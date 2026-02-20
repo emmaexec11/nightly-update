@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Inter:wght@100..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 240 10% 4%;
+  --foreground: 0 0% 98%;
+
+  --card: 240 10% 6%;
+  --card-foreground: 0 0% 98%;
+
+  --popover: 240 10% 6%;
+  --popover-foreground: 0 0% 98%;
+
+  --primary: 0 0% 98%;
+  --primary-foreground: 240 10% 4%;
+
+  --secondary: 240 5% 15%;
+  --secondary-foreground: 0 0% 98%;
+
+  --muted: 240 5% 15%;
+  --muted-foreground: 240 5% 60%;
+
+  --accent: 240 5% 15%;
+  --accent-foreground: 0 0% 98%;
+
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 240 5% 15%;
+  --input: 240 5% 15%;
+  --ring: 240 5% 30%;
+
+  /* Functional Colors for Execution */
+  --success: 142 71% 45%;
+  --warning: 35 92% 50%;
+  --error: 0 84% 60%;
+
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'Geist Mono', monospace;
+  
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased selection:bg-white/20;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply tracking-tight;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .glass-panel {
+    @apply bg-card/50 backdrop-blur-xl border border-white/5;
+  }
+
+  .stat-value {
+    @apply font-mono tracking-tighter;
+  }
+}
