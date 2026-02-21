@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Execution System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Geist+Mono:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background: #0a0a0f;
+            --foreground: #fafafa;
+            --card: #0f0f17;
+            --card-foreground: #fafafa;
+            --primary: #fafafa;
+            --primary-foreground: #0a0a0f;
+            --secondary: #262635;
+            --secondary-foreground: #fafafa;
+            --muted: #262635;
+            --muted-foreground: #999999;
+            --accent: #262635;
+            --accent-foreground: #fafafa;
+            --destructive: #7f1d1d;
+            --border: #262635;
+            --input: #262635;
+            --ring: #4d4d4d;
+            --success: #059669;
+            --warning: #f59e0b;
+            --error: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--foreground);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .font-mono {
+            font-family: 'Geist Mono', monospace;
+        }
+
+        .container {
+            max-width: 1024px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        /* Header */
+        .header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .date-display {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+            font-family: 'Geist Mono', monospace;
+            margin-bottom: 0.5rem;
+        }
+
+        .main-title {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -0.05em;
+            color: white;
+        }
+
+        .today-habits {
+            text-align: right;
+        }
+
+        .today-label {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+            font-family: 'Geist Mono', monospace;
+        }
+
+        .habit-count {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #059669;
+            font-family: 'Geist Mono', monospace;
+        }
+
+        .habit-label {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+        }
+
+        /* Quotes Section */
+        .quotes-section {
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            background: linear-gradient(to right, rgba(245, 158, 11, 0.05), rgba(249, 115, 22, 0.05));
+            border: 1px solid rgba(245, 158, 11, 0.1);
+            border-radius: 0.5rem;
+        }
+
+        .quotes-icon {
+            width: 2rem;
+            height: 2rem;
+            color: rgba(245, 158, 11, 0.5);
+            flex-shrink: 0;
+        }
+
+        .quotes-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .quote-item p {
+            font-size: 0.875rem;
+            color: rgba(253, 230, 138, 0.8);
+            font-style: italic;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .quote-author {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+        }
+
+        /* Cards */
+        .card {
+            background-color: rgba(15, 15, 23, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            opacity: 0.8;
+        }
+
+        /* Goals Section */
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .goal-card {
+            background-color: rgba(38, 38, 69, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+
+        .goal-label {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+            font-family: 'Geist Mono', monospace;
+            margin-bottom: 0.5rem;
+        }
+
+        .goal-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            word-break: break-word;
+        }
+
+        .goal-placeholder {
+            color: rgba(153, 153, 153, 0.5);
+            font-style: italic;
+        }
+
+        .goal-actions {
+            display: flex;
+            gap: 0.25rem;
+            margin-top: 0.75rem;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--muted-foreground);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: var(--foreground);
+        }
+
+        /* Habits Section */
+        .habit-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1rem;
+            background-color: var(--card);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 0.75rem;
+            margin-bottom: 0.75rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .habit-item:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .habit-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .habit-info {
+            flex: 1;
+            cursor: pointer;
+        }
+
+        .habit-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            transition: color 0.2s ease;
+        }
+
+        .habit-item:hover .habit-name {
+            color: var(--primary);
+        }
+
+        .habit-stats {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+            font-family: 'Geist Mono', monospace;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .stat-icon {
+            width: 0.75rem;
+            height: 0.75rem;
+        }
+
+        .streak-active {
+            color: #f97316;
+        }
+
+        .rate-success {
+            color: #059669;
+        }
+
+        .rate-warning {
+            color: #f59e0b;
+        }
+
+        .rate-danger {
+            color: #ef4444;
+        }
+
+        .habit-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding-left: 1rem;
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
+            margin-left: 1rem;
+        }
+
+        .checkbox-btn {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(38, 38, 69, 0.5);
+            color: var(--muted-foreground);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-btn:hover {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .checkbox-btn.checked {
+            background: #059669;
+            color: white;
+            box-shadow: 0 0 15px rgba(5, 150, 105, 0.3);
+        }
+
+        .note-btn, .delete-btn {
+            background: transparent;
+            border: none;
+            color: var(--muted-foreground);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .note-btn:hover, .delete-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .note-btn.has-note {
+            color: #f59e0b;
+        }
+
+        .delete-btn:hover {
+            color: var(--error);
+        }
+
+        /* Notes Display */
+        .habit-note {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+
+        .habit-note:hover {
+            opacity: 0.9;
+        }
+
+        /* Add Buttons */
+        .add-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: transparent;
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            color: var(--muted-foreground);
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .add-btn:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            color: var(--foreground);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Reflection Section */
+        .reflection-input {
+            width: 100%;
+            min-height: 150px;
+            background: rgba(38, 38, 69, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--foreground);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: 'Geist Mono', monospace;
+            font-size: 0.875rem;
+            resize: vertical;
+            transition: border-color 0.2s ease;
+        }
+
+        .reflection-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .reflection-input::placeholder {
+            color: var(--muted-foreground);
+        }
+
+        .save-reflection-btn {
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background: #059669;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .save-reflection-btn:hover {
+            background: #047857;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+        }
+
+        /* Modal/Dialog */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: transparent;
+            border: none;
+            color: var(--muted-foreground);
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--secondary);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--foreground);
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 0.75rem;
+            background: rgba(26, 32, 54, 0.8);
+            border-radius: 0.375rem;
+            overflow: hidden;
+            margin: 0.625rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #9333ea, #3b82f6);
+            border-radius: 0.375rem;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+            margin-top: 0.5rem;
+        }
+
+        /* Lag Indicators */
+        .indicator-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: rgba(38, 38, 69, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .indicator-name {
+            font-weight: 500;
+        }
+
+        .indicator-value {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .indicator-input {
+            width: 80px;
+            padding: 0.25rem 0.5rem;
+            background: var(--secondary);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--foreground);
+            border-radius: 0.25rem;
+            text-align: center;
+            font-size: 0.875rem;
+        }
+
+        .indicator-unit {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+        }
+
+        /* Utility classes */
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2rem;
+            }
+
+            .header-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .today-habits {
+                text-align: left;
+            }
+
+            .goals-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-top">
+                <div>
+                    <div class="date-display" id="currentDate"></div>
+                    <h1 class="main-title">Execution System</h1>
+                </div>
+                <div class="today-habits">
+                    <div class="today-label">TODAY</div>
+                    <div class="habit-count" id="habitCount">0</div>
+                    <div class="habit-label">habits</div>
+                </div>
+            </div>
+            
+            <!-- Inspirational Quotes -->
+            <div class="quotes-section">
+                <svg class="quotes-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M11.25 4.533A9.707 9.707 0 006 3a9.735 9.735 0 00-3.25.555.75.75 0 00-.5.707v14.25a.75.75 0 001 .707A8.237 8.237 0 016 18.75c1.995 0 3.823.707 5.25 1.886V4.533zM12.75 20.636A8.214 8.214 0 0118 18.75c.966 0 1.89.166 2.75.47a.75.75 0 001-.708V4.262a.75.75 0 00-.5-.707A9.735 9.735 0 0018 3a9.707 9.707 0 00-5.25 1.533v16.103z" />
+                </svg>
+                <div class="quotes-content">
+                    <div class="quote-item">
+                        <p>"We must all suffer one of two things: the pain of discipline or the pain of regret."</p>
+                        <div class="quote-author">— Jim Rohn</div>
+                    </div>
+                    <div class="quote-item">
+                        <p>"Nothing changes if nothing changes."</p>
+                        <div class="quote-author">— Theo Von</div>
+                    </div>
+                    <div class="quote-item">
+                        <p>"Discipline equals freedom."</p>
+                        <div class="quote-author">— Jocko Willink</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Goals Section -->
+        <div class="card">
+            <h2 class="section-title">
+                <svg class="section-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                </svg>
+                Goals
+            </h2>
+            <div class="goals-grid">
+                <div class="goal-card">
+                    <div class="goal-label">YEARLY</div>
+                    <h4 class="goal-name" id="yearlyGoal">
+                        <span class="goal-placeholder">Set your yearly goal</span>
+                    </h4>
+                    <div class="goal-actions">
+                        <button class="action-btn" onclick="editGoal('yearly')">Edit</button>
+                        <button class="action-btn" onclick="deleteGoal('yearly')">Delete</button>
+                    </div>
+                </div>
+                <div class="goal-card">
+                    <div class="goal-label">QUARTERLY</div>
+                    <h4 class="goal-name" id="quarterlyGoal">
+                        <span class="goal-placeholder">Set your quarterly goal</span>
+                    </h4>
+                    <div class="goal-actions">
+                        <button class="action-btn" onclick="editGoal('quarterly')">Edit</button>
+                        <button class="action-btn" onclick="deleteGoal('quarterly')">Delete</button>
+                    </div>
+                </div>
+                <div class="goal-card">
+                    <div class="goal-label">MONTHLY</div>
+                    <h4 class="goal-name" id="monthlyGoal">
+                        <span class="goal-placeholder">Set your monthly goal</span>
+                    </h4>
+                    <div class="goal-actions">
+                        <button class="action-btn" onclick="editGoal('monthly')">Edit</button>
+                        <button class="action-btn" onclick="deleteGoal('monthly')">Delete</button>
+                    </div>
+                </div>
+                <div class="goal-card">
+                    <div class="goal-label">WEEKLY</div>
+                    <h4 class="goal-name" id="weeklyGoal">
+                        <span class="goal-placeholder">Set your weekly goal</span>
+                    </h4>
+                    <div class="goal-actions">
+                        <button class="action-btn" onclick="editGoal('weekly')">Edit</button>
+                        <button class="action-btn" onclick="deleteGoal('weekly')">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Habits Section -->
+        <div class="card">
+            <h2 class="section-title">
+                <svg class="section-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 11 12 14 22 4"></polyline>
+                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+                </svg>
+                Daily Habits
+            </h2>
+            <div id="habitsList"></div>
+            <button class="add-btn" onclick="openAddHabit()">
+                <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add New Habit
+            </button>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="habitProgress" style="width: 0%"></div>
+                </div>
+                <div class="progress-text" id="habitProgressText">0% Complete</div>
+            </div>
+        </div>
+
+        <!-- Lag Indicators Section -->
+        <div class="card">
+            <h2 class="section-title">
+                <svg class="section-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+                Lag Indicators
+            </h2>
+            <div id="indicatorsList">
+                <div class="indicator-item">
+                    <span class="indicator-name">Revenue</span>
+                    <div class="indicator-value">
+                        <input type="number" class="indicator-input" id="revenue" placeholder="0">
+                        <span class="indicator-unit">$</span>
+                    </div>
+                </div>
+                <div class="indicator-item">
+                    <span class="indicator-name">Weight</span>
+                    <div class="indicator-value">
+                        <input type="number" class="indicator-input" id="weight" placeholder="0" step="0.1">
+                        <span class="indicator-unit">lbs</span>
+                    </div>
+                </div>
+                <div class="indicator-item">
+                    <span class="indicator-name">Energy Level</span>
+                    <div class="indicator-value">
+                        <input type="number" class="indicator-input" id="energy" placeholder="0" min="1" max="10">
+                        <span class="indicator-unit">/10</span>
+                    </div>
+                </div>
+            </div>
+            <button class="add-btn" onclick="openAddIndicator()">
+                <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add Lag Indicator
+            </button>
+        </div>
+
+        <!-- Daily Reflection -->
+        <div class="card">
+            <h2 class="section-title">
+                <svg class="section-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                Daily Reflection
+            </h2>
+            <textarea 
+                class="reflection-input" 
+                id="reflection" 
+                placeholder="What's on your mind? What went well today? What could be improved? Any lessons learned?"
+            ></textarea>
+            <button class="save-reflection-btn" onclick="saveReflection()">Save Reflection</button>
+        </div>
+    </div>
+
+    <!-- Goal Edit Modal -->
+    <div class="modal" id="goalModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('goalModal')">&times;</button>
+            <h3 class="modal-header">Edit Goal</h3>
+            <div class="form-group">
+                <label class="form-label">Goal Name</label>
+                <input type="text" class="form-input" id="goalNameInput" placeholder="Enter goal name">
+            </div>
+            <input type="hidden" id="goalTypeInput">
+            <button class="save-reflection-btn" onclick="saveGoal()">Save Goal</button>
+        </div>
+    </div>
+
+    <!-- Add Habit Modal -->
+    <div class="modal" id="habitModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('habitModal')">&times;</button>
+            <h3 class="modal-header">Add New Habit</h3>
+            <div class="form-group">
+                <label class="form-label">Habit Name</label>
+                <input type="text" class="form-input" id="habitNameInput" placeholder="Enter habit name">
+            </div>
+            <button class="save-reflection-btn" onclick="saveHabit()">Add Habit</button>
+        </div>
+    </div>
+
+    <!-- Add Note Modal -->
+    <div class="modal" id="noteModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('noteModal')">&times;</button>
+            <h3 class="modal-header">Habit Note</h3>
+            <div class="form-group">
+                <label class="form-label">Note</label>
+                <textarea class="form-input" id="noteInput" rows="4" placeholder="Add a note for this habit..."></textarea>
+            </div>
+            <input type="hidden" id="noteHabitId">
+            <button class="save-reflection-btn" onclick="saveNote()">Save Note</button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize data structure
+        let executionData = {
+            goals: {
+                yearly: localStorage.getItem('goal_yearly') || 'Skincare',
+                quarterly: localStorage.getItem('goal_quarterly') || '',
+                monthly: localStorage.getItem('goal_monthly') || '',
+                weekly: localStorage.getItem('goal_weekly') || ''
+            },
+            habits: JSON.parse(localStorage.getItem('habits') || '[]'),
+            indicators: JSON.parse(localStorage.getItem('indicators') || '[]'),
+            reflection: localStorage.getItem('reflection_' + new Date().toDateString()) || '',
+            checkedHabits: JSON.parse(localStorage.getItem('checkedHabits_' + new Date().toDateString()) || '{}'),
+            habitNotes: JSON.parse(localStorage.getItem('habitNotes') || '{}')
+        };
+
+        // Set current date
+        function updateDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        // Initialize page
+        function init() {
+            updateDate();
+            renderGoals();
+            renderHabits();
+            renderIndicators();
+            loadReflection();
+        }
+
+        // Render goals
+        function renderGoals() {
+            for (const [type, goal] of Object.entries(executionData.goals)) {
+                const element = document.getElementById(type + 'Goal');
+                if (element) {
+                    if (goal) {
+                        element.innerHTML = goal;
+                    } else {
+                        element.innerHTML = '<span class="goal-placeholder">Set your ' + type + ' goal</span>';
+                    }
+                }
+            }
+        }
+
+        // Render habits
+        function renderHabits() {
+            const habitsList = document.getElementById('habitsList');
+            habitsList.innerHTML = '';
+            
+            executionData.habits.forEach((habit, index) => {
+                const isChecked = executionData.checkedHabits[habit.id] || false;
+                const hasNote = executionData.habitNotes[habit.id] || false;
+                
+                const habitItem = document.createElement('div');
+                habitItem.className = 'habit-item';
+                habitItem.innerHTML = `
+                    <div class="habit-main">
+                        <div class="habit-info" onclick="viewHabitDetails('${habit.id}')">
+                            <h3 class="habit-name">${habit.name}</h3>
+                            <div class="habit-stats">
+                                <span class="stat-item ${habit.streak > 0 ? 'streak-active' : ''}">
+                                    <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                    </svg>
+                                    ${habit.streak || 0} streak
+                                </span>
+                                <span class="stat-item ${habit.rate >= 80 ? 'rate-success' : habit.rate < 50 ? 'rate-danger' : 'rate-warning'}">
+                                    <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                                    </svg>
+                                    ${habit.rate || 0}% rate
+                                </span>
+                            </div>
+                        </div>
+                        <div class="habit-actions">
+                            <button class="note-btn ${hasNote ? 'has-note' : ''}" onclick="openNote('${habit.id}')" title="Add note">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z"/>
+                                </svg>
+                            </button>
+                            <button class="checkbox-btn ${isChecked ? 'checked' : ''}" onclick="toggleHabit('${habit.id}')">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </button>
+                            <button class="delete-btn" onclick="deleteHabit(${index})" title="Delete habit">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    ${hasNote ? `<div class="habit-note" style="background-color: #fef3c7; color: #92400e;" onclick="openNote('${habit.id}')">${executionData.habitNotes[habit.id]}</div>` : ''}
+                `;
+                habitsList.appendChild(habitItem);
+            });
+            
+            updateHabitCount();
+            updateProgress();
+        }
+
+        // Toggle habit completion
+        function toggleHabit(habitId) {
+            executionData.checkedHabits[habitId] = !executionData.checkedHabits[habitId];
+            localStorage.setItem('checkedHabits_' + new Date().toDateString(), JSON.stringify(executionData.checkedHabits));
+            
+            // Update streak and rate
+            const habitIndex = executionData.habits.findIndex(h => h.id === habitId);
+            if (habitIndex !== -1) {
+                if (executionData.checkedHabits[habitId]) {
+                    executionData.habits[habitIndex].streak = (executionData.habits[habitIndex].streak || 0) + 1;
+                    executionData.habits[habitIndex].rate = Math.min(100, (executionData.habits[habitIndex].rate || 0) + 5);
+                }
+                localStorage.setItem('habits', JSON.stringify(executionData.habits));
+            }
+            
+            renderHabits();
+        }
+
+        // Update habit count
+        function updateHabitCount() {
+            document.getElementById('habitCount').textContent = executionData.habits.length;
+        }
+
+        // Update progress
+        function updateProgress() {
+            const totalHabits = executionData.habits.length;
+            if (totalHabits === 0) {
+                document.getElementById('habitProgress').style.width = '0%';
+                document.getElementById('habitProgressText').textContent = '0% Complete';
+                return;
+            }
+            
+            const checkedCount = Object.values(executionData.checkedHabits).filter(checked => checked).length;
+            const percentage = Math.round((checkedCount / totalHabits) * 100);
+            
+            document.getElementById('habitProgress').style.width = percentage + '%';
+            document.getElementById('habitProgressText').textContent = percentage + '% Complete';
+        }
+
+        // Goal functions
+        function editGoal(type) {
+            document.getElementById('goalNameInput').value = executionData.goals[type] || '';
+            document.getElementById('goalTypeInput').value = type;
+            openModal('goalModal');
+        }
+
+        function saveGoal() {
+            const type = document.getElementById('goalTypeInput').value;
+            const name = document.getElementById('goalNameInput').value;
+            
+            executionData.goals[type] = name;
+            localStorage.setItem('goal_' + type, name);
+            
+            renderGoals();
+            closeModal('goalModal');
+        }
+
+        function deleteGoal(type) {
+            if (confirm('Are you sure you want to delete this goal?')) {
+                executionData.goals[type] = '';
+                localStorage.removeItem('goal_' + type);
+                renderGoals();
+            }
+        }
+
+        // Habit functions
+        function openAddHabit() {
+            document.getElementById('habitNameInput').value = '';
+            openModal('habitModal');
+        }
+
+        function saveHabit() {
+            const name = document.getElementById('habitNameInput').value;
+            if (!name) return;
+            
+            const newHabit = {
+                id: 'habit_' + Date.now(),
+                name: name,
+                streak: 0,
+                rate: 0
+            };
+            
+            executionData.habits.push(newHabit);
+            localStorage.setItem('habits', JSON.stringify(executionData.habits));
+            
+            renderHabits();
+            closeModal('habitModal');
+        }
+
+        function deleteHabit(index) {
+            if (confirm('Are you sure you want to delete this habit?')) {
+                const habitId = executionData.habits[index].id;
+                executionData.habits.splice(index, 1);
+                delete executionData.checkedHabits[habitId];
+                delete executionData.habitNotes[habitId];
+                
+                localStorage.setItem('habits', JSON.stringify(executionData.habits));
+                localStorage.setItem('checkedHabits_' + new Date().toDateString(), JSON.stringify(executionData.checkedHabits));
+                localStorage.setItem('habitNotes', JSON.stringify(executionData.habitNotes));
+                
+                renderHabits();
+            }
+        }
+
+        function viewHabitDetails(habitId) {
+            // This would show more detailed habit information
+            console.log('View habit details:', habitId);
+        }
+
+        // Note functions
+        function openNote(habitId) {
+            document.getElementById('noteInput').value = executionData.habitNotes[habitId] || '';
+            document.getElementById('noteHabitId').value = habitId;
+            openModal('noteModal');
+        }
+
+        function saveNote() {
+            const habitId = document.getElementById('noteHabitId').value;
+            const note = document.getElementById('noteInput').value;
+            
+            if (note) {
+                executionData.habitNotes[habitId] = note;
+            } else {
+                delete executionData.habitNotes[habitId];
+            }
+            
+            localStorage.setItem('habitNotes', JSON.stringify(executionData.habitNotes));
+            renderHabits();
+            closeModal('noteModal');
+        }
+
+        // Indicator functions
+        function renderIndicators() {
+            // Load saved indicator values
+            const savedIndicators = JSON.parse(localStorage.getItem('indicatorValues_' + new Date().toDateString()) || '{}');
+            
+            for (const [key, value] of Object.entries(savedIndicators)) {
+                const input = document.getElementById(key);
+                if (input) {
+                    input.value = value;
+                }
+            }
+        }
+
+        function openAddIndicator() {
+            alert('Add custom lag indicator feature coming soon!');
+        }
+
+        // Reflection functions
+        function loadReflection() {
+            document.getElementById('reflection').value = executionData.reflection;
+        }
+
+        function saveReflection() {
+            const reflection = document.getElementById('reflection').value;
+            executionData.reflection = reflection;
+            localStorage.setItem('reflection_' + new Date().toDateString(), reflection);
+            alert('Reflection saved!');
+        }
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Save indicator values on change
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('indicator-input')) {
+                const indicators = JSON.parse(localStorage.getItem('indicatorValues_' + new Date().toDateString()) || '{}');
+                indicators[e.target.id] = e.target.value;
+                localStorage.setItem('indicatorValues_' + new Date().toDateString(), JSON.stringify(indicators));
+            }
+        });
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>
