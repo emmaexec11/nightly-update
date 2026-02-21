@@ -38,7 +38,8 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--background);
+            background: linear-gradient(to bottom, #0a0a0f, #0f0f17, #0a0a0f);
+            background-attachment: fixed;
             color: var(--foreground);
             min-height: 100vh;
             line-height: 1.6;
@@ -78,10 +79,14 @@
         }
 
         .main-title {
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: 700;
             letter-spacing: -0.05em;
             color: white;
+            background: linear-gradient(to right, #fff, #9f7aea);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .today-habits {
@@ -235,15 +240,19 @@
             flex-direction: column;
             gap: 0.5rem;
             padding: 1rem;
-            background-color: var(--card);
+            background-color: rgba(45, 55, 72, 0.6);
+            backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 0.75rem;
             margin-bottom: 0.75rem;
-            transition: border-color 0.2s ease;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         .habit-item:hover {
-            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-5px);
+            border-color: rgba(159, 122, 234, 0.5);
+            box-shadow: 0 15px 40px rgba(159, 122, 234, 0.2);
         }
 
         .habit-main {
@@ -883,7 +892,7 @@
                             <div class="habit-stats">
                                 <span class="stat-item ${habit.streak > 0 ? 'streak-active' : ''}">
                                     <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                        <path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/>
                                     </svg>
                                     ${habit.streak || 0} streak
                                 </span>
@@ -1100,8 +1109,58 @@
             }
         });
 
+        // Drag and drop for goals
+        let draggedElement = null;
+
+        function enableDragDrop() {
+            const goalCards = document.querySelectorAll('.goal-card');
+            
+            goalCards.forEach(card => {
+                card.draggable = true;
+                card.style.cursor = 'move';
+                
+                card.addEventListener('dragstart', function(e) {
+                    draggedElement = this;
+                    this.style.opacity = '0.5';
+                });
+                
+                card.addEventListener('dragend', function(e) {
+                    this.style.opacity = '';
+                });
+                
+                card.addEventListener('dragover', function(e) {
+                    if (e.preventDefault) {
+                        e.preventDefault();
+                    }
+                    e.dataTransfer.dropEffect = 'move';
+                    return false;
+                });
+                
+                card.addEventListener('drop', function(e) {
+                    if (e.stopPropagation) {
+                        e.stopPropagation();
+                    }
+                    
+                    if (draggedElement !== this) {
+                        const allCards = [...document.querySelectorAll('.goal-card')];
+                        const draggedIndex = allCards.indexOf(draggedElement);
+                        const targetIndex = allCards.indexOf(this);
+                        
+                        if (draggedIndex < targetIndex) {
+                            this.parentNode.insertBefore(draggedElement, this.nextSibling);
+                        } else {
+                            this.parentNode.insertBefore(draggedElement, this);
+                        }
+                    }
+                    
+                    return false;
+                });
+            });
+        }
+
         // Initialize on load
         init();
+        enableDragDrop();
     </script>
 </body>
 </html>
