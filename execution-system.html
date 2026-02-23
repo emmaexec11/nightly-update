@@ -1118,7 +1118,14 @@
 
         // Initialize
         function init() {
-            loadState();
+            // FORCE CLEAR OLD DATA AND USE DEFAULTS
+            localStorage.removeItem('questTracker');
+            localStorage.removeItem('executionSystem');
+            localStorage.removeItem('modernTracker');
+            
+            // Make sure state has goals
+            console.log('Goals in state:', state.goals.length);
+            
             renderGoals();
             updateStats();
             
@@ -1160,6 +1167,13 @@
         // Render goals
         function renderGoals() {
             const container = document.getElementById('goalsContainer');
+            
+            // Debug - show how many goals we have
+            if (!state.goals || state.goals.length === 0) {
+                container.innerHTML = '<div style="color: red; font-size: 2rem;">NO GOALS FOUND IN STATE!</div>';
+                return;
+            }
+            
             container.innerHTML = state.goals.map(goal => {
                 const goalColor = goal.color || getCategoryColor(goal.category);
                 return `
