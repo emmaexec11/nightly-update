@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Execution System</title>
+    <title>Execution System - v2</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -96,6 +96,42 @@
             font-size: 0.875rem;
         }
 
+        /* Character Section - Much Smaller */
+        .character-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .level-badge {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--warning);
+        }
+
+        .mini-stats {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .mini-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .mini-stat-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
         /* Goals Section */
         .goal {
             background: var(--bg-secondary);
@@ -105,14 +141,53 @@
             overflow: hidden;
         }
 
+        /* Goal Hierarchy */
+        .goal-hierarchy {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hierarchy-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .hierarchy-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .hierarchy-box:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .hierarchy-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .hierarchy-content {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+
         .goal-header {
             padding: 1.5rem;
             border-bottom: 1px solid var(--border);
-            cursor: pointer;
-        }
-
-        .goal-header:hover {
-            background: var(--bg-card);
+            position: relative;
         }
 
         .goal-category {
@@ -535,6 +610,19 @@
         .btn:hover {
             transform: translateY(-1px);
         }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hierarchy-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .character-section {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -544,6 +632,25 @@
             <div class="date" id="currentDate"></div>
             <h1 class="title">Execution System</h1>
             <p class="subtitle">Transform Goals into Reality</p>
+        </div>
+
+        <!-- Character Section - Compact -->
+        <div class="character-section">
+            <span class="level-badge">LEVEL 18</span>
+            <div class="mini-stats">
+                <div class="mini-stat">
+                    <span>HP:</span>
+                    <span class="mini-stat-value">180/200</span>
+                </div>
+                <div class="mini-stat">
+                    <span>EXP:</span>
+                    <span class="mini-stat-value">8.2k</span>
+                </div>
+                <div class="mini-stat">
+                    <span>Streak:</span>
+                    <span class="mini-stat-value">12 days</span>
+                </div>
+            </div>
         </div>
 
         <!-- Quotes Section -->
@@ -637,6 +744,10 @@
                     name: 'SPIRITUALITY & NERVOUS SYSTEM GOAL',
                     category: 'spiritual',
                     description: 'Anxiety 80% Reduction',
+                    yearly: 'Master inner peace and reduce anxiety by 80%',
+                    quarterly: 'Implement full morning/afternoon/night routines',
+                    monthly: 'Perfect morning routine and meditation practice',
+                    weekly: 'Complete all routines 6/7 days',
                     lagIndicators: [
                         { name: '20min morning walk', value: '85%' },
                         { name: 'Anxious to Energized 0-5', value: '3.2' },
@@ -651,6 +762,31 @@
                         'Morning': ['Morning Routine Guide', 'Breathwork Tutorial'],
                         'Afternoon': ['Power Hour Template', 'Focus Music'],
                         'Night': ['Wind Down Protocol', 'Sleep Optimization']
+                    }
+                },
+                {
+                    id: 2,
+                    name: 'BUSINESS GROWTH - NATURALLY WYLD',
+                    category: 'financial',
+                    description: '40% Revenue Growth',
+                    yearly: 'Scale to $X revenue with 40% growth',
+                    quarterly: 'Alberta expansion - 3 new cities',
+                    monthly: 'Launch Multi-Colour Cream product',
+                    weekly: 'Create 5 landing pages for products',
+                    lagIndicators: [
+                        { name: 'Monthly Revenue', value: '$32.5k' },
+                        { name: 'New Customers', value: '145' },
+                        { name: 'Conversion Rate', value: '3.2%' }
+                    ],
+                    habits: [
+                        { id: 4, name: 'Review daily sales', frequency: 'daily', completed: false, streak: 24, success: 96 },
+                        { id: 5, name: 'Customer outreach', frequency: 'daily', completed: false, streak: 15, success: 88 },
+                        { id: 6, name: 'Product development', frequency: 'weekly', completed: false, streak: 4, success: 100 }
+                    ],
+                    links: {
+                        'Marketing': ['Landing Page Templates', 'Meta Ads Guide'],
+                        'Products': ['Multi-Colour Cream', 'Ozonated Oil'],
+                        'Analytics': ['Sales Dashboard', 'Customer Reports']
                     }
                 }
             ]
@@ -689,10 +825,10 @@
             container.innerHTML = state.goals.map(goal => {
                 const categoryColors = {
                     spiritual: '#a855f7',
-                    financial: '#eab308',
+                    financial: '#f59e0b',
                     health: '#ef4444',
                     community: '#3b82f6',
-                    personal: '#22c55e'
+                    personal: '#10b981'
                 };
 
                 let linksHtml = '';
@@ -718,14 +854,39 @@
                     `;
                 }
 
+                const goalColor = categoryColors[goal.category];
+                
                 return `
-                    <div class="goal" style="border-left: 4px solid ${categoryColors[goal.category]}">
+                    <div class="goal" style="border-left: 4px solid ${goalColor}">
                         <div class="goal-header">
                             <button class="edit-button" onclick="editGoal(${goal.id})">Edit</button>
                             <div class="goal-category" style="color: ${categoryColors[goal.category]}">${goal.category.toUpperCase()}</div>
                             <h2 class="goal-title">${goal.name}</h2>
                             <p class="goal-description">${goal.description}</p>
                         </div>
+                        
+                        <div class="goal-hierarchy">
+                            <h3 class="indicators-title" style="margin-bottom: 0;">GOAL BREAKDOWN</h3>
+                            <div class="hierarchy-grid">
+                                <div class="hierarchy-box" style="border-color: ${goalColor}20;" onclick="editGoalPeriod(${goal.id}, 'yearly')">
+                                    <div class="hierarchy-label" style="color: ${goalColor};">YEARLY</div>
+                                    <div class="hierarchy-content">${goal.yearly || 'Click to set'}</div>
+                                </div>
+                                <div class="hierarchy-box" style="border-color: ${goalColor}20;" onclick="editGoalPeriod(${goal.id}, 'quarterly')">
+                                    <div class="hierarchy-label" style="color: ${goalColor};">QUARTERLY</div>
+                                    <div class="hierarchy-content">${goal.quarterly || 'Click to set'}</div>
+                                </div>
+                                <div class="hierarchy-box" style="border-color: ${goalColor}20;" onclick="editGoalPeriod(${goal.id}, 'monthly')">
+                                    <div class="hierarchy-label" style="color: ${goalColor};">MONTHLY</div>
+                                    <div class="hierarchy-content">${goal.monthly || 'Click to set'}</div>
+                                </div>
+                                <div class="hierarchy-box" style="border-color: ${goalColor}20;" onclick="editGoalPeriod(${goal.id}, 'weekly')">
+                                    <div class="hierarchy-label" style="color: ${goalColor};">WEEKLY</div>
+                                    <div class="hierarchy-content">${goal.weekly || 'Click to set'}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="goal-content">
                             ${goal.lagIndicators ? `
                                 <div class="lag-indicators">
@@ -742,6 +903,7 @@
                             ` : ''}
                             
                             <div class="habits-section">
+                                <h3 class="indicators-title" style="margin: 1.5rem 0 1rem 0;">DAILY HABITS</h3>
                                 ${goal.habits.map(habit => `
                                     <div class="habit-item" onclick="toggleHabit(${goal.id}, ${habit.id})">
                                         <div class="habit-checkbox ${habit.completed ? 'checked' : ''}"></div>
@@ -822,6 +984,10 @@
                     name: name,
                     category: category,
                     description: description,
+                    yearly: 'Define yearly target',
+                    quarterly: 'Define quarterly milestone',
+                    monthly: 'Define monthly goal',
+                    weekly: 'Define weekly target',
                     habits: [],
                     links: {}
                 };
@@ -873,6 +1039,19 @@
                 renderGoals();
                 closeModal('habitModal');
                 document.getElementById('habitName').value = '';
+            }
+        }
+
+        function editGoalPeriod(goalId, period) {
+            const goal = state.goals.find(g => g.id === goalId);
+            if (goal) {
+                const currentValue = goal[period] || '';
+                const newValue = prompt(`Set ${period} goal:`, currentValue);
+                if (newValue !== null) {
+                    goal[period] = newValue;
+                    saveState();
+                    renderGoals();
+                }
             }
         }
 
