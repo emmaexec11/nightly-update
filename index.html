@@ -4,164 +4,175 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Execution System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..800&display=swap" rel="stylesheet">
     <style>
-        /* CSS Variables for Dark Theme */
         :root {
-            --background: #0a0a0a;
-            --foreground: #ffffff;
-            --card: #111111;
-            --card-foreground: #ffffff;
-            --primary: #3b82f6;
-            --primary-foreground: #ffffff;
-            --secondary: #262626;
-            --secondary-foreground: #a3a3a3;
-            --muted: #262626;
-            --muted-foreground: #737373;
-            --accent: #262626;
-            --accent-foreground: #ffffff;
-            --destructive: #ef4444;
-            --destructive-foreground: #ffffff;
-            --border: #262626;
-            --input: #262626;
-            --ring: #3b82f6;
-            --radius: 0.5rem;
-            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-            --font-mono: "JetBrains Mono", "Fira Code", "Roboto Mono", monospace;
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --bg-card: #111111;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.12);
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --purple: #a855f7;
+            --blue: #3b82f6;
+            --green: #10b981;
+            --orange: #f97316;
+            --red: #ef4444;
+            --yellow: #fbbf24;
         }
 
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: var(--font-sans);
-            background-color: var(--background);
-            color: var(--foreground);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             line-height: 1.5;
-            font-size: 14px;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 2rem;
         }
 
-        /* Typography */
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(to right, #fff, #999);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .subtitle {
-            color: var(--muted-foreground);
-            font-size: 1.125rem;
-            margin-bottom: 2rem;
-        }
-
-        /* Cards */
-        .card {
-            background: var(--card);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            transition: all 0.2s ease;
-        }
-
-        .card:hover {
-            border-color: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Goals Section */
-        .goals-section {
+        /* Header */
+        .header {
+            text-align: center;
             margin-bottom: 3rem;
+            position: relative;
         }
 
-        .goals-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
+        .date {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
         }
 
-        .section-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            display: flex;
+        .title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            letter-spacing: -0.02em;
+        }
+
+        .habit-counter {
+            position: absolute;
+            top: 0;
+            right: 0;
+            text-align: right;
+        }
+
+        .habit-count {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--green);
+            line-height: 1;
+        }
+
+        .habit-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .new-goal-btn {
+            margin-top: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px dashed rgba(255, 255, 255, 0.3);
+            color: var(--text-primary);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-        }
-
-        .goals-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .goal-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: var(--radius);
-            padding: 1.25rem;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
             transition: all 0.2s ease;
         }
 
-        .goal-card:hover {
+        .new-goal-btn:hover {
+            border-color: rgba(255, 255, 255, 0.5);
             background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.1);
-            transform: translateY(-1px);
         }
 
-        .goal-card.yearly {
-            border-left: 4px solid #a855f7;
+        /* Quotes */
+        .quotes {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
         }
 
-        .goal-card.quarterly {
-            border-left: 4px solid #3b82f6;
+        .quote {
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+            border-left: 3px solid var(--yellow);
         }
 
-        .goal-card.monthly {
-            border-left: 4px solid #10b981;
+        .quote:last-child {
+            margin-bottom: 0;
         }
 
-        .goal-card.weekly {
-            border-left: 4px solid #f97316;
+        .quote-text {
+            font-style: italic;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .quote-author {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        /* Goal Card */
+        .goal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .goal-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--purple);
         }
 
         .goal-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
         }
 
-        .goal-type {
+        .goal-type-badge {
             font-size: 0.75rem;
-            color: var(--muted-foreground);
-            text-transform: uppercase;
             font-weight: 700;
-            letter-spacing: 0.05em;
-            display: flex;
-            align-items: center;
-            gap: 0.375rem;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.8;
         }
 
         .goal-actions {
             display: flex;
-            gap: 0.25rem;
+            gap: 0.5rem;
             opacity: 0;
             transition: opacity 0.2s ease;
         }
@@ -170,183 +181,314 @@
             opacity: 1;
         }
 
-        .goal-name {
-            font-size: 1rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            line-height: 1.4;
-        }
-
-        .goal-meta {
+        .action-btn {
+            width: 2rem;
+            height: 2rem;
             display: flex;
             align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 0.375rem;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        .goal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            line-height: 1.3;
+        }
+
+        /* Sub Goals */
+        .sub-goals {
+            display: flex;
             gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .sub-goal {
+            flex: 1;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .sub-goal:hover {
+            border-color: var(--border-hover);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .sub-goal-label {
             font-size: 0.75rem;
-            color: var(--muted-foreground);
-            font-family: var(--font-mono);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+            opacity: 0.6;
+        }
+
+        /* Lag Indicators */
+        .lag-indicators {
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+        }
+
+        .lag-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .lag-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .add-link-btn {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s ease;
+        }
+
+        .add-link-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        .lag-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .lag-item:hover {
+            background: rgba(255, 255, 255, 0.02);
+            border-color: var(--border-hover);
+        }
+
+        .notion-badge {
+            padding: 0.25rem 0.75rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            margin-left: auto;
         }
 
         /* Habits Section */
         .habits-section {
-            margin-bottom: 3rem;
+            margin-top: 3rem;
         }
 
-        .habit-row {
-            background: var(--card);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: var(--radius);
-            padding: 1rem;
-            margin-bottom: 0.75rem;
+        .habits-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+        }
+
+        .new-habit-btn {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px dashed rgba(255, 255, 255, 0.3);
+            color: var(--text-primary);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 0.5rem;
             transition: all 0.2s ease;
+        }
+
+        .new-habit-btn:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Habit Row */
+        .habit-row {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
             position: relative;
+            transition: all 0.2s ease;
         }
 
         .habit-row:hover {
-            border-color: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-color: var(--border-hover);
         }
 
-        .habit-info {
+        .habit-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .habit-left {
             display: flex;
             align-items: center;
             gap: 1rem;
             flex: 1;
-            cursor: pointer;
+        }
+
+        .habit-number {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .habit-emoji {
+            font-size: 1.5rem;
+        }
+
+        .habit-info {
+            flex: 1;
+        }
+
+        .habit-name-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.25rem;
         }
 
         .habit-name {
             font-size: 1.125rem;
             font-weight: 600;
-            margin-bottom: 0.25rem;
-            transition: color 0.2s ease;
         }
 
-        .habit-row:hover .habit-name {
-            color: var(--primary);
+        .warning-icon {
+            width: 1rem;
+            height: 1rem;
+            color: var(--orange);
+            animation: pulse 2s infinite;
         }
 
-        .habit-stats {
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .habit-badges {
             display: flex;
-            align-items: center;
-            gap: 1rem;
+            gap: 0.75rem;
+        }
+
+        .habit-badge {
             font-size: 0.75rem;
-            color: var(--muted-foreground);
-            font-family: var(--font-mono);
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
-        .habit-stat {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
+        .streak-badge {
+            color: var(--text-muted);
+        }
+
+        .success-badge {
+            color: var(--red);
+        }
+
+        .success-badge.high {
+            color: var(--green);
         }
 
         .habit-actions {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            padding-left: 1rem;
-            border-left: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .habit-note {
-            margin-top: 0.75rem;
-            padding: 0.75rem;
-            border-radius: calc(var(--radius) - 2px);
-            font-size: 0.875rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: opacity 0.2s ease;
-        }
-
-        .habit-note:hover {
-            opacity: 0.9;
-        }
-
-        /* Buttons */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            border-radius: calc(var(--radius) - 2px);
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            background: transparent;
-            color: var(--foreground);
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: var(--primary-foreground);
-        }
-
-        .btn-primary:hover {
-            opacity: 0.9;
-        }
-
-        .btn-outline {
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-outline:hover {
-            border-color: rgba(255, 255, 255, 0.4);
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .btn-ghost {
-            padding: 0.5rem;
-        }
-
-        .btn-ghost:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .btn-icon {
-            width: 2rem;
-            height: 2rem;
-            padding: 0;
-        }
-
-        .btn-check {
+        .check-btn {
             width: 3rem;
             height: 3rem;
-            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            color: var(--text-muted);
+            cursor: pointer;
             transition: all 0.2s ease;
         }
 
-        .btn-check:hover {
-            background: rgba(255, 255, 255, 0.1);
+        .check-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--border-hover);
         }
 
-        .btn-check.checked {
-            background: #10b981;
+        .check-btn.checked {
+            background: var(--green);
+            border-color: var(--green);
             color: white;
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Habit Note */
+        .habit-note {
+            margin-top: 1rem;
+            padding: 0.875rem;
+            background: #fef3c7;
+            color: #92400e;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            line-height: 1.5;
         }
 
         /* Icons */
         .icon {
-            width: 1rem;
-            height: 1rem;
-            flex-shrink: 0;
+            width: 1.25rem;
+            height: 1.25rem;
         }
 
         .icon-sm {
-            width: 0.75rem;
-            height: 0.75rem;
-        }
-
-        .icon-lg {
-            width: 1.5rem;
-            height: 1.5rem;
+            width: 1rem;
+            height: 1rem;
         }
 
         /* Dialogs */
@@ -354,6 +496,7 @@
             position: fixed;
             inset: 0;
             background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
             z-index: 50;
             display: flex;
             align-items: center;
@@ -369,9 +512,9 @@
         }
 
         .dialog {
-            background: var(--card);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
             width: 90%;
             max-width: 500px;
             max-height: 85vh;
@@ -386,7 +529,7 @@
 
         .dialog-header {
             padding: 1.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .dialog-title {
@@ -398,15 +541,6 @@
             padding: 1.5rem;
         }
 
-        .dialog-footer {
-            padding: 1.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.5rem;
-        }
-
-        /* Forms */
         .form-group {
             margin-bottom: 1.5rem;
         }
@@ -416,48 +550,72 @@
             font-size: 0.875rem;
             font-weight: 500;
             margin-bottom: 0.5rem;
+            color: var(--text-secondary);
         }
 
         .input, .select, .textarea {
             width: 100%;
-            padding: 0.5rem 0.75rem;
+            padding: 0.75rem;
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: calc(var(--radius) - 2px);
-            color: var(--foreground);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            color: var(--text-primary);
             font-size: 0.875rem;
             transition: all 0.2s ease;
         }
 
         .input:focus, .select:focus, .textarea:focus {
             outline: none;
-            border-color: var(--ring);
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+            border-color: var(--purple);
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
         }
 
         .textarea {
             resize: vertical;
-            min-height: 80px;
+            min-height: 100px;
+            font-family: inherit;
         }
 
-        /* Utility Classes */
-        .text-success { color: #10b981; }
-        .text-warning { color: #f59e0b; }
-        .text-danger { color: #ef4444; }
-        .text-muted { color: var(--muted-foreground); }
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
+        .dialog-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
         }
 
-        .empty-state {
-            padding: 3rem;
-            text-align: center;
-            color: var(--muted-foreground);
-            border: 1px dashed rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius);
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+        }
+
+        .btn-primary {
+            background: var(--purple);
+            border: 1px solid var(--purple);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
         }
 
         /* Day Pills */
@@ -468,197 +626,95 @@
         }
 
         .day-pill {
-            padding: 0.375rem 0.75rem;
-            border-radius: calc(var(--radius) - 2px);
+            padding: 0.5rem 0.875rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
             font-size: 0.875rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--muted-foreground);
+            color: var(--text-muted);
+        }
+
+        .day-pill:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--border-hover);
         }
 
         .day-pill.active {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-            border: 1px solid rgba(16, 185, 129, 0.3);
+            background: rgba(16, 185, 129, 0.15);
+            border-color: var(--green);
+            color: var(--green);
         }
 
-        .day-pill:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        /* Badges */
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.125rem 0.625rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            border-radius: 9999px;
-            white-space: nowrap;
-        }
-
-        .badge-outline {
-            border: 1px solid currentColor;
-            background: transparent;
-        }
-
-        /* Color Pills */
-        .color-pills {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .color-pill {
-            width: 2rem;
-            height: 2rem;
-            border-radius: calc(var(--radius) - 2px);
-            cursor: pointer;
-            transition: transform 0.2s ease;
-            position: relative;
-        }
-
-        .color-pill:hover {
-            transform: scale(1.1);
-        }
-
-        .color-pill.selected {
-            box-shadow: 0 0 0 2px white, 0 0 0 4px var(--background);
-        }
-
-        /* Close Button */
-        .close-btn {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            width: 2rem;
-            height: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: calc(var(--radius) - 2px);
-            background: transparent;
-            border: none;
-            color: var(--muted-foreground);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .close-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--foreground);
-        }
-
-        /* Lag Indicators */
-        .lag-indicator-row {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: calc(var(--radius) - 2px);
-            margin-bottom: 0.5rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .lag-indicator-row:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .lag-indicator-name {
-            flex: 1;
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-
-        .lag-indicator-value {
-            font-size: 0.75rem;
-            color: var(--muted-foreground);
-            font-family: var(--font-mono);
-        }
-
-        .lag-indicator-input {
-            width: 5rem;
-            height: 2rem;
-            padding: 0 0.5rem;
-            text-align: center;
-            font-size: 0.875rem;
+        /* Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Execution System</h1>
-        <p class="subtitle">Turn goals into reality through consistent action.</p>
-
-        <!-- Goals Section -->
-        <div class="goals-section">
-            <div class="goals-header">
-                <h2 class="section-title">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <!-- Header -->
+        <div class="header">
+            <div class="date" id="currentDate">Monday, February 23, 2026</div>
+            <h1 class="title">Execution System</h1>
+            
+            <div class="habit-counter">
+                <div class="habit-label">TODAY</div>
+                <div class="habit-count" id="habitCount">15</div>
+                <div class="habit-label">habits</div>
+                <button class="new-goal-btn" onclick="openGoalDialog()">
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="10"/>
-                        <path d="M12 2v20M2 12h20"/>
-                    </svg>
-                    Goals
-                </h2>
-                <button class="btn btn-outline" onclick="openGoalDialog()">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M12 2v20M2 12h20"/>
+                        <circle cx="12" cy="12" r="3"/>
                     </svg>
                     New Goal
                 </button>
             </div>
-            
-            <div id="goalsContainer" class="goals-grid">
-                <div class="empty-state">
-                    <p>No active goals defined. Add context to drive your habits.</p>
-                </div>
+        </div>
+
+        <!-- Quotes -->
+        <div class="quotes">
+            <div class="quote">
+                <div class="quote-text">"We must all suffer one of two things: the pain of discipline or the pain of regret."</div>
+                <div class="quote-author">— Jim Rohn</div>
+            </div>
+            <div class="quote">
+                <div class="quote-text">"Nothing changes if nothing changes."</div>
+                <div class="quote-author">— Theo Von</div>
+            </div>
+            <div class="quote">
+                <div class="quote-text">"Discipline equals freedom."</div>
+                <div class="quote-author">— Jocko Willink</div>
             </div>
         </div>
 
-        <!-- Habits Section -->
+        <!-- Goals -->
+        <div id="goalsContainer"></div>
+
+        <!-- Habits -->
         <div class="habits-section">
-            <div class="goals-header">
-                <h2 class="section-title">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/>
-                        <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                    Daily Habits
-                </h2>
-                <button class="btn btn-outline" onclick="openHabitDialog()">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <div class="habits-header">
+                <h2 class="section-title">TODAY'S HABITS</h2>
+                <button class="new-habit-btn" onclick="openHabitDialog()">
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="12" y1="5" x2="12" y2="19"/>
                         <line x1="5" y1="12" x2="19" y2="12"/>
                     </svg>
                     New Habit
                 </button>
             </div>
-            
-            <div id="habitsContainer">
-                <div class="empty-state">
-                    <p>No habits yet. Start building your daily routine.</p>
-                </div>
-            </div>
+            <div id="habitsContainer"></div>
         </div>
     </div>
 
     <!-- Goal Dialog -->
     <div id="goalDialog" class="dialog-overlay">
         <div class="dialog">
-            <button class="close-btn" onclick="closeGoalDialog()">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-            </button>
-            
             <div class="dialog-header">
                 <h3 class="dialog-title">Set New Goal</h3>
             </div>
@@ -695,7 +751,7 @@
             </div>
             
             <div class="dialog-footer">
-                <button class="btn" onclick="closeGoalDialog()">Cancel</button>
+                <button class="btn btn-ghost" onclick="closeGoalDialog()">Cancel</button>
                 <button class="btn btn-primary" onclick="saveGoal()">Set Goal</button>
             </div>
         </div>
@@ -704,13 +760,6 @@
     <!-- Habit Dialog -->
     <div id="habitDialog" class="dialog-overlay">
         <div class="dialog">
-            <button class="close-btn" onclick="closeHabitDialog()">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-            </button>
-            
             <div class="dialog-header">
                 <h3 class="dialog-title">Define New Habit</h3>
             </div>
@@ -723,14 +772,7 @@
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">Link to Goal (Optional)</label>
-                        <select id="habitGoal" class="select">
-                            <option value="">No specific goal</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Required Days <span class="text-muted">(click to toggle)</span></label>
+                        <label class="form-label">Required Days</label>
                         <div id="dayPills" class="day-pills">
                             <div class="day-pill active" data-day="Mon">Mon</div>
                             <div class="day-pill active" data-day="Tue">Tue</div>
@@ -750,59 +792,8 @@
             </div>
             
             <div class="dialog-footer">
-                <button class="btn" onclick="closeHabitDialog()">Cancel</button>
+                <button class="btn btn-ghost" onclick="closeHabitDialog()">Cancel</button>
                 <button class="btn btn-primary" onclick="saveHabit()">Commit to Habit</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Habit Note Dialog -->
-    <div id="noteDialog" class="dialog-overlay">
-        <div class="dialog">
-            <button class="close-btn" onclick="closeNoteDialog()">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-            </button>
-            
-            <div class="dialog-header">
-                <h3 class="dialog-title">Habit Note</h3>
-            </div>
-            
-            <div class="dialog-content">
-                <div class="form-group">
-                    <label class="form-label">Note</label>
-                    <textarea id="noteText" class="textarea" placeholder="Add a visible note for this habit..."></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Note Background Color</label>
-                    <div class="color-pills">
-                        <div class="color-pill" style="background: #fef3c7" data-bg="#fef3c7" data-text="#92400e"></div>
-                        <div class="color-pill" style="background: #d1fae5" data-bg="#d1fae5" data-text="#065f46"></div>
-                        <div class="color-pill" style="background: #dbeafe" data-bg="#dbeafe" data-text="#1e40af"></div>
-                        <div class="color-pill" style="background: #ede9fe" data-bg="#ede9fe" data-text="#5b21b6"></div>
-                        <div class="color-pill" style="background: #fce7f3" data-bg="#fce7f3" data-text="#9d174d"></div>
-                        <div class="color-pill" style="background: #ffedd5" data-bg="#ffedd5" data-text="#c2410c"></div>
-                        <div class="color-pill" style="background: #fee2e2" data-bg="#fee2e2" data-text="#b91c1c"></div>
-                        <div class="color-pill" style="background: #cffafe" data-bg="#cffafe" data-text="#0e7490"></div>
-                        <div class="color-pill" style="background: #f3f4f6" data-bg="#f3f4f6" data-text="#374151"></div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Preview</label>
-                    <div id="notePreview" style="padding: 0.75rem; border-radius: 0.375rem; font-size: 0.875rem; background: #fef3c7; color: #92400e;">
-                        Your note will appear here...
-                    </div>
-                </div>
-            </div>
-            
-            <div class="dialog-footer">
-                <button class="btn btn-outline text-danger" id="removeNoteBtn" onclick="removeNote()" style="display: none;">Remove Note</button>
-                <button class="btn" onclick="closeNoteDialog()">Cancel</button>
-                <button class="btn btn-primary" onclick="saveNote()">Save Note</button>
             </div>
         </div>
     </div>
@@ -810,23 +801,44 @@
     <script>
         // State Management
         let state = {
-            goals: [],
-            habits: [],
+            goals: [
+                {
+                    id: 1,
+                    type: 'Yearly',
+                    name: '⚡ SPIRITUALITY & NERVOUS SYSTEM GOAL - Anxiety 80% Reduction.',
+                    targetSuccess: 80,
+                    lagIndicators: [
+                        { id: 1, name: 'Daily Routine', type: 'notion' }
+                    ]
+                }
+            ],
+            habits: [
+                {
+                    id: 1,
+                    emoji: '☀️',
+                    name: 'Morning Routine',
+                    requiredDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    notes: '1. Charts 2. Prep Breakfast 3. Jog (breath, prayer, gratitude) 4. Breakfast (short vid) 5. Pray for guidance',
+                    noteColor: '#fef3c7',
+                    noteTextColor: '#92400e'
+                }
+            ],
             checks: []
         };
-
-        let editingHabitId = null;
-        let selectedNoteColor = { bg: '#fef3c7', text: '#92400e' };
 
         // Load state from localStorage
         function loadState() {
             const saved = localStorage.getItem('executionSystem');
             if (saved) {
-                state = JSON.parse(saved);
+                const parsed = JSON.parse(saved);
+                // Use saved state but ensure we have at least the example data
+                if (parsed.goals.length > 0) state.goals = parsed.goals;
+                if (parsed.habits.length > 0) state.habits = parsed.habits;
+                if (parsed.checks) state.checks = parsed.checks;
             }
+            updateHabitCount();
             renderGoals();
             renderHabits();
-            updateGoalSelect();
         }
 
         // Save state to localStorage
@@ -834,18 +846,19 @@
             localStorage.setItem('executionSystem', JSON.stringify(state));
         }
 
+        // Format date
+        function formatDate() {
+            const date = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = date.toLocaleDateString('en-US', options);
+        }
+
         // Get today's date string
         function getToday() {
-            const date = new Date();
-            return date.toISOString().split('T')[0];
+            return new Date().toISOString().split('T')[0];
         }
 
-        // Get day name from date
-        function getDayName(date) {
-            return new Date(date).toLocaleDateString('en', { weekday: 'short' });
-        }
-
-        // Calculate success rate for habit
+        // Calculate success rate
         function calculateSuccessRate(habitId) {
             const habit = state.habits.find(h => h.id === habitId);
             if (!habit) return 0;
@@ -860,7 +873,7 @@
                 const checkDate = new Date(thirtyDaysAgo);
                 checkDate.setDate(checkDate.getDate() + i);
                 const dateStr = checkDate.toISOString().split('T')[0];
-                const dayName = getDayName(dateStr);
+                const dayName = checkDate.toLocaleDateString('en', { weekday: 'short' });
 
                 if (habit.requiredDays.includes(dayName)) {
                     requiredDays++;
@@ -874,7 +887,7 @@
             return requiredDays > 0 ? Math.round((completedDays / requiredDays) * 100) : 0;
         }
 
-        // Calculate current streak
+        // Calculate streak
         function calculateStreak(habitId) {
             const habit = state.habits.find(h => h.id === habitId);
             if (!habit) return 0;
@@ -886,7 +899,7 @@
                 const checkDate = new Date(today);
                 checkDate.setDate(checkDate.getDate() - i);
                 const dateStr = checkDate.toISOString().split('T')[0];
-                const dayName = getDayName(dateStr);
+                const dayName = checkDate.toLocaleDateString('en', { weekday: 'short' });
 
                 if (habit.requiredDays.includes(dayName)) {
                     const check = state.checks.find(c => c.habitId === habitId && c.date === dateStr);
@@ -901,22 +914,9 @@
             return streak;
         }
 
-        // Check if habit was missed on last required day
-        function missedLastRequired(habitId) {
-            const habit = state.habits.find(h => h.id === habitId);
-            if (!habit) return false;
-
-            const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            const yesterdayStr = yesterday.toISOString().split('T')[0];
-            const yesterdayName = getDayName(yesterdayStr);
-
-            if (habit.requiredDays.includes(yesterdayName)) {
-                const check = state.checks.find(c => c.habitId === habitId && c.date === yesterdayStr);
-                return !check || !check.completed;
-            }
-
-            return false;
+        // Update habit count
+        function updateHabitCount() {
+            document.getElementById('habitCount').textContent = state.habits.length;
         }
 
         // Goal dialog functions
@@ -937,7 +937,7 @@
                 name: document.getElementById('goalName').value,
                 targetSuccess: parseInt(document.getElementById('goalTarget').value),
                 description: document.getElementById('goalDescription').value,
-                createdAt: new Date().toISOString()
+                lagIndicators: []
             };
 
             if (!goal.name) {
@@ -948,17 +948,7 @@
             state.goals.push(goal);
             saveState();
             renderGoals();
-            updateGoalSelect();
             closeGoalDialog();
-        }
-
-        function deleteGoal(id) {
-            if (confirm('Are you sure you want to delete this goal?')) {
-                state.goals = state.goals.filter(g => g.id !== id);
-                saveState();
-                renderGoals();
-                updateGoalSelect();
-            }
         }
 
         // Habit dialog functions
@@ -976,17 +966,15 @@
         }
 
         function saveHabit() {
-            const form = document.getElementById('habitForm');
             const selectedDays = Array.from(document.querySelectorAll('.day-pill.active'))
                 .map(pill => pill.dataset.day);
 
             const habit = {
                 id: Date.now(),
+                emoji: '📝',
                 name: document.getElementById('habitName').value,
-                linkedGoalId: document.getElementById('habitGoal').value || null,
                 requiredDays: selectedDays,
-                notes: document.getElementById('habitNotes').value,
-                createdAt: new Date().toISOString()
+                notes: document.getElementById('habitNotes').value
             };
 
             if (!habit.name) {
@@ -1001,17 +989,9 @@
 
             state.habits.push(habit);
             saveState();
+            updateHabitCount();
             renderHabits();
             closeHabitDialog();
-        }
-
-        function deleteHabit(id) {
-            if (confirm('Are you sure you want to delete this habit?')) {
-                state.habits = state.habits.filter(h => h.id !== id);
-                state.checks = state.checks.filter(c => c.habitId !== id);
-                saveState();
-                renderHabits();
-            }
         }
 
         function toggleHabit(habitId) {
@@ -1032,233 +1012,165 @@
             renderHabits();
         }
 
-        // Note dialog functions
-        function openNoteDialog(habitId) {
-            editingHabitId = habitId;
-            const habit = state.habits.find(h => h.id === habitId);
-            
-            document.getElementById('noteDialog').classList.add('open');
-            document.getElementById('noteText').value = habit.habitNote || '';
-            
-            // Set selected color
-            if (habit.noteColor) {
-                selectedNoteColor = { bg: habit.noteColor, text: habit.noteTextColor };
-                updateSelectedColor();
-                updateNotePreview();
-            }
-            
-            // Show/hide remove button
-            document.getElementById('removeNoteBtn').style.display = habit.habitNote ? 'block' : 'none';
-        }
-
-        function closeNoteDialog() {
-            document.getElementById('noteDialog').classList.remove('open');
-            editingHabitId = null;
-        }
-
-        function saveNote() {
-            const habit = state.habits.find(h => h.id === editingHabitId);
-            const noteText = document.getElementById('noteText').value;
-            
-            if (habit) {
-                habit.habitNote = noteText;
-                habit.noteColor = noteText ? selectedNoteColor.bg : null;
-                habit.noteTextColor = noteText ? selectedNoteColor.text : null;
+        function deleteHabit(id) {
+            if (confirm('Are you sure you want to delete this habit?')) {
+                state.habits = state.habits.filter(h => h.id !== id);
+                state.checks = state.checks.filter(c => c.habitId !== id);
                 saveState();
+                updateHabitCount();
                 renderHabits();
             }
-            
-            closeNoteDialog();
         }
 
-        function removeNote() {
-            const habit = state.habits.find(h => h.id === editingHabitId);
-            if (habit) {
-                habit.habitNote = null;
-                habit.noteColor = null;
-                habit.noteTextColor = null;
+        function deleteGoal(id) {
+            if (confirm('Are you sure you want to delete this goal?')) {
+                state.goals = state.goals.filter(g => g.id !== id);
                 saveState();
-                renderHabits();
+                renderGoals();
             }
-            closeNoteDialog();
-        }
-
-        function updateSelectedColor() {
-            document.querySelectorAll('.color-pill').forEach(pill => {
-                if (pill.dataset.bg === selectedNoteColor.bg) {
-                    pill.classList.add('selected');
-                } else {
-                    pill.classList.remove('selected');
-                }
-            });
-        }
-
-        function updateNotePreview() {
-            const preview = document.getElementById('notePreview');
-            const text = document.getElementById('noteText').value || 'Your note will appear here...';
-            preview.textContent = text;
-            preview.style.backgroundColor = selectedNoteColor.bg;
-            preview.style.color = selectedNoteColor.text;
-        }
-
-        // Update goal select options
-        function updateGoalSelect() {
-            const select = document.getElementById('habitGoal');
-            select.innerHTML = '<option value="">No specific goal</option>';
-            
-            state.goals.forEach(goal => {
-                const option = document.createElement('option');
-                option.value = goal.id;
-                option.textContent = `${goal.name} (${goal.type})`;
-                select.appendChild(option);
-            });
         }
 
         // Render functions
         function renderGoals() {
             const container = document.getElementById('goalsContainer');
-            
-            if (state.goals.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>No active goals defined. Add context to drive your habits.</p></div>';
-                return;
-            }
-
-            // Group goals by type
-            const goalsByType = {
-                Yearly: state.goals.filter(g => g.type === 'Yearly'),
-                Quarterly: state.goals.filter(g => g.type === 'Quarterly'),
-                Monthly: state.goals.filter(g => g.type === 'Monthly'),
-                Weekly: state.goals.filter(g => g.type === 'Weekly')
-            };
-
-            let html = '';
-            
-            // Render each type
-            Object.entries(goalsByType).forEach(([type, goals]) => {
-                if (goals.length > 0) {
-                    goals.forEach(goal => {
-                        const typeClass = type.toLowerCase();
-                        const icon = getGoalIcon(type);
-                        
-                        html += `
-                            <div class="goal-card ${typeClass}">
-                                <div class="goal-header">
-                                    <div class="goal-type">
-                                        ${icon}
-                                        ${type}
-                                    </div>
-                                    <div class="goal-actions">
-                                        <button class="btn btn-ghost btn-icon" onclick="deleteGoal(${goal.id})">
-                                            <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <polyline points="3 6 5 6 21 6"/>
-                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="goal-name">${goal.name}</div>
-                                ${goal.description ? `<p class="text-muted" style="font-size: 0.875rem; margin-bottom: 0.75rem;">${goal.description}</p>` : ''}
-                                <div class="goal-meta">
-                                    <span>Target: ${goal.targetSuccess}%</span>
-                                </div>
-                            </div>
-                        `;
-                    });
-                }
-            });
-
-            container.innerHTML = html;
-        }
-
-        function getGoalIcon(type) {
-            const icons = {
-                Yearly: '<svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M2 12h20"/></svg>',
-                Quarterly: '<svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
-                Monthly: '<svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
-                Weekly: '<svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
-            };
-            return icons[type] || '';
-        }
-
-        function renderHabits() {
-            const container = document.getElementById('habitsContainer');
-            
-            if (state.habits.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>No habits yet. Start building your daily routine.</p></div>';
-                return;
-            }
-
-            const today = getToday();
-            let html = '';
-
-            state.habits.forEach(habit => {
-                const isChecked = state.checks.find(c => c.habitId === habit.id && c.date === today && c.completed);
-                const successRate = calculateSuccessRate(habit.id);
-                const streak = calculateStreak(habit.id);
-                const missed = missedLastRequired(habit.id);
-                
-                html += `
-                    <div class="habit-row">
-                        <div class="habit-info">
-                            <div>
-                                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                    <div class="habit-name">${habit.name}</div>
-                                    ${missed ? `<svg class="icon text-warning" style="animation: pulse 2s infinite;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                                        <line x1="12" y1="9" x2="12" y2="13"/>
-                                        <line x1="12" y1="17" x2="12.01" y2="17"/>
-                                    </svg>` : ''}
-                                </div>
-                                <div class="habit-stats">
-                                    <span class="habit-stat">
-                                        <svg class="icon icon-sm ${streak > 0 ? 'text-warning' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-                                        </svg>
-                                        ${streak} streak
-                                    </span>
-                                    <span class="habit-stat ${successRate >= 80 ? 'text-success' : successRate < 50 ? 'text-danger' : 'text-warning'}">
-                                        <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <line x1="12" y1="20" x2="12" y2="10"/>
-                                            <line x1="18" y1="20" x2="18" y2="4"/>
-                                            <line x1="6" y1="20" x2="6" y2="16"/>
-                                        </svg>
-                                        ${successRate}% rate
-                                    </span>
-                                </div>
-                                ${habit.habitNote ? `<div class="habit-note" style="background: ${habit.noteColor}; color: ${habit.noteTextColor}" onclick="openNoteDialog(${habit.id})">${habit.habitNote}</div>` : ''}
-                            </div>
-                        </div>
-                        <div class="habit-actions">
-                            <button class="btn btn-ghost btn-icon" onclick="openNoteDialog(${habit.id})">
-                                <svg class="icon ${habit.habitNote ? 'text-warning' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                    <polyline points="14 2 14 8 20 8"/>
-                                    <line x1="16" y1="13" x2="8" y2="13"/>
-                                    <line x1="16" y1="17" x2="8" y2="17"/>
-                                    <polyline points="10 9 9 9 8 9"/>
+            container.innerHTML = state.goals.map((goal, index) => `
+                <div class="goal-card">
+                    <div class="goal-header">
+                        <span class="goal-type-badge">${goal.type.toUpperCase()}</span>
+                        <div class="goal-actions">
+                            <button class="action-btn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                                 </svg>
                             </button>
-                            <button class="btn btn-check ${isChecked ? 'checked' : ''}" onclick="toggleHabit(${habit.id})">
-                                <svg class="icon icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="20 6 9 17 4 12"/>
+                            <button class="action-btn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                    <path d="M18 14v6"/>
+                                    <path d="M22 10l-4 4-4-4"/>
+                                    <path d="M2 10h12"/>
                                 </svg>
                             </button>
-                            <button class="btn btn-ghost btn-icon" onclick="deleteHabit(${habit.id})">
-                                <svg class="icon text-danger" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <button class="action-btn" onclick="deleteGoal(${goal.id})">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="3 6 5 6 21 6"/>
                                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
                                 </svg>
                             </button>
                         </div>
                     </div>
-                `;
-            });
+                    
+                    <h2 class="goal-title">${goal.name}</h2>
+                    
+                    <div class="sub-goals">
+                        <div class="sub-goal">
+                            <div class="sub-goal-label">Weekly</div>
+                            <div>Not weekly live</div>
+                        </div>
+                        <div class="sub-goal">
+                            <div class="sub-goal-label">Monthly</div>
+                            <div>Not monthly live</div>
+                        </div>
+                        <div class="sub-goal">
+                            <div class="sub-goal-label">Quarterly</div>
+                            <div>+ Add a quarterly goal</div>
+                        </div>
+                    </div>
+                    
+                    ${goal.lagIndicators.length > 0 ? `
+                        <div class="lag-indicators">
+                            <div class="lag-header">
+                                <div class="lag-title">
+                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                                    </svg>
+                                    LAG INDICATORS
+                                </div>
+                                <button class="add-link-btn">
+                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                                    </svg>
+                                    Add Link
+                                </button>
+                            </div>
+                            ${goal.lagIndicators.map(ind => `
+                                <div class="lag-item">
+                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                                    </svg>
+                                    ${ind.name}
+                                    ${ind.type === 'notion' ? '<span class="notion-badge">Notion</span>' : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
 
-            container.innerHTML = html;
+        function renderHabits() {
+            const container = document.getElementById('habitsContainer');
+            const today = getToday();
+
+            container.innerHTML = state.habits.map((habit, index) => {
+                const isChecked = state.checks.find(c => c.habitId === habit.id && c.date === today && c.completed);
+                const successRate = calculateSuccessRate(habit.id);
+                const streak = calculateStreak(habit.id);
+                const showWarning = false; // You can implement missed day logic
+
+                return `
+                    <div class="habit-row">
+                        <div class="habit-main">
+                            <div class="habit-left">
+                                <span class="habit-number">${(index + 1).toString().padStart(2, '0')}</span>
+                                <span class="habit-emoji">${habit.emoji}</span>
+                                <div class="habit-info">
+                                    <div class="habit-name-row">
+                                        <span class="habit-name">${habit.name}</span>
+                                        ${showWarning ? '<svg class="warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' : ''}
+                                    </div>
+                                    <div class="habit-badges">
+                                        <span class="habit-badge streak-badge">${streak} STREAK</span>
+                                        <span class="habit-badge">&middot;</span>
+                                        <span class="habit-badge success-badge ${successRate >= 80 ? 'high' : ''}">${successRate}%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="habit-actions">
+                                <button class="action-btn">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                        <polyline points="14 2 14 8 20 8"/>
+                                        <line x1="16" y1="13" x2="8" y2="13"/>
+                                        <line x1="16" y1="17" x2="8" y2="17"/>
+                                        <polyline points="10 9 9 9 8 9"/>
+                                    </svg>
+                                </button>
+                                <button class="check-btn ${isChecked ? 'checked' : ''}" onclick="toggleHabit(${habit.id})">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                </button>
+                                <button class="action-btn" onclick="deleteHabit(${habit.id})">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"/>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        ${habit.notes ? `<div class="habit-note" style="background: ${habit.noteColor || '#fef3c7'}; color: ${habit.noteTextColor || '#92400e'}">${habit.notes}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
         }
 
         // Event listeners
         document.addEventListener('DOMContentLoaded', function() {
+            formatDate();
             loadState();
 
             // Day pills toggle
@@ -1267,21 +1179,6 @@
                     this.classList.toggle('active');
                 });
             });
-
-            // Color pills
-            document.querySelectorAll('.color-pill').forEach(pill => {
-                pill.addEventListener('click', function() {
-                    selectedNoteColor = {
-                        bg: this.dataset.bg,
-                        text: this.dataset.text
-                    };
-                    updateSelectedColor();
-                    updateNotePreview();
-                });
-            });
-
-            // Note text input
-            document.getElementById('noteText').addEventListener('input', updateNotePreview);
 
             // Close dialogs on overlay click
             document.querySelectorAll('.dialog-overlay').forEach(overlay => {
@@ -1292,17 +1189,6 @@
                 });
             });
         });
-
-        // Animation styles
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes pulse {
-                0% { opacity: 1; }
-                50% { opacity: 0.5; }
-                100% { opacity: 1; }
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
