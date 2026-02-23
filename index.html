@@ -1143,8 +1143,8 @@
             const saved = localStorage.getItem('questTracker');
             if (saved) {
                 const parsed = JSON.parse(saved);
-                // If old format (goals object instead of array), reset
-                if (!Array.isArray(parsed.goals)) {
+                // If old format (goals object instead of array) or empty goals, reset
+                if (!Array.isArray(parsed.goals) || parsed.goals.length === 0) {
                     localStorage.removeItem('questTracker');
                 } else {
                     state = parsed;
