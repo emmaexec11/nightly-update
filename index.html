@@ -654,6 +654,228 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
         }
+
+        /* Habit Detail Dialog */
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 2rem;
+            height: 2rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 0.375rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        .habit-detail-header {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--green);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .habit-detail-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--green);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .habit-detail-notes {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .stat-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            text-align: center;
+        }
+
+        .stat-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .detail-section {
+            margin-bottom: 2rem;
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Calendar Grid */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.375rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .calendar-day.completed {
+            background: var(--green);
+            color: white;
+        }
+
+        .calendar-day.missed {
+            background: var(--red);
+            color: white;
+        }
+
+        .calendar-day.not-required {
+            background: var(--purple);
+            opacity: 0.5;
+            color: white;
+        }
+
+        .calendar-day.future {
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+            cursor: default;
+            opacity: 0.5;
+        }
+
+        .calendar-day:not(.future):hover {
+            opacity: 0.8;
+        }
+
+        .calendar-legend {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .legend-box {
+            width: 1rem;
+            height: 1rem;
+            border-radius: 0.25rem;
+        }
+
+        /* Detail Steps */
+        .detail-steps {
+            space-y: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-number {
+            width: 1.5rem;
+            height: 1.5rem;
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .step-text {
+            flex: 1;
+            font-size: 0.875rem;
+        }
+
+        .step-delete {
+            width: 1.5rem;
+            height: 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.2s ease;
+        }
+
+        .step-item:hover .step-delete {
+            opacity: 1;
+        }
+
+        .step-delete:hover {
+            color: var(--red);
+        }
+
+        .add-step-container {
+            display: flex;
+            gap: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -798,6 +1020,122 @@
         </div>
     </div>
 
+    <!-- Habit Detail Dialog -->
+    <div id="habitDetailDialog" class="dialog-overlay">
+        <div class="dialog">
+            <button class="close-btn" onclick="closeHabitDetail()">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+            
+            <div class="dialog-header" style="padding: 2rem;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2">
+                        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    <h3 class="dialog-title">Habit Details</h3>
+                </div>
+            </div>
+            
+            <div class="dialog-content" style="padding: 0 2rem 2rem;">
+                <div class="habit-detail-header">
+                    <div class="habit-detail-name">
+                        <span id="detailHabitName"></span>
+                        <button class="action-btn" onclick="editHabitName()">
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="habit-detail-notes" id="detailHabitNotes"></div>
+                </div>
+
+                <div class="stat-cards">
+                    <div class="stat-card">
+                        <div class="stat-label">
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="20" x2="12" y2="10"/>
+                                <line x1="18" y1="20" x2="18" y2="4"/>
+                                <line x1="6" y1="20" x2="6" y2="16"/>
+                            </svg>
+                            SUCCESS RATE
+                        </div>
+                        <div class="stat-value" id="detailSuccessRate" style="color: var(--green)">66%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            CURRENT STREAK
+                        </div>
+                        <div class="stat-value" id="detailStreak" style="color: var(--orange)">0 days</div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-label">REQUIRED DAYS <span style="opacity: 0.6; font-weight: normal;">(CLICK TO TOGGLE)</span></div>
+                    <div id="detailDayPills" class="day-pills"></div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-label" style="margin-bottom: 1rem;">
+                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        LAST 4 WEEKS
+                    </div>
+                    <div id="calendarGrid" class="calendar-grid"></div>
+                    <div class="calendar-legend">
+                        <div class="legend-item">
+                            <span class="legend-box" style="background: var(--green)"></span>
+                            Completed
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-box" style="background: var(--red)"></span>
+                            Missed
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-box" style="background: var(--purple); opacity: 0.5;"></span>
+                            Not required
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-label" style="margin-bottom: 1rem;">
+                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="8" y1="6" x2="21" y2="6"/>
+                            <line x1="8" y1="12" x2="21" y2="12"/>
+                            <line x1="8" y1="18" x2="21" y2="18"/>
+                            <line x1="3" y1="6" x2="3.01" y2="6"/>
+                            <line x1="3" y1="12" x2="3.01" y2="12"/>
+                            <line x1="3" y1="18" x2="3.01" y2="18"/>
+                        </svg>
+                        DETAILED STEPS / BREAKDOWN
+                    </div>
+                    <div id="detailSteps" class="detail-steps"></div>
+                    <div class="add-step-container">
+                        <input type="text" id="newStep" class="input" placeholder="Add a step or detail..." onkeypress="if(event.key==='Enter'){addStep()}">
+                        <button class="btn btn-primary btn-icon" onclick="addStep()">
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // State Management
         let state = {
@@ -818,9 +1156,10 @@
                     emoji: '☀️',
                     name: 'Morning Routine',
                     requiredDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                    notes: '1. Charts 2. Prep Breakfast 3. Jog (breath, prayer, gratitude) 4. Breakfast (short vid) 5. Pray for guidance',
+                    notes: '6 times a week (Never miss 2 days in a row)',
                     noteColor: '#fef3c7',
-                    noteTextColor: '#92400e'
+                    noteTextColor: '#92400e',
+                    steps: ['Charts', 'Prep Breakfast', 'Jog (breath, prayer, gratitude)', 'Breakfast (short vid)', 'Pray for guidance']
                 }
             ],
             checks: []
@@ -1030,6 +1369,197 @@
             }
         }
 
+        // Habit Detail Dialog functions
+        let currentDetailHabitId = null;
+
+        function openHabitDetail(habitId) {
+            currentDetailHabitId = habitId;
+            const habit = state.habits.find(h => h.id === habitId);
+            if (!habit) return;
+
+            // Update header
+            document.getElementById('detailHabitName').textContent = habit.name;
+            document.getElementById('detailHabitNotes').textContent = habit.notes || '';
+
+            // Update stats
+            const successRate = calculateSuccessRate(habitId);
+            const streak = calculateStreak(habitId);
+            document.getElementById('detailSuccessRate').textContent = successRate + '%';
+            document.getElementById('detailSuccessRate').style.color = successRate >= 80 ? 'var(--green)' : 'var(--red)';
+            document.getElementById('detailStreak').textContent = streak + ' days';
+
+            // Update required days
+            renderDetailDays(habit);
+
+            // Update calendar
+            renderCalendar(habitId);
+
+            // Update steps
+            renderSteps(habit);
+
+            document.getElementById('habitDetailDialog').classList.add('open');
+        }
+
+        function closeHabitDetail() {
+            document.getElementById('habitDetailDialog').classList.remove('open');
+            currentDetailHabitId = null;
+        }
+
+        function renderDetailDays(habit) {
+            const container = document.getElementById('detailDayPills');
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            
+            container.innerHTML = days.map(day => `
+                <div class="day-pill ${habit.requiredDays.includes(day) ? 'active' : ''}" 
+                     data-day="${day}" 
+                     onclick="toggleDetailDay('${day}')">
+                    ${day}
+                </div>
+            `).join('');
+        }
+
+        function toggleDetailDay(day) {
+            const habit = state.habits.find(h => h.id === currentDetailHabitId);
+            if (!habit) return;
+
+            if (habit.requiredDays.includes(day)) {
+                habit.requiredDays = habit.requiredDays.filter(d => d !== day);
+            } else {
+                habit.requiredDays.push(day);
+            }
+
+            saveState();
+            renderDetailDays(habit);
+            renderHabits();
+        }
+
+        function renderCalendar(habitId) {
+            const habit = state.habits.find(h => h.id === habitId);
+            const container = document.getElementById('calendarGrid');
+            const today = new Date();
+            const daysToShow = 28; // 4 weeks
+            
+            let html = '';
+            
+            // Start from 4 weeks ago
+            for (let i = daysToShow - 1; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                const dayName = date.toLocaleDateString('en', { weekday: 'short' });
+                const dayNumber = date.getDate();
+                const isFuture = date > today;
+                
+                const check = state.checks.find(c => c.habitId === habitId && c.date === dateStr);
+                const isRequired = habit.requiredDays.includes(dayName);
+                
+                let className = 'calendar-day';
+                if (isFuture) {
+                    className += ' future';
+                } else if (check && check.completed) {
+                    className += ' completed';
+                } else if (isRequired) {
+                    className += ' missed';
+                } else {
+                    className += ' not-required';
+                }
+                
+                html += `<div class="${className}" data-date="${dateStr}" onclick="toggleCalendarDay('${dateStr}')">${dayNumber}</div>`;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function toggleCalendarDay(dateStr) {
+            const date = new Date(dateStr);
+            const today = new Date();
+            if (date > today) return; // Can't toggle future dates
+
+            const checkIndex = state.checks.findIndex(c => c.habitId === currentDetailHabitId && c.date === dateStr);
+            
+            if (checkIndex >= 0) {
+                state.checks[checkIndex].completed = !state.checks[checkIndex].completed;
+            } else {
+                state.checks.push({
+                    habitId: currentDetailHabitId,
+                    date: dateStr,
+                    completed: true
+                });
+            }
+
+            saveState();
+            renderCalendar(currentDetailHabitId);
+            renderHabits();
+            
+            // Update stats
+            const successRate = calculateSuccessRate(currentDetailHabitId);
+            const streak = calculateStreak(currentDetailHabitId);
+            document.getElementById('detailSuccessRate').textContent = successRate + '%';
+            document.getElementById('detailSuccessRate').style.color = successRate >= 80 ? 'var(--green)' : 'var(--red)';
+            document.getElementById('detailStreak').textContent = streak + ' days';
+        }
+
+        function renderSteps(habit) {
+            const container = document.getElementById('detailSteps');
+            const steps = habit.steps || [];
+            
+            if (steps.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            container.innerHTML = steps.map((step, index) => `
+                <div class="step-item">
+                    <div class="step-number">${index + 1}</div>
+                    <div class="step-text">${step}</div>
+                    <button class="step-delete" onclick="deleteStep(${index})">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addStep() {
+            const input = document.getElementById('newStep');
+            const step = input.value.trim();
+            if (!step) return;
+
+            const habit = state.habits.find(h => h.id === currentDetailHabitId);
+            if (!habit) return;
+
+            if (!habit.steps) habit.steps = [];
+            habit.steps.push(step);
+            
+            saveState();
+            renderSteps(habit);
+            input.value = '';
+        }
+
+        function deleteStep(index) {
+            const habit = state.habits.find(h => h.id === currentDetailHabitId);
+            if (!habit || !habit.steps) return;
+
+            habit.steps.splice(index, 1);
+            saveState();
+            renderSteps(habit);
+        }
+
+        function editHabitName() {
+            const habit = state.habits.find(h => h.id === currentDetailHabitId);
+            if (!habit) return;
+
+            const newName = prompt('Edit habit name:', habit.name);
+            if (newName && newName.trim()) {
+                habit.name = newName.trim();
+                saveState();
+                document.getElementById('detailHabitName').textContent = habit.name;
+                renderHabits();
+            }
+        }
+
         // Render functions
         function renderGoals() {
             const container = document.getElementById('goalsContainer');
@@ -1127,7 +1657,7 @@
                             <div class="habit-left">
                                 <span class="habit-number">${(index + 1).toString().padStart(2, '0')}</span>
                                 <span class="habit-emoji">${habit.emoji}</span>
-                                <div class="habit-info">
+                                <div class="habit-info" onclick="openHabitDetail(${habit.id})" style="cursor: pointer;">
                                     <div class="habit-name-row">
                                         <span class="habit-name">${habit.name}</span>
                                         ${showWarning ? '<svg class="warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' : ''}
@@ -1162,7 +1692,9 @@
                                 </button>
                             </div>
                         </div>
-                        ${habit.notes ? `<div class="habit-note" style="background: ${habit.noteColor || '#fef3c7'}; color: ${habit.noteTextColor || '#92400e'}">${habit.notes}</div>` : ''}
+                        ${habit.noteColor ? `<div class="habit-note" style="background: ${habit.noteColor}; color: ${habit.noteTextColor}">
+                            ${habit.steps ? habit.steps.map((step, i) => `${i+1}. ${step}`).join(' ') : ''}
+                        </div>` : ''}
                     </div>
                 `;
             }).join('');
