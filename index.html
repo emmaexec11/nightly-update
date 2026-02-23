@@ -3,49 +3,674 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Devon's Nightly Update - Redirecting...</title>
-    <meta http-equiv="refresh" content="0;url=./execution-system.html">
+    <title>Execution System</title>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0c1222 0%, #1a1f36 50%, #0c1222 100%);
-            color: #e2e8f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        /* CSS Variables for theming */
+        :root {
+            --background: 0 0% 3.9%;
+            --foreground: 0 0% 98%;
+            --card: 0 0% 3.9%;
+            --card-foreground: 0 0% 98%;
+            --popover: 0 0% 3.9%;
+            --popover-foreground: 0 0% 98%;
+            --primary: 0 0% 98%;
+            --primary-foreground: 0 0% 3.9%;
+            --secondary: 0 0% 14.9%;
+            --secondary-foreground: 0 0% 98%;
+            --muted: 0 0% 14.9%;
+            --muted-foreground: 0 0% 63.9%;
+            --accent: 0 0% 14.9%;
+            --accent-foreground: 0 0% 98%;
+            --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 0 0% 98%;
+            --border: 0 0% 14.9%;
+            --input: 0 0% 14.9%;
+            --ring: 0 0% 83.1%;
+            --radius: 0.5rem;
+        }
+
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .loading {
-            text-align: center;
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
+            min-height: 100vh;
+            line-height: 1.5;
         }
-        .spinner {
-            border: 3px solid #4a5568;
-            border-top: 3px solid #9f7aea;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+
+        h1, h2, h3 {
+            margin-bottom: 1rem;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            background-color: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+            border: none;
+            border-radius: calc(var(--radius) - 2px);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .button:hover {
+            opacity: 0.9;
+        }
+
+        .button-outline {
+            background-color: transparent;
+            color: hsl(var(--foreground));
+            border: 1px solid hsl(var(--border));
+        }
+
+        .button-outline:hover {
+            background-color: hsl(var(--secondary));
+        }
+
+        .card {
+            background-color: hsl(var(--card));
+            color: hsl(var(--card-foreground));
+            border: 1px solid hsl(var(--border));
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .goals-section, .habits-section {
+            margin-bottom: 2rem;
+        }
+
+        .goal-item, .habit-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            background-color: hsl(var(--secondary) / 0.5);
+            border-radius: calc(var(--radius) - 2px);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .goal-item:hover, .habit-item:hover {
+            background-color: hsl(var(--secondary));
+        }
+
+        .goal-type {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: hsl(var(--muted-foreground));
+            margin-right: 0.5rem;
+        }
+
+        .habit-check {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 4px;
+            background-color: hsl(var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .habit-check.checked {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .success-rate {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-left: 1rem;
+        }
+
+        .success-rate.good {
+            color: #10b981;
+        }
+
+        .success-rate.warning {
+            color: #f59e0b;
+        }
+
+        .success-rate.danger {
+            color: #ef4444;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .modal.open {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: var(--radius);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideIn 0.2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.5rem;
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
+            border: 1px solid hsl(var(--input));
+            border-radius: calc(var(--radius) - 2px);
+            font-size: 0.875rem;
+        }
+
+        .required-days {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .day-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: calc(var(--radius) - 2px);
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: hsl(var(--secondary) / 0.5);
+            color: hsl(var(--muted-foreground));
+        }
+
+        .day-badge.selected {
+            background-color: #10b981;
+            color: white;
         }
     </style>
 </head>
 <body>
-    <div class="loading">
-        <div class="spinner"></div>
-        <h2>⚡ Loading Execution System...</h2>
-        <p>Redirecting to your execution system...</p>
-        <p><a href="./execution-system.html" style="color: #9f7aea;">Click here if not redirected automatically</a></p>
+    <div class="container">
+        <h1>Execution System</h1>
+        
+        <!-- Goals Section -->
+        <div class="goals-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2>Goals</h2>
+                <button class="button button-outline" onclick="openGoalModal()">New Goal</button>
+            </div>
+            <div id="goals-container"></div>
+        </div>
+
+        <!-- Habits Section -->
+        <div class="habits-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2>Habits</h2>
+                <button class="button button-outline" onclick="openHabitModal()">New Habit</button>
+            </div>
+            <div id="habits-container"></div>
+        </div>
     </div>
+
+    <!-- Goal Modal -->
+    <div id="goalModal" class="modal">
+        <div class="modal-content">
+            <h3 id="goalModalTitle">Create Goal</h3>
+            <form id="goalForm">
+                <input type="hidden" id="goalId">
+                
+                <div class="form-group">
+                    <label for="goalType">Goal Type</label>
+                    <select id="goalType" required>
+                        <option value="Yearly">Yearly</option>
+                        <option value="Quarterly">Quarterly</option>
+                        <option value="Monthly">Monthly</option>
+                        <option value="Weekly">Weekly</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="goalName">Goal Name</label>
+                    <input type="text" id="goalName" placeholder="e.g., Build $1M ARR Business" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="goalTarget">Target Success %</label>
+                    <input type="number" id="goalTarget" value="80" min="0" max="100">
+                </div>
+
+                <div class="form-group">
+                    <label for="goalDescription">Description</label>
+                    <textarea id="goalDescription" rows="3" placeholder="Details about this goal..."></textarea>
+                </div>
+
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                    <button type="button" class="button button-outline" onclick="closeGoalModal()">Cancel</button>
+                    <button type="submit" class="button">Save Goal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Habit Modal -->
+    <div id="habitModal" class="modal">
+        <div class="modal-content">
+            <h3 id="habitModalTitle">Create Habit</h3>
+            <form id="habitForm">
+                <input type="hidden" id="habitId">
+                
+                <div class="form-group">
+                    <label for="habitName">Habit Name</label>
+                    <input type="text" id="habitName" placeholder="e.g., Read 10 pages" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Required Days</label>
+                    <div class="required-days" id="requiredDays">
+                        <div class="day-badge" data-day="Mon">Mon</div>
+                        <div class="day-badge" data-day="Tue">Tue</div>
+                        <div class="day-badge" data-day="Wed">Wed</div>
+                        <div class="day-badge" data-day="Thu">Thu</div>
+                        <div class="day-badge" data-day="Fri">Fri</div>
+                        <div class="day-badge" data-day="Sat">Sat</div>
+                        <div class="day-badge" data-day="Sun">Sun</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="habitNotes">Notes</label>
+                    <textarea id="habitNotes" rows="3" placeholder="Success criteria or details..."></textarea>
+                </div>
+
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                    <button type="button" class="button button-outline" onclick="closeHabitModal()">Cancel</button>
+                    <button type="submit" class="button">Save Habit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
-        // Redirect after 1 second if meta refresh doesn't work
-        setTimeout(() => {
-            window.location.href = './execution-system.html';
-        }, 1000);
+        // Data storage
+        const storage = {
+            getGoals: () => JSON.parse(localStorage.getItem('execution-goals') || '[]'),
+            setGoals: (goals) => localStorage.setItem('execution-goals', JSON.stringify(goals)),
+            getHabits: () => JSON.parse(localStorage.getItem('execution-habits') || '[]'),
+            setHabits: (habits) => localStorage.setItem('execution-habits', JSON.stringify(habits)),
+            getHabitChecks: () => JSON.parse(localStorage.getItem('execution-checks') || '{}'),
+            setHabitChecks: (checks) => localStorage.setItem('execution-checks', JSON.stringify(checks))
+        };
+
+        // Utility functions
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        function getToday() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        function getDayName(date = new Date()) {
+            return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()];
+        }
+
+        // Calculate success rate for a habit
+        function calculateSuccessRate(habit) {
+            const checks = storage.getHabitChecks();
+            const today = new Date();
+            const thirtyDaysAgo = new Date(today);
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            
+            let requiredCount = 0;
+            let completedCount = 0;
+            
+            for (let d = new Date(thirtyDaysAgo); d <= today; d.setDate(d.getDate() + 1)) {
+                const dateStr = d.toISOString().split('T')[0];
+                const dayName = getDayName(d);
+                
+                if (habit.requiredDays.includes(dayName)) {
+                    requiredCount++;
+                    if (checks[`${habit.id}-${dateStr}`]) {
+                        completedCount++;
+                    }
+                }
+            }
+            
+            return requiredCount > 0 ? Math.round((completedCount / requiredCount) * 100) : 100;
+        }
+
+        // Calculate current streak
+        function calculateStreak(habit) {
+            const checks = storage.getHabitChecks();
+            let streak = 0;
+            const today = new Date();
+            
+            for (let i = 0; i < 365; i++) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                const dayName = getDayName(date);
+                
+                if (habit.requiredDays.includes(dayName)) {
+                    if (checks[`${habit.id}-${dateStr}`]) {
+                        streak++;
+                    } else {
+                        break;
+                    }
+                }
+            }
+            
+            return streak;
+        }
+
+        // Render functions
+        function renderGoals() {
+            const goals = storage.getGoals();
+            const container = document.getElementById('goals-container');
+            
+            if (goals.length === 0) {
+                container.innerHTML = '<div class="card" style="text-align: center; color: hsl(var(--muted-foreground));">No goals yet. Add one to get started!</div>';
+                return;
+            }
+            
+            const goalsByType = goals.reduce((acc, goal) => {
+                acc[goal.type] = acc[goal.type] || [];
+                acc[goal.type].push(goal);
+                return acc;
+            }, {});
+            
+            container.innerHTML = ['Yearly', 'Quarterly', 'Monthly', 'Weekly']
+                .map(type => {
+                    const typeGoals = goalsByType[type] || [];
+                    if (typeGoals.length === 0) return '';
+                    
+                    return `
+                        <div class="card">
+                            <h3 style="margin-bottom: 1rem;">${type} Goals</h3>
+                            ${typeGoals.map(goal => `
+                                <div class="goal-item" onclick="editGoal('${goal.id}')">
+                                    <div>
+                                        <span class="goal-type">${goal.type}</span>
+                                        <strong>${goal.name}</strong>
+                                        ${goal.description ? `<div style="font-size: 0.875rem; color: hsl(var(--muted-foreground)); margin-top: 0.25rem;">${goal.description}</div>` : ''}
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <div style="font-size: 0.75rem; color: hsl(var(--muted-foreground));">Target</div>
+                                        <div style="font-weight: 600;">${goal.targetSuccess}%</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }).join('');
+        }
+
+        function renderHabits() {
+            const habits = storage.getHabits();
+            const container = document.getElementById('habits-container');
+            const checks = storage.getHabitChecks();
+            const today = getToday();
+            const todayName = getDayName();
+            
+            if (habits.length === 0) {
+                container.innerHTML = '<div class="card" style="text-align: center; color: hsl(var(--muted-foreground));">No habits yet. Create your first habit!</div>';
+                return;
+            }
+            
+            container.innerHTML = habits.map(habit => {
+                const successRate = calculateSuccessRate(habit);
+                const streak = calculateStreak(habit);
+                const isCheckedToday = checks[`${habit.id}-${today}`] || false;
+                const isRequiredToday = habit.requiredDays.includes(todayName);
+                
+                let successClass = 'good';
+                if (successRate < 50) successClass = 'danger';
+                else if (successRate < 80) successClass = 'warning';
+                
+                return `
+                    <div class="card habit-item">
+                        <div style="flex: 1;" onclick="editHabit('${habit.id}')">
+                            <strong>${habit.name}</strong>
+                            <div style="display: flex; align-items: center; margin-top: 0.25rem;">
+                                <span style="font-size: 0.75rem; color: hsl(var(--muted-foreground));">
+                                    ${habit.requiredDays.join(', ')}
+                                </span>
+                                <span class="success-rate ${successClass}">${successRate}%</span>
+                                ${streak > 0 ? `<span style="font-size: 0.75rem; color: #f59e0b; margin-left: 1rem;">🔥 ${streak} streak</span>` : ''}
+                            </div>
+                            ${habit.notes ? `<div style="font-size: 0.875rem; color: hsl(var(--muted-foreground)); margin-top: 0.5rem;">${habit.notes}</div>` : ''}
+                        </div>
+                        ${isRequiredToday ? `
+                            <div class="habit-check ${isCheckedToday ? 'checked' : ''}" onclick="toggleHabit('${habit.id}')">
+                                ${isCheckedToday ? '✓' : ''}
+                            </div>
+                        ` : '<div style="width: 2rem;"></div>'}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Modal functions
+        function openGoalModal(goalId = null) {
+            const modal = document.getElementById('goalModal');
+            const form = document.getElementById('goalForm');
+            
+            if (goalId) {
+                const goals = storage.getGoals();
+                const goal = goals.find(g => g.id === goalId);
+                if (goal) {
+                    document.getElementById('goalModalTitle').textContent = 'Edit Goal';
+                    document.getElementById('goalId').value = goal.id;
+                    document.getElementById('goalType').value = goal.type;
+                    document.getElementById('goalName').value = goal.name;
+                    document.getElementById('goalTarget').value = goal.targetSuccess || 80;
+                    document.getElementById('goalDescription').value = goal.description || '';
+                }
+            } else {
+                document.getElementById('goalModalTitle').textContent = 'Create Goal';
+                form.reset();
+                document.getElementById('goalId').value = '';
+            }
+            
+            modal.classList.add('open');
+        }
+
+        function closeGoalModal() {
+            document.getElementById('goalModal').classList.remove('open');
+        }
+
+        function openHabitModal(habitId = null) {
+            const modal = document.getElementById('habitModal');
+            const form = document.getElementById('habitForm');
+            
+            // Reset day selection
+            document.querySelectorAll('.day-badge').forEach(badge => {
+                badge.classList.remove('selected');
+            });
+            
+            if (habitId) {
+                const habits = storage.getHabits();
+                const habit = habits.find(h => h.id === habitId);
+                if (habit) {
+                    document.getElementById('habitModalTitle').textContent = 'Edit Habit';
+                    document.getElementById('habitId').value = habit.id;
+                    document.getElementById('habitName').value = habit.name;
+                    document.getElementById('habitNotes').value = habit.notes || '';
+                    
+                    habit.requiredDays.forEach(day => {
+                        document.querySelector(`.day-badge[data-day="${day}"]`).classList.add('selected');
+                    });
+                }
+            } else {
+                document.getElementById('habitModalTitle').textContent = 'Create Habit';
+                form.reset();
+                document.getElementById('habitId').value = '';
+                
+                // Default to all days selected
+                document.querySelectorAll('.day-badge').forEach(badge => {
+                    badge.classList.add('selected');
+                });
+            }
+            
+            modal.classList.add('open');
+        }
+
+        function closeHabitModal() {
+            document.getElementById('habitModal').classList.remove('open');
+        }
+
+        // Edit functions
+        function editGoal(goalId) {
+            openGoalModal(goalId);
+        }
+
+        function editHabit(habitId) {
+            openHabitModal(habitId);
+        }
+
+        // Toggle habit check
+        function toggleHabit(habitId) {
+            event.stopPropagation();
+            const checks = storage.getHabitChecks();
+            const today = getToday();
+            const key = `${habitId}-${today}`;
+            
+            checks[key] = !checks[key];
+            storage.setHabitChecks(checks);
+            renderHabits();
+        }
+
+        // Form submissions
+        document.getElementById('goalForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const goals = storage.getGoals();
+            const goalId = document.getElementById('goalId').value;
+            
+            const goalData = {
+                id: goalId || generateId(),
+                type: document.getElementById('goalType').value,
+                name: document.getElementById('goalName').value,
+                targetSuccess: parseInt(document.getElementById('goalTarget').value) || 80,
+                description: document.getElementById('goalDescription').value,
+                createdAt: goalId ? goals.find(g => g.id === goalId).createdAt : new Date().toISOString()
+            };
+            
+            if (goalId) {
+                const index = goals.findIndex(g => g.id === goalId);
+                goals[index] = { ...goals[index], ...goalData };
+            } else {
+                goals.push(goalData);
+            }
+            
+            storage.setGoals(goals);
+            renderGoals();
+            closeGoalModal();
+        });
+
+        document.getElementById('habitForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const habits = storage.getHabits();
+            const habitId = document.getElementById('habitId').value;
+            
+            const selectedDays = Array.from(document.querySelectorAll('.day-badge.selected'))
+                .map(badge => badge.dataset.day);
+            
+            if (selectedDays.length === 0) {
+                alert('Please select at least one day for this habit');
+                return;
+            }
+            
+            const habitData = {
+                id: habitId || generateId(),
+                name: document.getElementById('habitName').value,
+                requiredDays: selectedDays,
+                notes: document.getElementById('habitNotes').value,
+                createdAt: habitId ? habits.find(h => h.id === habitId).createdAt : new Date().toISOString()
+            };
+            
+            if (habitId) {
+                const index = habits.findIndex(h => h.id === habitId);
+                habits[index] = { ...habits[index], ...habitData };
+            } else {
+                habits.push(habitData);
+            }
+            
+            storage.setHabits(habits);
+            renderHabits();
+            closeHabitModal();
+        });
+
+        // Day badge toggle
+        document.querySelectorAll('.day-badge').forEach(badge => {
+            badge.addEventListener('click', () => {
+                badge.classList.toggle('selected');
+            });
+        });
+
+        // Close modals on background click
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('open');
+                }
+            });
+        });
+
+        // Initial render
+        renderGoals();
+        renderHabits();
     </script>
 </body>
 </html>
