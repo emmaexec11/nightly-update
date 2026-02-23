@@ -5,42 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Execution System</title>
     <style>
-        /* CSS Variables for theming */
-        :root {
-            --background: 0 0% 3.9%;
-            --foreground: 0 0% 98%;
-            --card: 0 0% 3.9%;
-            --card-foreground: 0 0% 98%;
-            --popover: 0 0% 3.9%;
-            --popover-foreground: 0 0% 98%;
-            --primary: 0 0% 98%;
-            --primary-foreground: 0 0% 3.9%;
-            --secondary: 0 0% 14.9%;
-            --secondary-foreground: 0 0% 98%;
-            --muted: 0 0% 14.9%;
-            --muted-foreground: 0 0% 63.9%;
-            --accent: 0 0% 14.9%;
-            --accent-foreground: 0 0% 98%;
-            --destructive: 0 84.2% 60.2%;
-            --destructive-foreground: 0 0% 98%;
-            --border: 0 0% 14.9%;
-            --input: 0 0% 14.9%;
-            --ring: 0 0% 83.1%;
-            --radius: 0.5rem;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        :root {
+            --background: #0a0a0a;
+            --foreground: #fafafa;
+            --card: #1a1a1a;
+            --card-hover: #262626;
+            --border: rgba(255, 255, 255, 0.1);
+            --muted: #6b7280;
+            --primary: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: hsl(var(--background));
-            color: hsl(var(--foreground));
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
             min-height: 100vh;
-            line-height: 1.5;
+            font-size: 16px;
         }
 
         .container {
@@ -49,121 +39,203 @@
             padding: 2rem;
         }
 
-        h1, h2, h3 {
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            letter-spacing: -0.025em;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
             margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.5rem 1rem;
-            background-color: hsl(var(--primary));
-            color: hsl(var(--primary-foreground));
+            background-color: var(--foreground);
+            color: var(--background);
             border: none;
-            border-radius: calc(var(--radius) - 2px);
+            padding: 0.5rem 1rem;
             font-size: 0.875rem;
             font-weight: 500;
+            border-radius: 6px;
             cursor: pointer;
-            transition: opacity 0.2s;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .button:hover {
             opacity: 0.9;
+            transform: translateY(-1px);
         }
 
         .button-outline {
             background-color: transparent;
-            color: hsl(var(--foreground));
-            border: 1px solid hsl(var(--border));
+            color: var(--foreground);
+            border: 1px solid var(--border);
         }
 
         .button-outline:hover {
-            background-color: hsl(var(--secondary));
+            background-color: rgba(255, 255, 255, 0.05);
         }
 
         .card {
-            background-color: hsl(var(--card));
-            color: hsl(var(--card-foreground));
-            border: 1px solid hsl(var(--border));
-            border-radius: var(--radius);
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
             padding: 1.5rem;
             margin-bottom: 1rem;
+            transition: all 0.2s;
         }
 
-        .goals-section, .habits-section {
-            margin-bottom: 2rem;
+        .card:hover {
+            background-color: var(--card-hover);
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
-        .goal-item, .habit-item {
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .goal-card {
+            position: relative;
+            cursor: pointer;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .goal-type-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--muted);
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .goal-name {
+            font-size: 1.125rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            word-wrap: break-word;
+        }
+
+        .goal-target {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 0.75rem;
+            color: var(--muted);
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--muted);
+            background-color: var(--card);
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+        }
+
+        .habits-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .habit-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 1rem;
-            margin-bottom: 0.5rem;
-            background-color: hsl(var(--secondary) / 0.5);
-            border-radius: calc(var(--radius) - 2px);
+            padding: 1rem 1.25rem;
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            transition: all 0.2s;
             cursor: pointer;
-            transition: background-color 0.2s;
         }
 
-        .goal-item:hover, .habit-item:hover {
-            background-color: hsl(var(--secondary));
+        .habit-item:hover {
+            background-color: var(--card-hover);
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
-        .goal-type {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: hsl(var(--muted-foreground));
-            margin-right: 0.5rem;
+        .habit-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            flex: 1;
+        }
+
+        .habit-name {
+            font-weight: 500;
+            font-size: 1.125rem;
+        }
+
+        .habit-stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: var(--muted);
         }
 
         .habit-check {
-            width: 2rem;
-            height: 2rem;
-            border-radius: 4px;
-            background-color: hsl(var(--secondary));
+            width: 3rem;
+            height: 3rem;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .habit-check:hover {
+            background-color: rgba(255, 255, 255, 0.2);
         }
 
         .habit-check.checked {
-            background-color: #10b981;
+            background-color: var(--success);
+            border-color: var(--success);
+        }
+
+        .checkmark {
+            display: none;
             color: white;
+            font-size: 1.5rem;
         }
 
-        .success-rate {
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-left: 1rem;
-        }
-
-        .success-rate.good {
-            color: #10b981;
-        }
-
-        .success-rate.warning {
-            color: #f59e0b;
-        }
-
-        .success-rate.danger {
-            color: #ef4444;
+        .habit-check.checked .checkmark {
+            display: block;
         }
 
         /* Modal styles */
         .modal {
             display: none;
             position: fixed;
-            z-index: 1000;
-            left: 0;
             top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.8);
-            animation: fadeIn 0.2s ease-out;
+            z-index: 1000;
+            padding: 2rem;
         }
 
         .modal.open {
@@ -173,104 +245,118 @@
         }
 
         .modal-content {
-            background-color: hsl(var(--card));
-            border: 1px solid hsl(var(--border));
-            border-radius: var(--radius);
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
             padding: 2rem;
+            width: 100%;
             max-width: 500px;
-            width: 90%;
             max-height: 90vh;
             overflow-y: auto;
-            animation: slideIn 0.2s ease-out;
+            animation: slideUp 0.3s ease-out;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
-        @keyframes slideIn {
-            from { transform: translateY(-20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+        .modal-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
         }
 
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 1.25rem;
         }
 
         label {
             display: block;
             font-size: 0.875rem;
             font-weight: 500;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--muted);
         }
 
         input, select, textarea {
             width: 100%;
-            padding: 0.5rem;
-            background-color: hsl(var(--background));
-            color: hsl(var(--foreground));
-            border: 1px solid hsl(var(--input));
-            border-radius: calc(var(--radius) - 2px);
+            padding: 0.75rem;
+            font-size: 1rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--foreground);
+            transition: all 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary);
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .success-rate {
+            font-weight: 600;
             font-size: 0.875rem;
         }
 
-        .required-days {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-top: 0.5rem;
-        }
+        .success-rate.good { color: var(--success); }
+        .success-rate.warning { color: var(--warning); }
+        .success-rate.danger { color: var(--danger); }
 
-        .day-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: calc(var(--radius) - 2px);
-            font-size: 0.75rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            background-color: hsl(var(--secondary) / 0.5);
-            color: hsl(var(--muted-foreground));
-        }
-
-        .day-badge.selected {
-            background-color: #10b981;
-            color: white;
-        }
+        /* Color coding for goal types */
+        .goal-card[data-type="Yearly"] .goal-type-label { color: #a78bfa; }
+        .goal-card[data-type="Quarterly"] .goal-type-label { color: #60a5fa; }
+        .goal-card[data-type="Monthly"] .goal-type-label { color: #34d399; }
+        .goal-card[data-type="Weekly"] .goal-type-label { color: #fbbf24; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Execution System</h1>
-        
-        <!-- Goals Section -->
-        <div class="goals-section">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h2>Goals</h2>
-                <button class="button button-outline" onclick="openGoalModal()">New Goal</button>
-            </div>
-            <div id="goals-container"></div>
-        </div>
 
-        <!-- Habits Section -->
-        <div class="habits-section">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h2>Habits</h2>
-                <button class="button button-outline" onclick="openHabitModal()">New Habit</button>
+        <section>
+            <h2>
+                Goals
+                <button class="button" onclick="openGoalModal()">New Goal</button>
+            </h2>
+            <div class="goals-grid" id="goalsContainer">
+                <!-- Goals will be rendered here -->
             </div>
-            <div id="habits-container"></div>
-        </div>
+        </section>
+
+        <section>
+            <h2>
+                Habits
+                <button class="button" onclick="openHabitModal()">New Habit</button>
+            </h2>
+            <div id="habitsContainer">
+                <!-- Habits will be rendered here -->
+            </div>
+        </section>
     </div>
 
     <!-- Goal Modal -->
     <div id="goalModal" class="modal">
         <div class="modal-content">
-            <h3 id="goalModalTitle">Create Goal</h3>
+            <h3 class="modal-header">Create New Goal</h3>
             <form id="goalForm">
-                <input type="hidden" id="goalId">
-                
                 <div class="form-group">
-                    <label for="goalType">Goal Type</label>
+                    <label>Goal Type</label>
                     <select id="goalType" required>
                         <option value="Yearly">Yearly</option>
                         <option value="Quarterly">Quarterly</option>
@@ -278,25 +364,21 @@
                         <option value="Weekly">Weekly</option>
                     </select>
                 </div>
-
                 <div class="form-group">
-                    <label for="goalName">Goal Name</label>
+                    <label>Goal Name</label>
                     <input type="text" id="goalName" placeholder="e.g., Build $1M ARR Business" required>
                 </div>
-
                 <div class="form-group">
-                    <label for="goalTarget">Target Success %</label>
-                    <input type="number" id="goalTarget" value="80" min="0" max="100">
+                    <label>Target Success %</label>
+                    <input type="number" id="goalTarget" min="0" max="100" value="80" required>
                 </div>
-
                 <div class="form-group">
-                    <label for="goalDescription">Description</label>
+                    <label>Description (optional)</label>
                     <textarea id="goalDescription" rows="3" placeholder="Details about this goal..."></textarea>
                 </div>
-
-                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                <div class="modal-footer">
                     <button type="button" class="button button-outline" onclick="closeGoalModal()">Cancel</button>
-                    <button type="submit" class="button">Save Goal</button>
+                    <button type="submit" class="button">Create Goal</button>
                 </div>
             </form>
         </div>
@@ -305,36 +387,26 @@
     <!-- Habit Modal -->
     <div id="habitModal" class="modal">
         <div class="modal-content">
-            <h3 id="habitModalTitle">Create Habit</h3>
+            <h3 class="modal-header">Create New Habit</h3>
             <form id="habitForm">
-                <input type="hidden" id="habitId">
-                
                 <div class="form-group">
-                    <label for="habitName">Habit Name</label>
+                    <label>Habit Name</label>
                     <input type="text" id="habitName" placeholder="e.g., Read 10 pages" required>
                 </div>
-
                 <div class="form-group">
-                    <label>Required Days</label>
-                    <div class="required-days" id="requiredDays">
-                        <div class="day-badge" data-day="Mon">Mon</div>
-                        <div class="day-badge" data-day="Tue">Tue</div>
-                        <div class="day-badge" data-day="Wed">Wed</div>
-                        <div class="day-badge" data-day="Thu">Thu</div>
-                        <div class="day-badge" data-day="Fri">Fri</div>
-                        <div class="day-badge" data-day="Sat">Sat</div>
-                        <div class="day-badge" data-day="Sun">Sun</div>
-                    </div>
+                    <label>Frequency</label>
+                    <select id="habitFrequency" required>
+                        <option value="Daily">Daily</option>
+                        <option value="Weekly">Weekly</option>
+                    </select>
                 </div>
-
                 <div class="form-group">
-                    <label for="habitNotes">Notes</label>
+                    <label>Notes (optional)</label>
                     <textarea id="habitNotes" rows="3" placeholder="Success criteria or details..."></textarea>
                 </div>
-
-                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                <div class="modal-footer">
                     <button type="button" class="button button-outline" onclick="closeHabitModal()">Cancel</button>
-                    <button type="submit" class="button">Save Habit</button>
+                    <button type="submit" class="button">Create Habit</button>
                 </div>
             </form>
         </div>
@@ -342,331 +414,182 @@
 
     <script>
         // Data storage
-        const storage = {
-            getGoals: () => JSON.parse(localStorage.getItem('execution-goals') || '[]'),
-            setGoals: (goals) => localStorage.setItem('execution-goals', JSON.stringify(goals)),
-            getHabits: () => JSON.parse(localStorage.getItem('execution-habits') || '[]'),
-            setHabits: (habits) => localStorage.setItem('execution-habits', JSON.stringify(habits)),
-            getHabitChecks: () => JSON.parse(localStorage.getItem('execution-checks') || '{}'),
-            setHabitChecks: (checks) => localStorage.setItem('execution-checks', JSON.stringify(checks))
-        };
+        let goals = JSON.parse(localStorage.getItem('executionGoals') || '[]');
+        let habits = JSON.parse(localStorage.getItem('executionHabits') || '[]');
+        let habitChecks = JSON.parse(localStorage.getItem('executionHabitChecks') || '{}');
 
-        // Utility functions
-        function generateId() {
-            return Date.now().toString(36) + Math.random().toString(36).substr(2);
-        }
-
-        function getToday() {
-            return new Date().toISOString().split('T')[0];
-        }
-
-        function getDayName(date = new Date()) {
-            return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()];
-        }
-
-        // Calculate success rate for a habit
-        function calculateSuccessRate(habit) {
-            const checks = storage.getHabitChecks();
-            const today = new Date();
-            const thirtyDaysAgo = new Date(today);
-            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        // Render functions
+        function renderGoals() {
+            const container = document.getElementById('goalsContainer');
             
-            let requiredCount = 0;
-            let completedCount = 0;
-            
-            for (let d = new Date(thirtyDaysAgo); d <= today; d.setDate(d.getDate() + 1)) {
-                const dateStr = d.toISOString().split('T')[0];
-                const dayName = getDayName(d);
-                
-                if (habit.requiredDays.includes(dayName)) {
-                    requiredCount++;
-                    if (checks[`${habit.id}-${dateStr}`]) {
-                        completedCount++;
-                    }
+            if (goals.length === 0) {
+                container.innerHTML = '<div class="empty-state">No goals yet. Click "New Goal" to create your first goal!</div>';
+                return;
+            }
+
+            const goalsByType = {
+                Yearly: goals.filter(g => g.type === 'Yearly'),
+                Quarterly: goals.filter(g => g.type === 'Quarterly'),
+                Monthly: goals.filter(g => g.type === 'Monthly'),
+                Weekly: goals.filter(g => g.type === 'Weekly')
+            };
+
+            let html = '';
+            for (const [type, typeGoals] of Object.entries(goalsByType)) {
+                if (typeGoals.length > 0) {
+                    typeGoals.forEach(goal => {
+                        html += `
+                            <div class="card goal-card" data-type="${type}">
+                                <div class="goal-type-label">${type.toUpperCase()}</div>
+                                <div class="goal-name">${goal.name}</div>
+                                <div class="goal-target">Target<br>${goal.target}%</div>
+                            </div>
+                        `;
+                    });
                 }
             }
             
-            return requiredCount > 0 ? Math.round((completedCount / requiredCount) * 100) : 100;
+            container.innerHTML = html;
         }
 
-        // Calculate current streak
-        function calculateStreak(habit) {
-            const checks = storage.getHabitChecks();
+        function renderHabits() {
+            const container = document.getElementById('habitsContainer');
+            
+            if (habits.length === 0) {
+                container.innerHTML = '<div class="empty-state">No habits yet. Create your first habit!</div>';
+                return;
+            }
+
+            const today = new Date().toDateString();
+            let html = '<div class="habits-list">';
+            
+            habits.forEach(habit => {
+                const isCheckedToday = habitChecks[`${habit.id}-${today}`] || false;
+                const successRate = calculateSuccessRate(habit.id);
+                const streak = calculateStreak(habit.id);
+                
+                html += `
+                    <div class="habit-item">
+                        <div class="habit-info">
+                            <div class="habit-name">${habit.name}</div>
+                            <div class="habit-stats">
+                                <span>🔥 ${streak} streak</span>
+                                <span class="success-rate ${getSuccessRateClass(successRate)}">${successRate}% rate</span>
+                            </div>
+                        </div>
+                        <div class="habit-check ${isCheckedToday ? 'checked' : ''}" onclick="toggleHabit('${habit.id}')">
+                            <span class="checkmark">✓</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function calculateSuccessRate(habitId) {
+            const dates = Object.keys(habitChecks)
+                .filter(key => key.startsWith(habitId + '-'))
+                .map(key => key.split('-').slice(1).join('-'));
+            
+            if (dates.length === 0) return 0;
+            
+            const checked = dates.filter(date => habitChecks[`${habitId}-${date}`]).length;
+            return Math.round((checked / dates.length) * 100);
+        }
+
+        function calculateStreak(habitId) {
             let streak = 0;
             const today = new Date();
             
             for (let i = 0; i < 365; i++) {
                 const date = new Date(today);
                 date.setDate(date.getDate() - i);
-                const dateStr = date.toISOString().split('T')[0];
-                const dayName = getDayName(date);
+                const dateStr = date.toDateString();
                 
-                if (habit.requiredDays.includes(dayName)) {
-                    if (checks[`${habit.id}-${dateStr}`]) {
-                        streak++;
-                    } else {
-                        break;
-                    }
+                if (habitChecks[`${habitId}-${dateStr}`]) {
+                    streak++;
+                } else if (i > 0) {
+                    break;
                 }
             }
             
             return streak;
         }
 
-        // Render functions
-        function renderGoals() {
-            const goals = storage.getGoals();
-            const container = document.getElementById('goals-container');
-            
-            if (goals.length === 0) {
-                container.innerHTML = '<div class="card" style="text-align: center; color: hsl(var(--muted-foreground));">No goals yet. Add one to get started!</div>';
-                return;
-            }
-            
-            const goalsByType = goals.reduce((acc, goal) => {
-                acc[goal.type] = acc[goal.type] || [];
-                acc[goal.type].push(goal);
-                return acc;
-            }, {});
-            
-            container.innerHTML = ['Yearly', 'Quarterly', 'Monthly', 'Weekly']
-                .map(type => {
-                    const typeGoals = goalsByType[type] || [];
-                    if (typeGoals.length === 0) return '';
-                    
-                    return `
-                        <div class="card">
-                            <h3 style="margin-bottom: 1rem;">${type} Goals</h3>
-                            ${typeGoals.map(goal => `
-                                <div class="goal-item" onclick="editGoal('${goal.id}')">
-                                    <div>
-                                        <span class="goal-type">${goal.type}</span>
-                                        <strong>${goal.name}</strong>
-                                        ${goal.description ? `<div style="font-size: 0.875rem; color: hsl(var(--muted-foreground)); margin-top: 0.25rem;">${goal.description}</div>` : ''}
-                                    </div>
-                                    <div style="text-align: right;">
-                                        <div style="font-size: 0.75rem; color: hsl(var(--muted-foreground));">Target</div>
-                                        <div style="font-weight: 600;">${goal.targetSuccess}%</div>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-                }).join('');
-        }
-
-        function renderHabits() {
-            const habits = storage.getHabits();
-            const container = document.getElementById('habits-container');
-            const checks = storage.getHabitChecks();
-            const today = getToday();
-            const todayName = getDayName();
-            
-            if (habits.length === 0) {
-                container.innerHTML = '<div class="card" style="text-align: center; color: hsl(var(--muted-foreground));">No habits yet. Create your first habit!</div>';
-                return;
-            }
-            
-            container.innerHTML = habits.map(habit => {
-                const successRate = calculateSuccessRate(habit);
-                const streak = calculateStreak(habit);
-                const isCheckedToday = checks[`${habit.id}-${today}`] || false;
-                const isRequiredToday = habit.requiredDays.includes(todayName);
-                
-                let successClass = 'good';
-                if (successRate < 50) successClass = 'danger';
-                else if (successRate < 80) successClass = 'warning';
-                
-                return `
-                    <div class="card habit-item">
-                        <div style="flex: 1;" onclick="editHabit('${habit.id}')">
-                            <strong>${habit.name}</strong>
-                            <div style="display: flex; align-items: center; margin-top: 0.25rem;">
-                                <span style="font-size: 0.75rem; color: hsl(var(--muted-foreground));">
-                                    ${habit.requiredDays.join(', ')}
-                                </span>
-                                <span class="success-rate ${successClass}">${successRate}%</span>
-                                ${streak > 0 ? `<span style="font-size: 0.75rem; color: #f59e0b; margin-left: 1rem;">🔥 ${streak} streak</span>` : ''}
-                            </div>
-                            ${habit.notes ? `<div style="font-size: 0.875rem; color: hsl(var(--muted-foreground)); margin-top: 0.5rem;">${habit.notes}</div>` : ''}
-                        </div>
-                        ${isRequiredToday ? `
-                            <div class="habit-check ${isCheckedToday ? 'checked' : ''}" onclick="toggleHabit('${habit.id}')">
-                                ${isCheckedToday ? '✓' : ''}
-                            </div>
-                        ` : '<div style="width: 2rem;"></div>'}
-                    </div>
-                `;
-            }).join('');
+        function getSuccessRateClass(rate) {
+            if (rate >= 80) return 'good';
+            if (rate >= 50) return 'warning';
+            return 'danger';
         }
 
         // Modal functions
-        function openGoalModal(goalId = null) {
-            const modal = document.getElementById('goalModal');
-            const form = document.getElementById('goalForm');
-            
-            if (goalId) {
-                const goals = storage.getGoals();
-                const goal = goals.find(g => g.id === goalId);
-                if (goal) {
-                    document.getElementById('goalModalTitle').textContent = 'Edit Goal';
-                    document.getElementById('goalId').value = goal.id;
-                    document.getElementById('goalType').value = goal.type;
-                    document.getElementById('goalName').value = goal.name;
-                    document.getElementById('goalTarget').value = goal.targetSuccess || 80;
-                    document.getElementById('goalDescription').value = goal.description || '';
-                }
-            } else {
-                document.getElementById('goalModalTitle').textContent = 'Create Goal';
-                form.reset();
-                document.getElementById('goalId').value = '';
-            }
-            
-            modal.classList.add('open');
+        function openGoalModal() {
+            document.getElementById('goalModal').classList.add('open');
         }
 
         function closeGoalModal() {
             document.getElementById('goalModal').classList.remove('open');
+            document.getElementById('goalForm').reset();
         }
 
-        function openHabitModal(habitId = null) {
-            const modal = document.getElementById('habitModal');
-            const form = document.getElementById('habitForm');
-            
-            // Reset day selection
-            document.querySelectorAll('.day-badge').forEach(badge => {
-                badge.classList.remove('selected');
-            });
-            
-            if (habitId) {
-                const habits = storage.getHabits();
-                const habit = habits.find(h => h.id === habitId);
-                if (habit) {
-                    document.getElementById('habitModalTitle').textContent = 'Edit Habit';
-                    document.getElementById('habitId').value = habit.id;
-                    document.getElementById('habitName').value = habit.name;
-                    document.getElementById('habitNotes').value = habit.notes || '';
-                    
-                    habit.requiredDays.forEach(day => {
-                        document.querySelector(`.day-badge[data-day="${day}"]`).classList.add('selected');
-                    });
-                }
-            } else {
-                document.getElementById('habitModalTitle').textContent = 'Create Habit';
-                form.reset();
-                document.getElementById('habitId').value = '';
-                
-                // Default to all days selected
-                document.querySelectorAll('.day-badge').forEach(badge => {
-                    badge.classList.add('selected');
-                });
-            }
-            
-            modal.classList.add('open');
+        function openHabitModal() {
+            document.getElementById('habitModal').classList.add('open');
         }
 
         function closeHabitModal() {
             document.getElementById('habitModal').classList.remove('open');
-        }
-
-        // Edit functions
-        function editGoal(goalId) {
-            openGoalModal(goalId);
-        }
-
-        function editHabit(habitId) {
-            openHabitModal(habitId);
+            document.getElementById('habitForm').reset();
         }
 
         // Toggle habit check
         function toggleHabit(habitId) {
-            event.stopPropagation();
-            const checks = storage.getHabitChecks();
-            const today = getToday();
+            const today = new Date().toDateString();
             const key = `${habitId}-${today}`;
-            
-            checks[key] = !checks[key];
-            storage.setHabitChecks(checks);
+            habitChecks[key] = !habitChecks[key];
+            localStorage.setItem('executionHabitChecks', JSON.stringify(habitChecks));
             renderHabits();
         }
 
         // Form submissions
-        document.getElementById('goalForm').addEventListener('submit', (e) => {
+        document.getElementById('goalForm').onsubmit = (e) => {
             e.preventDefault();
-            
-            const goals = storage.getGoals();
-            const goalId = document.getElementById('goalId').value;
-            
-            const goalData = {
-                id: goalId || generateId(),
+            const goal = {
+                id: Date.now().toString(),
                 type: document.getElementById('goalType').value,
                 name: document.getElementById('goalName').value,
-                targetSuccess: parseInt(document.getElementById('goalTarget').value) || 80,
+                target: parseInt(document.getElementById('goalTarget').value),
                 description: document.getElementById('goalDescription').value,
-                createdAt: goalId ? goals.find(g => g.id === goalId).createdAt : new Date().toISOString()
+                createdAt: new Date().toISOString()
             };
-            
-            if (goalId) {
-                const index = goals.findIndex(g => g.id === goalId);
-                goals[index] = { ...goals[index], ...goalData };
-            } else {
-                goals.push(goalData);
-            }
-            
-            storage.setGoals(goals);
+            goals.push(goal);
+            localStorage.setItem('executionGoals', JSON.stringify(goals));
             renderGoals();
             closeGoalModal();
-        });
+        };
 
-        document.getElementById('habitForm').addEventListener('submit', (e) => {
+        document.getElementById('habitForm').onsubmit = (e) => {
             e.preventDefault();
-            
-            const habits = storage.getHabits();
-            const habitId = document.getElementById('habitId').value;
-            
-            const selectedDays = Array.from(document.querySelectorAll('.day-badge.selected'))
-                .map(badge => badge.dataset.day);
-            
-            if (selectedDays.length === 0) {
-                alert('Please select at least one day for this habit');
-                return;
-            }
-            
-            const habitData = {
-                id: habitId || generateId(),
+            const habit = {
+                id: Date.now().toString(),
                 name: document.getElementById('habitName').value,
-                requiredDays: selectedDays,
+                frequency: document.getElementById('habitFrequency').value,
                 notes: document.getElementById('habitNotes').value,
-                createdAt: habitId ? habits.find(h => h.id === habitId).createdAt : new Date().toISOString()
+                createdAt: new Date().toISOString()
             };
-            
-            if (habitId) {
-                const index = habits.findIndex(h => h.id === habitId);
-                habits[index] = { ...habits[index], ...habitData };
-            } else {
-                habits.push(habitData);
-            }
-            
-            storage.setHabits(habits);
+            habits.push(habit);
+            localStorage.setItem('executionHabits', JSON.stringify(habits));
             renderHabits();
             closeHabitModal();
-        });
+        };
 
-        // Day badge toggle
-        document.querySelectorAll('.day-badge').forEach(badge => {
-            badge.addEventListener('click', () => {
-                badge.classList.toggle('selected');
-            });
-        });
-
-        // Close modals on background click
-        document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.remove('open');
-                }
-            });
-        });
+        // Close modals on outside click
+        window.onclick = (event) => {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('open');
+            }
+        };
 
         // Initial render
         renderGoals();
