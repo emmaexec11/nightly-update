@@ -96,6 +96,57 @@
             font-size: 0.875rem;
         }
 
+        /* Character Section - Smaller */
+        .character-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .character-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .character-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .character-stats {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .stat-block {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--warning);
+        }
+
         /* Goals Section */
         .goal {
             background: var(--bg-secondary);
@@ -103,6 +154,41 @@
             border-radius: 0.75rem;
             margin-bottom: 2rem;
             overflow: hidden;
+        }
+
+        /* Goal Hierarchy */
+        .goal-hierarchy {
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hierarchy-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hierarchy-item:last-child {
+            border-bottom: none;
+        }
+
+        .hierarchy-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            min-width: 100px;
+        }
+
+        .hierarchy-content {
+            flex: 1;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-align: right;
         }
 
         .goal-header {
@@ -546,6 +632,31 @@
             <p class="subtitle">Transform Goals into Reality</p>
         </div>
 
+        <!-- Character Section -->
+        <div class="character-section">
+            <div class="character-info">
+                <div class="character-avatar">🧙</div>
+                <div>
+                    <h3 style="font-size: 1.25rem; margin-bottom: 0.25rem;">Devon the Wise</h3>
+                    <p style="font-size: 0.875rem; color: var(--text-secondary);">Level 18 Quest Master</p>
+                </div>
+            </div>
+            <div class="character-stats">
+                <div class="stat-block">
+                    <div class="stat-label">Streak</div>
+                    <div class="stat-value">12</div>
+                </div>
+                <div class="stat-block">
+                    <div class="stat-label">Quests</div>
+                    <div class="stat-value">85%</div>
+                </div>
+                <div class="stat-block">
+                    <div class="stat-label">EXP</div>
+                    <div class="stat-value">8.2k</div>
+                </div>
+            </div>
+        </div>
+
         <!-- Quotes Section -->
         <div class="quotes-section">
             <div class="quote">
@@ -637,6 +748,10 @@
                     name: 'SPIRITUALITY & NERVOUS SYSTEM GOAL',
                     category: 'spiritual',
                     description: 'Anxiety 80% Reduction',
+                    yearly: 'Master inner peace and reduce anxiety by 80%',
+                    quarterly: 'Implement full morning/afternoon/night routines',
+                    monthly: 'Perfect morning routine and meditation practice',
+                    weekly: 'Complete all routines 6/7 days',
                     lagIndicators: [
                         { name: '20min morning walk', value: '85%' },
                         { name: 'Anxious to Energized 0-5', value: '3.2' },
@@ -726,6 +841,28 @@
                             <h2 class="goal-title">${goal.name}</h2>
                             <p class="goal-description">${goal.description}</p>
                         </div>
+                        
+                        ${goal.yearly ? `
+                            <div class="goal-hierarchy">
+                                <div class="hierarchy-item">
+                                    <span class="hierarchy-label">YEARLY</span>
+                                    <span class="hierarchy-content">${goal.yearly}</span>
+                                </div>
+                                <div class="hierarchy-item">
+                                    <span class="hierarchy-label">QUARTERLY</span>
+                                    <span class="hierarchy-content">${goal.quarterly}</span>
+                                </div>
+                                <div class="hierarchy-item">
+                                    <span class="hierarchy-label">MONTHLY</span>
+                                    <span class="hierarchy-content">${goal.monthly}</span>
+                                </div>
+                                <div class="hierarchy-item">
+                                    <span class="hierarchy-label">WEEKLY</span>
+                                    <span class="hierarchy-content">${goal.weekly}</span>
+                                </div>
+                            </div>
+                        ` : ''}
+                        
                         <div class="goal-content">
                             ${goal.lagIndicators ? `
                                 <div class="lag-indicators">
@@ -742,6 +879,7 @@
                             ` : ''}
                             
                             <div class="habits-section">
+                                <h3 class="indicators-title" style="margin: 1.5rem 0 1rem 0;">DAILY HABITS</h3>
                                 ${goal.habits.map(habit => `
                                     <div class="habit-item" onclick="toggleHabit(${goal.id}, ${habit.id})">
                                         <div class="habit-checkbox ${habit.completed ? 'checked' : ''}"></div>
@@ -822,6 +960,10 @@
                     name: name,
                     category: category,
                     description: description,
+                    yearly: 'Define yearly target',
+                    quarterly: 'Define quarterly milestone',
+                    monthly: 'Define monthly goal',
+                    weekly: 'Define weekly target',
                     habits: [],
                     links: {}
                 };
