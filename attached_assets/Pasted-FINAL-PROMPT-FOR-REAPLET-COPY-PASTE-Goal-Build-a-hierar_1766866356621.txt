@@ -1,0 +1,152 @@
+FINAL PROMPT FOR REAPLET (COPY & PASTE)
+
+Goal: Build a hierarchical execution system that automatically breaks a high-level goal into time-based layers down to daily habits, with visual boxes under each goal.
+
+Core Concept
+
+When I add a Goal, I want it to create a nested structure automatically:
+
+Yearly Goal → Quarterly → Monthly → Weekly → Daily Habits
+
+Each level should be visible as expandable boxes under the goal, not hidden or manual.
+
+1️⃣ Goal Creation Logic
+
+When creating a new goal:
+
+I select Goal Type (Yearly / Quarterly / Monthly)
+
+If I select Yearly, the system should:
+
+Prompt me to define:
+
+Quarterly milestones
+
+Monthly targets
+
+Weekly execution focus
+
+Daily habits
+
+These layers should be generated and linked automatically, not separate goals.
+
+Example:
+Health & Fitness
+
+Yearly Goal: 180 lbs @ ~12% body fat
+
+Quarterly: +5 lbs lean mass / reduce body fat
+
+Monthly: Weight + strength targets
+
+Weekly: # of workouts / recovery
+
+Daily Habits:
+
+Train (yes/no)
+
+Calories hit (yes/no)
+
+Protein hit (yes/no)
+
+Walk / recovery
+
+Breathing / nervous system regulation
+
+2️⃣ Visual Structure (Very Important)
+
+Under each main goal, show stacked expandable boxes:
+
+[ Health & Fitness ]
+  ├─ Yearly Goal
+  │   ├─ Quarterly Goals
+  │   │   ├─ Monthly Goals
+  │   │   │   ├─ Weekly Focus
+  │   │   │   │   ├─ Daily Habits
+
+
+Clicking a layer expands/collapses it
+
+This should feel like a command center, not a flat list
+
+3️⃣ Daily Habits Behavior
+
+Daily habits should:
+
+Be clickable checkboxes (Did / Didn’t)
+
+Auto-reset every day
+
+Track:
+
+Current streak
+
+Longest streak
+
+% consistency (weekly / monthly / yearly)
+
+Show a visual warning if I miss 2 days in a row
+
+Example: “⚠️ Don’t miss twice — do this today”
+
+Show a calendar heatmap of completion
+
+Be filterable by:
+
+This week
+
+This month
+
+This quarter
+
+This year
+
+4️⃣ Progress Logic
+
+Daily habits roll up into Weekly
+
+Weekly rolls up into Monthly
+
+Monthly → Quarterly → Yearly
+
+Each layer shows % completion toward its parent
+
+The top goal shows overall success %
+
+5️⃣ Use Case Example
+
+For Nervous System Regulation:
+
+Yearly Goal: Stable nervous system
+
+Daily Habits:
+
+Morning breathing
+
+Somatic awareness
+
+No caffeine after X time
+
+Missing habits should visually affect higher-level progress
+
+6️⃣ Design Philosophy
+
+Minimal
+
+Visual
+
+Execution-first
+
+Zero friction
+
+Everything visible at a glance
+
+Optimized for daily check-ins (30 seconds max)
+
+7️⃣ Non-Negotiables
+
+No manual rebuilding of goals at each level
+
+No separate “goal types” that don’t talk to each other
+
+The hierarchy must be one connected system
