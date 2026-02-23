@@ -3,22 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Execution System - v2</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Quest Tracker - Level Up Your Life</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #000000;
-            --bg-secondary: #0a0a0a;
-            --bg-card: #111111;
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --bg-card: #1a1a1a;
+            --bg-hover: #242424;
+            
             --border: rgba(255, 255, 255, 0.1);
             --border-hover: rgba(255, 255, 255, 0.2);
+            
             --text-primary: #ffffff;
-            --text-secondary: #999999;
+            --text-secondary: #b4b4b4;
             --text-muted: #666666;
-            --success: #22c55e;
-            --warning: #eab308;
-            --danger: #ef4444;
-            --info: #3b82f6;
+            
+            --hp: #ef4444;
+            --mana: #3b82f6;
+            --exp: #fbbf24;
+            --success: #10b981;
+            --purple: #a855f7;
+            --orange: #f97316;
+            
+            --pixel-font: 'Press Start 2P', monospace;
+            --modern-font: 'Inter', -apple-system, sans-serif;
         }
 
         * {
@@ -28,266 +37,391 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: var(--modern-font);
             background: var(--bg-primary);
             color: var(--text-primary);
             line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(168, 85, 247, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
         }
 
-        /* Header */
-        .header {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        .date {
-            color: var(--text-muted);
-            font-size: 0.875rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .subtitle {
-            color: var(--text-secondary);
-            font-size: 1.125rem;
-        }
-
-        /* Quotes Section */
-        .quotes-section {
-            background: var(--bg-card);
-            border-radius: 0.75rem;
-            padding: 2rem;
-            margin-bottom: 3rem;
-            border: 1px solid var(--border);
-        }
-
-        .quote {
-            margin-bottom: 1.5rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .quote:last-child {
-            margin-bottom: 0;
-            padding-bottom: 0;
-            border-bottom: none;
-        }
-
-        .quote-text {
-            font-size: 1.125rem;
-            font-style: italic;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .quote-author {
-            color: var(--text-muted);
-            font-size: 0.875rem;
-        }
-
-        /* Character Section - Much Smaller */
+        /* Character Section */
         .character-section {
-            background: var(--bg-card);
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+            border: 2px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .character-section::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--purple), var(--mana), var(--exp));
+            border-radius: 1.5rem;
+            opacity: 0.5;
+            z-index: -1;
+            animation: gradient-border 3s ease infinite;
+        }
+
+        @keyframes gradient-border {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        .character-wrapper {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .character-display {
+            text-align: center;
+        }
+
+        .pixel-character {
+            width: 100px;
+            height: 100px;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.5));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .character-name {
+            font-family: var(--pixel-font);
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+            color: var(--exp);
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+        }
+
+        .stats-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .level-display {
+            font-size: 1.75rem;
+            font-weight: 800;
+            background: linear-gradient(to bottom, var(--exp) 0%, var(--orange) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-bar {
+            background: rgba(0, 0, 0, 0.5);
             border: 1px solid var(--border);
             border-radius: 0.5rem;
-            padding: 0.75rem 1rem;
-            margin-bottom: 2rem;
-            display: flex;
-            align-items: center;
-            gap: 2rem;
+            padding: 0.5rem 0.75rem;
+            position: relative;
+            overflow: hidden;
         }
 
-        .level-badge {
-            font-size: 0.875rem;
-            font-weight: 700;
-            color: var(--warning);
-        }
-
-        .mini-stats {
-            display: flex;
-            gap: 1.5rem;
+        .stat-label {
             font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-
-        .mini-stat {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .mini-stat-value {
             font-weight: 600;
-            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.25rem;
+            display: flex;
+            justify-content: space-between;
         }
 
-        /* Goals Section */
-        .goal {
+        .bar-container {
+            height: 0.75rem;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 0.375rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 0.5rem;
+            transition: width 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .hp-bar { background: linear-gradient(90deg, var(--hp), #dc2626); }
+        .mana-bar { background: linear-gradient(90deg, var(--mana), #2563eb); }
+        .exp-bar { background: linear-gradient(90deg, var(--exp), #f59e0b); }
+
+        /* Goals Hierarchy */
+        .goals-section {
+            margin-bottom: 3rem;
+        }
+
+        .goal-card {
             background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 1rem;
             margin-bottom: 2rem;
             overflow: hidden;
         }
 
-        /* Goal Hierarchy */
+        .goal-card.financial {
+            border-left: 4px solid var(--orange);
+        }
+
+        .goal-card.spiritual {
+            border-left: 4px solid var(--purple);
+        }
+
         .goal-hierarchy {
             padding: 1.5rem;
-            border-bottom: 1px solid var(--border);
+            background: var(--bg-card);
         }
 
         .hierarchy-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 1rem;
-            margin-top: 1rem;
+            margin-bottom: 1.5rem;
         }
 
-        .hierarchy-box {
+        .hierarchy-item {
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border);
             border-radius: 0.5rem;
-            padding: 1rem;
+            padding: 0.75rem;
             text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .hierarchy-box:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.15);
         }
 
         .hierarchy-label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            font-family: var(--pixel-font);
+            font-size: 0.5rem;
             color: var(--text-muted);
             margin-bottom: 0.5rem;
         }
 
-        .hierarchy-content {
+        .hierarchy-value {
             font-size: 0.875rem;
             color: var(--text-secondary);
-            line-height: 1.3;
         }
 
         .goal-header {
             padding: 1.5rem;
-            border-bottom: 1px solid var(--border);
-            position: relative;
-        }
-
-        .goal-category {
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
+            background: var(--bg-card);
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .goal-title {
             font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .goal-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .title-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(135deg, var(--purple) 0%, var(--mana) 100%);
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .add-goal-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--purple);
+            border: none;
+            border-radius: 0.75rem;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .add-goal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(168, 85, 247, 0.3);
+        }
+
+        /* Goal Timeline */
+        .goal-timeline {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .goal-period {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .goal-period:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        .period-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .period-label {
+            font-family: var(--pixel-font);
+            font-size: 0.75rem;
+            color: var(--exp);
+            text-transform: uppercase;
+        }
+
+        .period-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .icon-btn {
+            width: 2rem;
+            height: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border-color: var(--border-hover);
+        }
+
+        .goal-title {
+            font-size: 1.25rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
         }
 
         .goal-description {
-            color: var(--text-secondary);
             font-size: 0.875rem;
-        }
-
-        .goal-content {
-            padding: 1.5rem;
-        }
-
-        /* Lag Indicators */
-        .lag-indicators {
-            margin-bottom: 1.5rem;
-        }
-
-        .indicators-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            color: var(--text-secondary);
             margin-bottom: 1rem;
         }
 
-        .indicators-title {
-            font-size: 0.875rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-secondary);
+        /* Habits Section */
+        .habit-container {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
         }
 
-        .indicator-item {
+        .habit-grid {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .indicator-name {
-            font-size: 0.875rem;
-        }
-
-        .indicator-value {
-            font-weight: 600;
-            color: var(--success);
-        }
-
-        /* Habits */
-        .habits-section {
-            margin-top: 1.5rem;
+            flex-direction: column;
+            gap: 1rem;
         }
 
         .habit-item {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
             display: flex;
             align-items: center;
-            padding: 1rem;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 0.5rem;
-            margin-bottom: 0.75rem;
-            cursor: pointer;
+            gap: 1.5rem;
             transition: all 0.2s ease;
+            cursor: pointer;
         }
 
         .habit-item:hover {
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--bg-hover);
             border-color: var(--border-hover);
+            transform: translateX(5px);
         }
 
         .habit-checkbox {
-            width: 5rem;
-            height: 5rem;
-            min-width: 5rem;
+            width: 4rem;
+            height: 4rem;
+            min-width: 4rem;
             background: rgba(255, 255, 255, 0.05);
             border: 3px solid var(--border);
-            border-radius: 0.75rem;
-            margin-right: 1.5rem;
+            border-radius: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
             transition: all 0.2s ease;
+            position: relative;
         }
 
         .habit-checkbox:hover {
@@ -302,50 +436,49 @@
 
         .habit-checkbox.checked::after {
             content: '✓';
-            font-size: 2.5rem;
-            font-weight: bold;
+            font-size: 2rem;
+            font-weight: 800;
             color: white;
+            animation: check-pop 0.3s ease;
         }
 
-        .habit-info {
+        @keyframes check-pop {
+            0% { transform: scale(0) rotate(-180deg); }
+            50% { transform: scale(1.2) rotate(10deg); }
+            100% { transform: scale(1) rotate(0); }
+        }
+
+        .habit-content {
             flex: 1;
         }
 
         .habit-name {
             font-size: 1.25rem;
             font-weight: 600;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 1rem;
         }
 
-        .warning-icon {
-            color: var(--warning);
-            font-size: 1rem;
-        }
-
-        .habit-frequency {
-            display: inline-block;
-            font-size: 0.75rem;
-            padding: 0.125rem 0.5rem;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 0.25rem;
-        }
-
-        .habit-details {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
+        .frequency-badge {
+            font-family: var(--pixel-font);
+            font-size: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            background: rgba(168, 85, 247, 0.2);
+            border: 1px solid var(--purple);
+            border-radius: 0.5rem;
+            color: var(--purple);
         }
 
         .habit-stats {
             display: flex;
-            gap: 1.5rem;
-            margin-top: 0.5rem;
+            gap: 2rem;
             font-size: 0.875rem;
+            color: var(--text-secondary);
         }
 
-        .stat {
+        .stat-item {
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -353,384 +486,415 @@
 
         .stat-value {
             font-weight: 600;
-        }
-
-        .stat.success .stat-value {
             color: var(--success);
         }
 
-        /* Links as Tabs */
-        .links-tabs {
-            margin-top: 1.5rem;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 0.5rem;
-            padding: 1rem;
-        }
-
-        .tabs-header {
-            display: flex;
-            gap: 0.5rem;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .tab-button {
-            padding: 0.5rem 1rem;
-            background: transparent;
-            border: 1px solid var(--border);
-            border-radius: 0.375rem;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .tab-button:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-primary);
-        }
-
-        .tab-button.active {
-            background: var(--info);
-            border-color: var(--info);
-            color: white;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .link-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .link-item {
-            padding: 0.5rem 1rem;
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid var(--info);
-            border-radius: 0.375rem;
-            color: var(--info);
-            text-decoration: none;
-            font-size: 0.875rem;
-            transition: all 0.2s ease;
-        }
-
-        .link-item:hover {
-            background: var(--info);
-            color: white;
-            transform: translateY(-1px);
-        }
-
-        /* Add buttons */
-        .add-button {
+        .add-habit-btn {
             width: 100%;
-            padding: 1.25rem;
-            margin-top: 1rem;
-            background: transparent;
-            border: 2px dashed var(--border);
-            border-radius: 0.5rem;
-            color: var(--text-secondary);
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .add-button:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: var(--border-hover);
-            color: var(--text-primary);
-        }
-
-        /* Edit buttons */
-        .edit-button {
-            padding: 0.375rem 0.75rem;
-            background: transparent;
-            border: 1px solid var(--border);
-            border-radius: 0.25rem;
-            color: var(--text-secondary);
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            float: right;
-        }
-
-        .edit-button:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-primary);
-            border-color: var(--border-hover);
-        }
-
-        /* Daily Quest Journal */
-        .quest-journal {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 0.75rem;
-            padding: 2rem;
-            margin-top: 3rem;
-            text-align: center;
-        }
-
-        .quest-journal-title {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-        }
-
-        .quest-textarea {
-            width: 100%;
-            min-height: 150px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 0.5rem;
-            padding: 1rem;
-            color: var(--text-primary);
-            font-family: inherit;
-            font-size: 1rem;
-            resize: vertical;
-        }
-
-        .quest-textarea:focus {
-            outline: none;
-            border-color: var(--info);
-        }
-
-        .complete-day-btn {
-            margin-top: 1.5rem;
-            padding: 1rem 2rem;
-            background: var(--success);
-            border: none;
-            border-radius: 0.5rem;
-            color: white;
+            padding: 1.5rem;
+            background: rgba(168, 85, 247, 0.1);
+            border: 3px dashed var(--purple);
+            border-radius: 1rem;
+            color: var(--purple);
             font-size: 1.125rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
-        }
-
-        .complete-day-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3);
-        }
-
-        /* Modals */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-        }
-
-        .modal.active {
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 0.75rem;
+            margin-top: 1rem;
         }
 
-        .modal-content {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 0.75rem;
+        .add-habit-btn:hover {
+            background: rgba(168, 85, 247, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Edit Actions */
+        .edit-actions {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .habit-item:hover .edit-actions,
+        .goal-period:hover .edit-actions {
+            opacity: 1;
+        }
+
+        .edit-btn {
+            padding: 0.5rem 1rem;
+            background: var(--mana);
+            border: none;
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .edit-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .delete-btn {
+            background: var(--hp);
+        }
+
+        /* Daily Reflection */
+        .reflection-section {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+            border: 2px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .reflection-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            background: linear-gradient(to right, var(--purple) 0%, var(--mana) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .reflection-textarea {
+            width: 100%;
+            min-height: 150px;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            color: var(--text-primary);
+            font-size: 1.125rem;
+            font-family: inherit;
+            resize: vertical;
+            transition: all 0.2s ease;
+        }
+
+        .reflection-textarea:focus {
+            outline: none;
+            border-color: var(--purple);
+        }
+
+        .complete-day-btn {
+            margin-top: 2rem;
+            padding: 1.5rem 3rem;
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            border: none;
+            border-radius: 1rem;
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .complete-day-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.4);
+        }
+
+        .complete-day-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s;
+        }
+
+        .complete-day-btn:hover::before {
+            animation: shine 0.5s ease;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 2rem;
-            width: 90%;
-            max-width: 500px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: 1.5rem;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
         }
 
         .modal-header {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
+            padding: 2rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .modal-body {
+            padding: 2rem;
         }
 
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .form-label {
             display: block;
             font-size: 0.875rem;
+            font-weight: 600;
             color: var(--text-secondary);
             margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
-        .form-input, .form-select {
+        .form-input,
+        .form-select {
             width: 100%;
-            padding: 0.75rem;
+            padding: 1rem;
             background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 0.375rem;
+            border: 2px solid var(--border);
+            border-radius: 0.75rem;
             color: var(--text-primary);
             font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
         }
 
-        .form-input:focus, .form-select:focus {
+        .form-input:focus,
+        .form-select:focus {
             outline: none;
-            border-color: var(--info);
+            border-color: var(--purple);
         }
 
         .modal-footer {
+            padding: 1.5rem 2rem;
+            border-top: 2px solid var(--border);
             display: flex;
             justify-content: flex-end;
             gap: 1rem;
-            margin-top: 1.5rem;
         }
 
         .btn {
             padding: 0.75rem 1.5rem;
-            border-radius: 0.375rem;
-            font-weight: 500;
+            border-radius: 0.75rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
-        }
-
-        .btn-cancel {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-        }
-
-        .btn-save {
-            background: var(--info);
             border: none;
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+        }
+
+        .btn-primary {
+            background: var(--purple);
             color: white;
         }
 
         .btn:hover {
-            transform: translateY(-1px);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hierarchy-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .character-section {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
+            transform: translateY(-2px);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="date" id="currentDate"></div>
-            <h1 class="title">Execution System</h1>
-            <p class="subtitle">Transform Goals into Reality</p>
-        </div>
-
-        <!-- Character Section - Compact -->
+        <!-- Character Section -->
         <div class="character-section">
-            <span class="level-badge">LEVEL 18</span>
-            <div class="mini-stats">
-                <div class="mini-stat">
-                    <span>HP:</span>
-                    <span class="mini-stat-value">180/200</span>
+            <div class="character-wrapper">
+                <div class="character-display">
+                    <svg class="pixel-character" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Cool Pixel Wizard/Knight Character -->
+                        <rect x="13" y="3" width="6" height="2" fill="#fbbf24"/>
+                        <rect x="12" y="5" width="8" height="2" fill="#fbbf24"/>
+                        <rect x="11" y="7" width="10" height="6" fill="#f9a8d4"/>
+                        <rect x="13" y="8" width="2" height="2" fill="#1e293b"/>
+                        <rect x="17" y="8" width="2" height="2" fill="#1e293b"/>
+                        <rect x="15" y="10" width="2" height="1" fill="#dc2626"/>
+                        <rect x="10" y="13" width="12" height="8" fill="#a855f7"/>
+                        <rect x="12" y="14" width="8" height="1" fill="#fbbf24"/>
+                        <rect x="9" y="15" width="14" height="6" fill="#a855f7"/>
+                        <rect x="11" y="21" width="4" height="4" fill="#475569"/>
+                        <rect x="17" y="21" width="4" height="4" fill="#475569"/>
+                        <rect x="10" y="25" width="5" height="3" fill="#1e293b"/>
+                        <rect x="17" y="25" width="5" height="3" fill="#1e293b"/>
+                        <!-- Staff -->
+                        <rect x="6" y="12" width="2" height="12" fill="#92400e"/>
+                        <rect x="5" y="10" width="4" height="3" fill="#3b82f6"/>
+                        <rect x="6" y="11" width="2" height="1" fill="#60a5fa"/>
+                        <!-- Magic effects -->
+                        <rect x="3" y="9" width="2" height="2" fill="#fbbf24" opacity="0.8"/>
+                        <rect x="9" y="8" width="1" height="1" fill="#a855f7" opacity="0.6"/>
+                        <rect x="4" y="12" width="1" height="1" fill="#60a5fa" opacity="0.7"/>
+                    </svg>
+                    <div class="character-name">DEVON THE WISE</div>
                 </div>
-                <div class="mini-stat">
-                    <span>EXP:</span>
-                    <span class="mini-stat-value">8.2k</span>
-                </div>
-                <div class="mini-stat">
-                    <span>Streak:</span>
-                    <span class="mini-stat-value">12 days</span>
+                <div class="stats-panel">
+                    <div>
+                        <div class="level-display">LEVEL 18</div>
+                        <div class="stat-bar">
+                            <div class="stat-label">
+                                <span>HP</span>
+                                <span>180/200</span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-fill hp-bar" style="width: 90%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-bar">
+                        <div class="stat-label">
+                            <span>MANA</span>
+                            <span>145/150</span>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar-fill mana-bar" style="width: 97%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-bar">
+                        <div class="stat-label">
+                            <span>EXP</span>
+                            <span>8,240/10,000</span>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar-fill exp-bar" style="width: 82%"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Quotes Section -->
-        <div class="quotes-section">
-            <div class="quote">
-                <div class="quote-text">"We must all suffer one of two things: the pain of discipline or the pain of regret."</div>
-                <div class="quote-author">— Jim Rohn</div>
+        <!-- Goals Section -->
+        <div class="goals-section">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="title-icon">🎯</div>
+                    Epic Quests
+                </div>
+                <button class="add-goal-btn" onclick="openGoalModal()">
+                    <span>+</span> New Quest
+                </button>
             </div>
-            <div class="quote">
-                <div class="quote-text">"Nothing changes if nothing changes."</div>
-                <div class="quote-author">— Theo Von</div>
-            </div>
-            <div class="quote">
-                <div class="quote-text">"Discipline equals freedom."</div>
-                <div class="quote-author">— Jocko Willink</div>
+
+            <div class="goals-container" id="goalsContainer">
+                <!-- Goals will be rendered here -->
             </div>
         </div>
 
-        <!-- Goals -->
-        <div id="goalsContainer"></div>
+        <!-- Habits are now inside each goal -->
 
-        <button class="add-button" onclick="addGoal()">+ Add New Goal</button>
-
-        <!-- Daily Quest Journal -->
-        <div class="quest-journal">
-            <h2 class="quest-journal-title">Daily Quest Journal</h2>
-            <textarea class="quest-textarea" placeholder="What epic quests did you complete today? What challenges await tomorrow?"></textarea>
-            <button class="complete-day-btn" onclick="completeDay()">Complete Day & Close All Loops</button>
+        <!-- Reflection Section -->
+        <div class="reflection-section">
+            <h2 class="reflection-title">Quest Journal</h2>
+            <textarea class="reflection-textarea" placeholder="What epic battles did you win today? What dragons remain to slay tomorrow?"></textarea>
+            <button class="complete-day-btn" onclick="completeDay()">
+                Complete Quest & Rest at Inn
+            </button>
         </div>
     </div>
 
-    <!-- Add Goal Modal -->
-    <div id="goalModal" class="modal">
-        <div class="modal-content">
-            <h3 class="modal-header">Add New Goal</h3>
-            <div class="form-group">
-                <label class="form-label">Goal Name</label>
-                <input type="text" id="goalName" class="form-input" placeholder="What do you want to achieve?">
+    <!-- Goal Modal -->
+    <div id="goalModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Create New Quest</h3>
             </div>
-            <div class="form-group">
-                <label class="form-label">Category</label>
-                <select id="goalCategory" class="form-select">
-                    <option value="spiritual">Spiritual & Mind</option>
-                    <option value="financial">Financial</option>
-                    <option value="health">Health & Fitness</option>
-                    <option value="community">Community & Relationships</option>
-                    <option value="personal">Personal Development</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Description</label>
-                <input type="text" id="goalDesc" class="form-input" placeholder="Target or description">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Quest Name</label>
+                    <input type="text" class="form-input" id="goalName" placeholder="What epic goal will you achieve?">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Time Period</label>
+                    <select class="form-select" id="goalPeriod">
+                        <option value="yearly">Yearly Quest</option>
+                        <option value="quarterly">Quarterly Quest</option>
+                        <option value="monthly">Monthly Quest</option>
+                        <option value="weekly">Weekly Quest</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <input type="text" class="form-input" id="goalDesc" placeholder="Quest details...">
+                </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-cancel" onclick="closeModal('goalModal')">Cancel</button>
-                <button class="btn btn-save" onclick="saveGoal()">Save Goal</button>
+                <button class="btn btn-secondary" onclick="closeGoalModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveGoal()">Create Quest</button>
             </div>
         </div>
     </div>
 
-    <!-- Add Habit Modal -->
-    <div id="habitModal" class="modal">
-        <div class="modal-content">
-            <h3 class="modal-header">Add New Habit</h3>
-            <input type="hidden" id="habitGoalId">
-            <div class="form-group">
-                <label class="form-label">Habit Name</label>
-                <input type="text" id="habitName" class="form-input" placeholder="What habit will you build?">
+    <!-- Habit Modal -->
+    <div id="habitModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Training</h3>
             </div>
-            <div class="form-group">
-                <label class="form-label">Frequency</label>
-                <select id="habitFrequency" class="form-select">
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                </select>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Training Name</label>
+                    <input type="text" class="form-input" id="habitName" placeholder="What skill will you practice?">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Frequency</label>
+                    <select class="form-select" id="habitFrequency">
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select>
+                </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-cancel" onclick="closeModal('habitModal')">Cancel</button>
-                <button class="btn btn-save" onclick="saveHabit()">Save Habit</button>
+                <button class="btn btn-secondary" onclick="closeHabitModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveHabit()">Add Training</button>
             </div>
         </div>
     </div>
@@ -741,67 +905,45 @@
             goals: [
                 {
                     id: 1,
-                    name: 'SPIRITUALITY & NERVOUS SYSTEM GOAL',
-                    category: 'spiritual',
-                    description: 'Anxiety 80% Reduction',
-                    yearly: 'Master inner peace and reduce anxiety by 80%',
-                    quarterly: 'Implement full morning/afternoon/night routines',
-                    monthly: 'Perfect morning routine and meditation practice',
-                    weekly: 'Complete all routines 6/7 days',
-                    lagIndicators: [
-                        { name: '20min morning walk', value: '85%' },
-                        { name: 'Anxious to Energized 0-5', value: '3.2' },
-                        { name: 'Resilience 0-5', value: '4.1' }
-                    ],
-                    habits: [
-                        { id: 1, name: 'Morning Routine', frequency: 'daily', completed: false, streak: 12, success: 85 },
-                        { id: 2, name: 'Jog (breath, prayer, gratitude)', frequency: 'daily', completed: true, streak: 8, success: 92 },
-                        { id: 3, name: 'Afternoon Routine', frequency: 'daily', completed: false, streak: 5, success: 78, warning: true }
-                    ],
-                    links: {
-                        'Morning': ['Morning Routine Guide', 'Breathwork Tutorial'],
-                        'Afternoon': ['Power Hour Template', 'Focus Music'],
-                        'Night': ['Wind Down Protocol', 'Sleep Optimization']
-                    }
+                    title: 'Master of Business',
+                    category: 'financial',
+                    yearly: '40% Revenue Growth for Naturally Wyld',
+                    quarterly: 'Alberta Expansion - 3 cities',
+                    monthly: 'Launch Multi-Colour Cream',
+                    weekly: 'Create 5 landing pages'
                 },
                 {
                     id: 2,
-                    name: 'BUSINESS GROWTH - NATURALLY WYLD',
-                    category: 'financial',
-                    description: '40% Revenue Growth',
-                    yearly: 'Scale to $X revenue with 40% growth',
-                    quarterly: 'Alberta expansion - 3 new cities',
-                    monthly: 'Launch Multi-Colour Cream product',
-                    weekly: 'Create 5 landing pages for products',
-                    lagIndicators: [
-                        { name: 'Monthly Revenue', value: '$32.5k' },
-                        { name: 'New Customers', value: '145' },
-                        { name: 'Conversion Rate', value: '3.2%' }
-                    ],
-                    habits: [
-                        { id: 4, name: 'Review daily sales', frequency: 'daily', completed: false, streak: 24, success: 96 },
-                        { id: 5, name: 'Customer outreach', frequency: 'daily', completed: false, streak: 15, success: 88 },
-                        { id: 6, name: 'Product development', frequency: 'weekly', completed: false, streak: 4, success: 100 }
-                    ],
-                    links: {
-                        'Marketing': ['Landing Page Templates', 'Meta Ads Guide'],
-                        'Products': ['Multi-Colour Cream', 'Ozonated Oil'],
-                        'Analytics': ['Sales Dashboard', 'Customer Reports']
-                    }
+                    title: 'Inner Peace',
+                    category: 'spiritual',
+                    yearly: 'Reduce anxiety by 80%',
+                    quarterly: 'Master morning/evening routines',
+                    monthly: 'Perfect meditation practice',
+                    weekly: 'Complete routines 6/7 days'
                 }
-            ]
+            ],
+            habits: [
+                { id: 1, goalId: 2, name: 'Morning Routine', frequency: 'daily', completed: false, streak: 12, successRate: 85 },
+                { id: 2, goalId: 2, name: 'Jog & Pray', frequency: 'daily', completed: true, streak: 8, successRate: 92 },
+                { id: 3, goalId: 1, name: 'Review Sales', frequency: 'daily', completed: false, streak: 24, successRate: 96 },
+                { id: 4, goalId: 1, name: 'Product Development', frequency: 'weekly', completed: false, streak: 4, successRate: 100 }
+            ],
+            level: 18,
+            hp: { current: 180, max: 200 },
+            mana: { current: 145, max: 150 },
+            exp: { current: 8240, max: 10000 }
         };
 
         // Initialize
         function init() {
             loadState();
-            updateDate();
             renderGoals();
+            updateStats();
         }
 
-        // Load state
+        // Load state from localStorage
         function loadState() {
-            const saved = localStorage.getItem('executionSystem');
+            const saved = localStorage.getItem('questTracker');
             if (saved) {
                 state = JSON.parse(saved);
             }
@@ -809,269 +951,269 @@
 
         // Save state
         function saveState() {
-            localStorage.setItem('executionSystem', JSON.stringify(state));
-        }
-
-        // Update date
-        function updateDate() {
-            const date = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('currentDate').textContent = date.toLocaleDateString('en-US', options);
+            localStorage.setItem('questTracker', JSON.stringify(state));
         }
 
         // Render goals
         function renderGoals() {
             const container = document.getElementById('goalsContainer');
-            container.innerHTML = state.goals.map(goal => {
-                const categoryColors = {
-                    spiritual: '#a855f7',
-                    financial: '#f59e0b',
-                    health: '#ef4444',
-                    community: '#3b82f6',
-                    personal: '#10b981'
-                };
-
-                let linksHtml = '';
-                if (goal.links && Object.keys(goal.links).length > 0) {
-                    const tabs = Object.keys(goal.links);
-                    linksHtml = `
-                        <div class="links-tabs">
-                            <div class="tabs-header">
-                                ${tabs.map((tab, index) => `
-                                    <button class="tab-button ${index === 0 ? 'active' : ''}" onclick="switchTab(${goal.id}, '${tab}')">${tab}</button>
-                                `).join('')}
-                            </div>
-                            ${tabs.map((tab, index) => `
-                                <div class="tab-content ${index === 0 ? 'active' : ''}" id="tab-${goal.id}-${tab}">
-                                    <div class="link-list">
-                                        ${goal.links[tab].map(link => `
-                                            <a href="#" class="link-item">${link}</a>
-                                        `).join('')}
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-                }
-
-                const goalColor = categoryColors[goal.category];
-                
-                return `
-                    <div class="goal" style="border-left: 4px solid ${goalColor}">
-                        <div class="goal-header">
-                            <button class="edit-button" onclick="editGoal(${goal.id})">Edit</button>
-                            <div class="goal-category" style="color: ${categoryColors[goal.category]}">${goal.category.toUpperCase()}</div>
-                            <h2 class="goal-title">${goal.name}</h2>
-                            <p class="goal-description">${goal.description}</p>
-                        </div>
-                        
-                        <div class="goal-hierarchy">
-                            <h3 class="indicators-title" style="margin-bottom: 0;">GOAL BREAKDOWN</h3>
-                            <div class="hierarchy-grid">
-                                <div class="hierarchy-box" style="border-color: ${goalColor}20;" onclick="editGoalPeriod(${goal.id}, 'yearly')">
-                                    <div class="hierarchy-label" style="color: ${goalColor};">YEARLY</div>
-                                    <div class="hierarchy-content">${goal.yearly || 'Click to set'}</div>
-                                </div>
-                                <div class="hierarchy-box" style="border-color: ${goalColor}20;" onclick="editGoalPeriod(${goal.id}, 'quarterly')">
-                                    <div class="hierarchy-label" style="color: ${goalColor};">QUARTERLY</div>
-                                    <div class="hierarchy-content">${goal.quarterly || 'Click to set'}</div>
-                                </div>
-                                <div class="hierarchy-box" style="border-color: ${goalColor}20;" onclick="editGoalPeriod(${goal.id}, 'monthly')">
-                                    <div class="hierarchy-label" style="color: ${goalColor};">MONTHLY</div>
-                                    <div class="hierarchy-content">${goal.monthly || 'Click to set'}</div>
-                                </div>
-                                <div class="hierarchy-box" style="border-color: ${goalColor}20;" onclick="editGoalPeriod(${goal.id}, 'weekly')">
-                                    <div class="hierarchy-label" style="color: ${goalColor};">WEEKLY</div>
-                                    <div class="hierarchy-content">${goal.weekly || 'Click to set'}</div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="goal-content">
-                            ${goal.lagIndicators ? `
-                                <div class="lag-indicators">
-                                    <div class="indicators-header">
-                                        <h3 class="indicators-title">LAG INDICATORS</h3>
-                                    </div>
-                                    ${goal.lagIndicators.map(indicator => `
-                                        <div class="indicator-item">
-                                            <span class="indicator-name">${indicator.name}</span>
-                                            <span class="indicator-value">${indicator.value}</span>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            ` : ''}
-                            
-                            <div class="habits-section">
-                                <h3 class="indicators-title" style="margin: 1.5rem 0 1rem 0;">DAILY HABITS</h3>
-                                ${goal.habits.map(habit => `
-                                    <div class="habit-item" onclick="toggleHabit(${goal.id}, ${habit.id})">
-                                        <div class="habit-checkbox ${habit.completed ? 'checked' : ''}"></div>
-                                        <div class="habit-info">
-                                            <div class="habit-name">
-                                                ${habit.name}
-                                                ${habit.frequency !== 'daily' ? `<span class="habit-frequency">${habit.frequency}</span>` : ''}
-                                                ${habit.warning ? '<span class="warning-icon">⚠️</span>' : ''}
-                                            </div>
-                                            <div class="habit-stats">
-                                                <div class="stat success">
-                                                    <span class="stat-value">${habit.success}%</span>
-                                                    <span>success</span>
-                                                </div>
-                                                <div class="stat">
-                                                    <span class="stat-value">🔥 ${habit.streak}</span>
-                                                    <span>day streak</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                `).join('')}
-                                <button class="add-button" onclick="addHabit(${goal.id})">+ Add Habit</button>
-                            </div>
-                            
-                            ${linksHtml}
+            container.innerHTML = state.goals.map(goal => `
+                <div class="goal-card ${goal.category}">
+                    <div class="goal-header">
+                        <h3 class="goal-title">${goal.title}</h3>
+                        <div class="goal-actions">
+                            <button class="icon-btn" onclick="editGoal(${goal.id})">✏️</button>
                         </div>
                     </div>
-                `;
-            }).join('');
+                    <div class="goal-hierarchy">
+                        <div class="hierarchy-grid">
+                            <div class="hierarchy-item">
+                                <div class="hierarchy-label">YEARLY</div>
+                                <div class="hierarchy-value">${goal.yearly}</div>
+                            </div>
+                            <div class="hierarchy-item">
+                                <div class="hierarchy-label">QUARTERLY</div>
+                                <div class="hierarchy-value">${goal.quarterly}</div>
+                            </div>
+                            <div class="hierarchy-item">
+                                <div class="hierarchy-label">MONTHLY</div>
+                                <div class="hierarchy-value">${goal.monthly}</div>
+                            </div>
+                            <div class="hierarchy-item">
+                                <div class="hierarchy-label">WEEKLY</div>
+                                <div class="hierarchy-value">${goal.weekly}</div>
+                            </div>
+                        </div>
+                        <h4 style="font-size: 0.875rem; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 1rem;">Daily Training</h4>
+                        <div id="habits-${goal.id}">
+                            ${renderHabitsForGoal(goal.id)}
+                        </div>
+                        <button class="add-habit-btn" onclick="openHabitModal(${goal.id})">
+                            + Add New Training
+                        </button>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        // Toggle habit
-        function toggleHabit(goalId, habitId) {
-            const goal = state.goals.find(g => g.id === goalId);
-            const habit = goal.habits.find(h => h.id === habitId);
-            habit.completed = !habit.completed;
-            saveState();
-            renderGoals();
+        // Render habits for a specific goal
+        function renderHabitsForGoal(goalId) {
+            return state.habits.filter(h => h.goalId === goalId).map(habit => `
+                <div class="habit-item" data-id="${habit.id}">
+                    <div class="habit-checkbox ${habit.completed ? 'checked' : ''}" onclick="toggleHabit(${habit.id})"></div>
+                    <div class="habit-content">
+                        <div class="habit-name">
+                            ${habit.name}
+                            ${habit.frequency !== 'daily' ? `<span class="frequency-badge">${habit.frequency.toUpperCase()}</span>` : ''}
+                        </div>
+                        <div class="habit-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">${habit.successRate}%</span>
+                                <span>Success</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">🔥 ${habit.streak}</span>
+                                <span>Streak</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        // Switch tab
-        function switchTab(goalId, tabName) {
-            const goal = state.goals.find(g => g.id === goalId);
-            const tabs = Object.keys(goal.links);
-            
-            tabs.forEach(tab => {
-                const tabContent = document.getElementById(`tab-${goalId}-${tab}`);
-                const tabButton = document.querySelector(`[onclick="switchTab(${goalId}, '${tab}')"]`);
-                
-                if (tab === tabName) {
-                    tabContent.classList.add('active');
-                    tabButton.classList.add('active');
+        // Render habits
+        function renderHabits() {
+            const grid = document.getElementById('habitGrid');
+            grid.innerHTML = state.habits.filter(h => !h.goalId).map(habit => `
+                <div class="habit-item" data-id="${habit.id}">
+                    <div class="habit-checkbox ${habit.completed ? 'checked' : ''}" onclick="toggleHabit(${habit.id})"></div>
+                    <div class="habit-content">
+                        <div class="habit-name">
+                            ${habit.name}
+                            ${habit.frequency !== 'daily' ? `<span class="frequency-badge">${habit.frequency.toUpperCase()}</span>` : ''}
+                        </div>
+                        <div class="habit-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">${habit.successRate}%</span>
+                                <span>Success</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">🔥 ${habit.streak}</span>
+                                <span>Streak</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="edit-actions">
+                        <button class="edit-btn" onclick="editHabit(${habit.id})">Edit</button>
+                        <button class="edit-btn delete-btn" onclick="deleteHabit(${habit.id})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Toggle habit completion
+        function toggleHabit(id) {
+            const habit = state.habits.find(h => h.id === id);
+            if (habit) {
+                habit.completed = !habit.completed;
+                if (habit.completed) {
+                    // Update stats
+                    state.exp.current += 50;
+                    state.mana.current = Math.min(state.mana.current + 10, state.mana.max);
+                    
+                    // Level up check
+                    if (state.exp.current >= state.exp.max) {
+                        state.level++;
+                        state.exp.current = state.exp.current - state.exp.max;
+                        state.exp.max = state.level * 600;
+                        state.hp.max += 20;
+                        state.hp.current = state.hp.max;
+                        state.mana.max += 10;
+                        state.mana.current = state.mana.max;
+                        alert(`🎉 LEVEL UP! You are now level ${state.level}!`);
+                    }
                 } else {
-                    tabContent.classList.remove('active');
-                    tabButton.classList.remove('active');
+                    // Deduct stats
+                    state.exp.current = Math.max(0, state.exp.current - 50);
+                    state.hp.current = Math.max(1, state.hp.current - 5);
                 }
-            });
+                saveState();
+                renderGoals();
+                updateStats();
+            }
+        }
+
+        // Update character stats display
+        function updateStats() {
+            document.querySelector('.level-display').textContent = `LEVEL ${state.level}`;
+            document.querySelector('.hp-bar').style.width = `${(state.hp.current / state.hp.max) * 100}%`;
+            document.querySelector('.mana-bar').style.width = `${(state.mana.current / state.mana.max) * 100}%`;
+            document.querySelector('.exp-bar').style.width = `${(state.exp.current / state.exp.max) * 100}%`;
+            
+            // Update stat labels
+            document.querySelectorAll('.stat-label span:last-child')[0].textContent = `${state.hp.current}/${state.hp.max}`;
+            document.querySelectorAll('.stat-label span:last-child')[1].textContent = `${state.mana.current}/${state.mana.max}`;
+            document.querySelectorAll('.stat-label span:last-child')[2].textContent = `${state.exp.current}/${state.exp.max}`;
         }
 
         // Modal functions
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
+        function openGoalModal() {
+            document.getElementById('goalModal').classList.add('active');
         }
 
-        function addGoal() {
-            document.getElementById('goalModal').classList.add('active');
+        function closeGoalModal() {
+            document.getElementById('goalModal').classList.remove('active');
+        }
+
+        function openHabitModal(goalId) {
+            document.getElementById('habitModal').classList.add('active');
+            document.getElementById('habitModal').dataset.goalId = goalId;
+        }
+
+        function closeHabitModal() {
+            document.getElementById('habitModal').classList.remove('active');
         }
 
         function saveGoal() {
             const name = document.getElementById('goalName').value;
-            const category = document.getElementById('goalCategory').value;
-            const description = document.getElementById('goalDesc').value;
+            const period = document.getElementById('goalPeriod').value;
+            const desc = document.getElementById('goalDesc').value;
             
-            if (name && description) {
+            if (name) {
                 const newGoal = {
                     id: Date.now(),
-                    name: name,
-                    category: category,
-                    description: description,
-                    yearly: 'Define yearly target',
+                    title: name,
+                    category: 'personal', // default
+                    yearly: desc || 'Define yearly goal',
                     quarterly: 'Define quarterly milestone',
-                    monthly: 'Define monthly goal',
-                    weekly: 'Define weekly target',
-                    habits: [],
-                    links: {}
+                    monthly: 'Define monthly target',
+                    weekly: 'Define weekly goal'
                 };
                 state.goals.push(newGoal);
                 saveState();
                 renderGoals();
-                closeModal('goalModal');
-                document.getElementById('goalName').value = '';
-                document.getElementById('goalDesc').value = '';
+                closeGoalModal();
+            }
+        }
+
+        function saveHabit() {
+            const name = document.getElementById('habitName').value;
+            const frequency = document.getElementById('habitFrequency').value;
+            
+            if (name) {
+                const goalId = parseInt(document.getElementById('habitModal').dataset.goalId);
+                const newHabit = {
+                    id: Date.now(),
+                    goalId: goalId,
+                    name: name,
+                    frequency: frequency,
+                    completed: false,
+                    streak: 0,
+                    successRate: 0
+                };
+                state.habits.push(newHabit);
+                saveState();
+                renderGoals();
+                closeHabitModal();
             }
         }
 
         function editGoal(id) {
             const goal = state.goals.find(g => g.id === id);
-            const newName = prompt('Goal name:', goal.name);
-            if (newName) {
-                goal.name = newName;
-                const newDesc = prompt('Description:', goal.description);
-                if (newDesc) {
-                    goal.description = newDesc;
+            if (goal) {
+                const newTitle = prompt('Goal title:', goal.title);
+                if (newTitle) {
+                    goal.title = newTitle;
                     saveState();
                     renderGoals();
                 }
             }
         }
 
-        function addHabit(goalId) {
-            document.getElementById('habitGoalId').value = goalId;
-            document.getElementById('habitModal').classList.add('active');
+        function editHabit(id) {
+            const habit = state.habits.find(h => h.id === id);
+            if (habit) {
+                const newName = prompt('Training name:', habit.name);
+                if (newName) {
+                    habit.name = newName;
+                    saveState();
+                    renderGoals();
+                }
+            }
         }
 
-        function saveHabit() {
-            const goalId = parseInt(document.getElementById('habitGoalId').value);
-            const name = document.getElementById('habitName').value;
-            const frequency = document.getElementById('habitFrequency').value;
-            
-            if (name) {
-                const goal = state.goals.find(g => g.id === goalId);
-                const newHabit = {
-                    id: Date.now(),
-                    name: name,
-                    frequency: frequency,
-                    completed: false,
-                    streak: 0,
-                    success: 0
-                };
-                goal.habits.push(newHabit);
+        function deleteHabit(id) {
+            if (confirm('Remove this training from your regimen?')) {
+                state.habits = state.habits.filter(h => h.id !== id);
                 saveState();
                 renderGoals();
-                closeModal('habitModal');
-                document.getElementById('habitName').value = '';
             }
         }
 
-        function editGoalPeriod(goalId, period) {
-            const goal = state.goals.find(g => g.id === goalId);
-            if (goal) {
-                const currentValue = goal[period] || '';
-                const newValue = prompt(`Set ${period} goal:`, currentValue);
-                if (newValue !== null) {
-                    goal[period] = newValue;
-                    saveState();
-                    renderGoals();
-                }
-            }
+        function addSubGoal(period) {
+            alert(`Sub-goals for ${period} quests coming soon!`);
         }
 
         function completeDay() {
-            const textarea = document.querySelector('.quest-textarea');
+            const textarea = document.querySelector('.reflection-textarea');
             if (textarea.value) {
-                alert('Day complete! All loops closed. Rest well and come back stronger tomorrow.');
+                alert('🌙 Quest journal saved! Rest well, brave warrior. Tomorrow brings new adventures!');
+                textarea.value = '';
                 
-                // Reset all habits for the new day
-                state.goals.forEach(goal => {
-                    goal.habits.forEach(habit => {
-                        if (habit.frequency === 'daily') {
-                            habit.completed = false;
-                        }
-                    });
+                // Reset daily habits
+                state.habits.forEach(habit => {
+                    if (habit.frequency === 'daily') {
+                        habit.completed = false;
+                    }
                 });
+                
+                // Restore some HP/Mana for the new day
+                state.hp.current = Math.min(state.hp.max, state.hp.current + 20);
+                state.mana.current = state.mana.max;
                 
                 saveState();
                 renderGoals();
-                textarea.value = '';
+                updateStats();
             }
         }
 
