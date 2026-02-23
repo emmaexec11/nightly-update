@@ -570,6 +570,26 @@
             background: var(--hp);
         }
 
+        .edit-icon-btn {
+            padding: 0.375rem 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .edit-icon-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border-color: var(--border-hover);
+        }
+
         /* Daily Reflection */
         .reflection-section {
             background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
@@ -764,6 +784,48 @@
         .btn:hover {
             transform: translateY(-2px);
         }
+
+        /* Nice modal styling */
+        .modal {
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: scale(0.95) translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Color picker */
+        .color-picker {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .color-option {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.5rem;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.selected {
+            border-color: white;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -922,6 +984,67 @@
         </div>
     </div>
 
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="editModalTitle">Edit</h3>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" id="editModalLabel">Value</label>
+                    <input type="text" class="form-input" id="editModalInput" placeholder="Enter value...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveEditModal()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Goal Settings Modal -->
+    <div id="goalSettingsModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Goal Settings</h3>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Goal Title</label>
+                    <input type="text" class="form-input" id="settingsTitle" placeholder="Goal title...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" id="settingsCategory">
+                        <option value="spiritual">Spiritual & Mind</option>
+                        <option value="financial">Financial & Wealth</option>
+                        <option value="health">Health & Fitness</option>
+                        <option value="community">Community & Relationships</option>
+                        <option value="personal">Personal Development</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Color Theme</label>
+                    <div class="color-picker">
+                        <button class="color-option" style="background: #a855f7;" data-color="#a855f7"></button>
+                        <button class="color-option" style="background: #f59e0b;" data-color="#f59e0b"></button>
+                        <button class="color-option" style="background: #ef4444;" data-color="#ef4444"></button>
+                        <button class="color-option" style="background: #3b82f6;" data-color="#3b82f6"></button>
+                        <button class="color-option" style="background: #10b981;" data-color="#10b981"></button>
+                        <button class="color-option" style="background: #ec4899;" data-color="#ec4899"></button>
+                        <button class="color-option" style="background: #8b5cf6;" data-color="#8b5cf6"></button>
+                        <button class="color-option" style="background: #14b8a6;" data-color="#14b8a6"></button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeGoalSettings()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveGoalSettings()">Save</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // State
         let state = {
@@ -989,6 +1112,21 @@
             loadState();
             renderGoals();
             updateStats();
+            
+            // Color picker functionality
+            document.querySelectorAll('.color-option').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.color-option').forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+
+            // Enter key support for edit modal
+            document.getElementById('editModalInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    saveEditModal();
+                }
+            });
         }
 
         // Load state from localStorage
@@ -1013,31 +1151,33 @@
         // Render goals
         function renderGoals() {
             const container = document.getElementById('goalsContainer');
-            container.innerHTML = state.goals.map(goal => `
-                <div class="goal-card ${goal.category}">
+            container.innerHTML = state.goals.map(goal => {
+                const goalColor = goal.color || getCategoryColor(goal.category);
+                return `
+                <div class="goal-card ${goal.category}" style="border-left-color: ${goalColor};">
                     <div class="goal-header">
                         <h3 class="goal-title">${goal.title}</h3>
                         <div class="goal-actions">
-                            <button class="icon-btn" onclick="editGoal(${goal.id})" title="Edit title">✏️</button>
+                            <button class="icon-btn" onclick="editGoal(${goal.id})" title="Edit settings">⚙️</button>
                             <button class="icon-btn" onclick="deleteGoal(${goal.id})" title="Delete goal" style="color: var(--danger);">🗑️</button>
                         </div>
                     </div>
                     <div class="goal-hierarchy">
                         <div class="hierarchy-grid">
-                            <div class="hierarchy-item" onclick="editGoalPeriod(${goal.id}, 'yearly')" style="cursor: pointer;">
-                                <div class="hierarchy-label">YEARLY</div>
+                            <div class="hierarchy-item" onclick="editGoalPeriod(${goal.id}, 'yearly')" style="cursor: pointer; border-color: ${goalColor}20;">
+                                <div class="hierarchy-label" style="color: ${goalColor};">YEARLY</div>
                                 <div class="hierarchy-value">${goal.yearly}</div>
                             </div>
-                            <div class="hierarchy-item" onclick="editGoalPeriod(${goal.id}, 'quarterly')" style="cursor: pointer;">
-                                <div class="hierarchy-label">QUARTERLY</div>
+                            <div class="hierarchy-item" onclick="editGoalPeriod(${goal.id}, 'quarterly')" style="cursor: pointer; border-color: ${goalColor}20;">
+                                <div class="hierarchy-label" style="color: ${goalColor};">QUARTERLY</div>
                                 <div class="hierarchy-value">${goal.quarterly}</div>
                             </div>
-                            <div class="hierarchy-item" onclick="editGoalPeriod(${goal.id}, 'monthly')" style="cursor: pointer;">
-                                <div class="hierarchy-label">MONTHLY</div>
+                            <div class="hierarchy-item" onclick="editGoalPeriod(${goal.id}, 'monthly')" style="cursor: pointer; border-color: ${goalColor}20;">
+                                <div class="hierarchy-label" style="color: ${goalColor};">MONTHLY</div>
                                 <div class="hierarchy-value">${goal.monthly}</div>
                             </div>
-                            <div class="hierarchy-item" onclick="editGoalPeriod(${goal.id}, 'weekly')" style="cursor: pointer;">
-                                <div class="hierarchy-label">WEEKLY</div>
+                            <div class="hierarchy-item" onclick="editGoalPeriod(${goal.id}, 'weekly')" style="cursor: pointer; border-color: ${goalColor}20;">
+                                <div class="hierarchy-label" style="color: ${goalColor};">WEEKLY</div>
                                 <div class="hierarchy-value">${goal.weekly}</div>
                             </div>
                         </div>
@@ -1071,6 +1211,12 @@
                             <div class="stat-item">
                                 <span class="stat-value">🔥 ${habit.streak}</span>
                                 <span>Streak</span>
+                                    <div class="edit-actions">
+                                        <button class="edit-icon-btn" onclick="editHabit(${habit.id})">
+                                            <span>✏️</span> Edit
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1218,29 +1364,108 @@
             }
         }
 
+        // Edit modal variables
+        let editModalCallback = null;
+
+        function openEditModal(title, label, currentValue, callback) {
+            document.getElementById('editModalTitle').textContent = title;
+            document.getElementById('editModalLabel').textContent = label;
+            document.getElementById('editModalInput').value = currentValue;
+            document.getElementById('editModal').classList.add('active');
+            editModalCallback = callback;
+            // Focus input
+            setTimeout(() => {
+                document.getElementById('editModalInput').focus();
+            }, 100);
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('active');
+            editModalCallback = null;
+        }
+
+        function saveEditModal() {
+            const value = document.getElementById('editModalInput').value;
+            if (editModalCallback && value) {
+                editModalCallback(value);
+            }
+            closeEditModal();
+        }
+
+        // Goal settings variables
+        let currentEditGoalId = null;
+
         function editGoal(id) {
             const goal = state.goals.find(g => g.id === id);
             if (goal) {
-                const newTitle = prompt('Goal title:', goal.title);
-                if (newTitle) {
-                    goal.title = newTitle;
-                    saveState();
-                    renderGoals();
-                }
+                currentEditGoalId = id;
+                document.getElementById('settingsTitle').value = goal.title;
+                document.getElementById('settingsCategory').value = goal.category;
+                
+                // Set selected color
+                document.querySelectorAll('.color-option').forEach(btn => {
+                    btn.classList.remove('selected');
+                    if (btn.dataset.color === (goal.color || getCategoryColor(goal.category))) {
+                        btn.classList.add('selected');
+                    }
+                });
+                
+                document.getElementById('goalSettingsModal').classList.add('active');
             }
+        }
+
+        function closeGoalSettings() {
+            document.getElementById('goalSettingsModal').classList.remove('active');
+            currentEditGoalId = null;
+        }
+
+        function saveGoalSettings() {
+            const goal = state.goals.find(g => g.id === currentEditGoalId);
+            if (goal) {
+                goal.title = document.getElementById('settingsTitle').value;
+                goal.category = document.getElementById('settingsCategory').value;
+                const selectedColor = document.querySelector('.color-option.selected');
+                if (selectedColor) {
+                    goal.color = selectedColor.dataset.color;
+                }
+                saveState();
+                renderGoals();
+            }
+            closeGoalSettings();
         }
 
         function editGoalPeriod(id, period) {
             const goal = state.goals.find(g => g.id === id);
             if (goal) {
-                const currentValue = goal[period];
-                const newValue = prompt(`Edit ${period} goal:`, currentValue);
-                if (newValue !== null && newValue !== '') {
-                    goal[period] = newValue;
-                    saveState();
-                    renderGoals();
-                }
+                const periodNames = {
+                    yearly: 'Yearly Goal',
+                    quarterly: 'Quarterly Milestone',
+                    monthly: 'Monthly Target',
+                    weekly: 'Weekly Goal'
+                };
+                
+                openEditModal(
+                    `Edit ${periodNames[period]}`,
+                    `${goal.title} - ${periodNames[period]}`,
+                    goal[period],
+                    (value) => {
+                        goal[period] = value;
+                        saveState();
+                        renderGoals();
+                    }
+                );
             }
+        }
+
+        function getCategoryColor(category) {
+            const colors = {
+                spiritual: '#a855f7',
+                financial: '#f59e0b',
+                health: '#ef4444',
+                community: '#3b82f6',
+                personal: '#10b981'
+            };
+            return colors[category] || '#a855f7';
         }
 
         function deleteGoal(id) {
@@ -1255,12 +1480,16 @@
         function editHabit(id) {
             const habit = state.habits.find(h => h.id === id);
             if (habit) {
-                const newName = prompt('Training name:', habit.name);
-                if (newName) {
-                    habit.name = newName;
-                    saveState();
-                    renderGoals();
-                }
+                openEditModal(
+                    'Edit Training',
+                    'Training Name',
+                    habit.name,
+                    (value) => {
+                        habit.name = value;
+                        saveState();
+                        renderGoals();
+                    }
+                );
             }
         }
 
