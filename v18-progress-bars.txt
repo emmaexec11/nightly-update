@@ -1,0 +1,37 @@
+Version 1.8 - Dual Progress Bar System
+======================================
+Time: Monday Feb 24, 2026 at 12:13 PM PST
+
+NEW GAMING FEATURES:
+
+1. GOAL PROGRESS BARS
+   - Shows overall goal completion
+   - Averages all habit progress percentages
+   - Video game style with shimmer animation
+   - Green when 80%+ (on track)
+   - Red when below 80% (needs work)
+
+2. INDIVIDUAL HABIT PROGRESS BARS
+   - Each habit tracks its own completion rate
+   - Based on history of completed days
+   - Smaller bars under each habit name
+   - Same color coding (80% threshold)
+
+3. AUTOMATIC TRACKING
+   - History tracked when you check/uncheck habits
+   - Progress updates in real-time
+   - Persists across sessions
+
+VISUAL FEATURES:
+- Gradient progress bars
+- Animated shimmer effect
+- Bold percentage text with shadow
+- Smooth transitions
+
+EXAMPLE:
+Goal Progress: [====75%====] (average of all habits)
+  ├─ Review Charts [====85%====]
+  ├─ Test Strategies [====65%====]
+  └─ Update Portfolio [====75%====]
+
+If you see this, v1.8 is deployed!
