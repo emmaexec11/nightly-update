@@ -365,6 +365,19 @@
                 transparent 100%);
             animation: shimmer 2s infinite;
         }
+        
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 4px,
+                rgba(0, 0, 0, 0.1) 4px,
+                rgba(0, 0, 0, 0.1) 8px
+            );
+        }
 
         @keyframes shimmer {
             100% { left: 100%; }
@@ -376,10 +389,15 @@
             left: 50%;
             transform: translate(-50%, -50%);
             color: white;
-            font-weight: 700;
+            font-weight: 900;
             font-size: 0.875rem;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            text-shadow: 
+                0 0 3px rgba(0, 0, 0, 0.8),
+                0 0 6px rgba(0, 255, 0, 0.5),
+                0 1px 2px rgba(0, 0, 0, 1);
             z-index: 1;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.05em;
         }
 
         .habit-progress {
@@ -1231,9 +1249,11 @@
                             if (!goal.habits) {
                                 goal.habits = [];
                             }
-                            // Ensure habits have history arrays
+                            // Ensure habits have history arrays and frequency/notes
                             goal.habits.forEach(habit => {
                                 initializeHabitHistory(habit);
+                                if (!habit.frequency) habit.frequency = 'daily';
+                                if (habit.notes === undefined) habit.notes = '';
                             });
                             // Remove old lead/lag indicators if they exist
                             delete goal.leadIndicator;
@@ -1545,6 +1565,8 @@
                         id: Date.now().toString(),
                         name: habitName,
                         completed: false,
+                        frequency: 'daily',
+                        notes: '',
                         history: [{
                             date: new Date().toISOString().split('T')[0],
                             completed: false
