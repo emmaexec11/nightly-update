@@ -225,6 +225,54 @@
             margin-bottom: 0.5rem;
         }
 
+        .links-section {
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .links-section h4 {
+            color: #999;
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .add-link-btn {
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            background: rgba(139, 92, 246, 0.2);
+            border: 1px solid rgba(139, 92, 246, 0.5);
+            color: #a855f7;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+
+        .link-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .link-item a {
+            color: #60a5fa;
+            text-decoration: none;
+            flex: 1;
+        }
+
+        .link-item a:hover {
+            text-decoration: underline;
+        }
+
         .habits-section {
             margin-top: 1.5rem;
         }
@@ -586,10 +634,11 @@
             }
             
             container.innerHTML = state.goals.map(goal => `
-                <div class="goal-card ${goal.category}">
+                <div class="goal-card ${goal.category}" style="border-left-color: ${goal.color || getCategoryColor(goal.category)}">
                     <div class="goal-header">
-                        <h3 class="goal-title" style="color: ${getCategoryColor(goal.category)}">${goal.name}</h3>
+                        <h3 class="goal-title" style="color: ${goal.color || getCategoryColor(goal.category)}">${goal.name}</h3>
                         <div class="goal-actions">
+                            <button class="icon-btn" onclick="changeGoalColor('${goal.id}')" title="Change color">🎨</button>
                             <button class="icon-btn" onclick="deleteGoal('${goal.id}')">🗑️</button>
                         </div>
                     </div>
@@ -632,6 +681,16 @@
                             </div>
                         </div>
                         
+                        <div class="links-section">
+                            <div class="section-header">
+                                <h4>Quick Links</h4>
+                                <button class="add-link-btn" onclick="addLink('${goal.id}')">+ Add Link</button>
+                            </div>
+                            <div class="links-container">
+                                ${renderLinks(goal.id)}
+                            </div>
+                        </div>
+                        
                         <div class="habits-section">
                             <div class="habits-header">
                                 <h4>Daily Habits</h4>
@@ -640,6 +699,22 @@
                             ${renderHabits(goal.id)}
                         </div>
                     </div>
+                </div>
+            `).join('');
+        }
+
+        // Render links for a goal
+        function renderLinks(goalId) {
+            const goal = state.goals.find(g => g.id === goalId);
+            if (!goal || !goal.links || goal.links.length === 0) {
+                return '<div style="color: #666; font-size: 0.875rem;">No links yet</div>';
+            }
+            
+            return goal.links.map(link => `
+                <div class="link-item">
+                    <a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.name}</a>
+                    <button class="icon-btn" style="color: #ef4444;" 
+                        onclick="deleteLink('${goalId}', '${link.id}')">×</button>
                 </div>
             `).join('');
         }
@@ -689,7 +764,8 @@
                 quarterly: '',
                 monthly: '',
                 weekly: '',
-                habits: []
+                habits: [],
+                links: []
             };
             
             state.goals.push(newGoal);
@@ -804,6 +880,51 @@
                 goal.habits = goal.habits.filter(h => h.id !== habitId);
                 saveState();
                 renderAll();
+            }
+        }
+
+        // Add link to goal
+        function addLink(goalId) {
+            const goal = state.goals.find(g => g.id === goalId);
+            if (goal) {
+                const linkName = prompt('Link name (e.g., Notion Dashboard):');
+                const linkUrl = prompt('Link URL:');
+                if (linkName && linkUrl) {
+                    if (!goal.links) goal.links = [];
+                    goal.links.push({
+                        id: Date.now().toString(),
+                        name: linkName,
+                        url: linkUrl.startsWith('http') ? linkUrl : 'https://' + linkUrl
+                    });
+                    saveState();
+                    renderAll();
+                }
+            }
+        }
+
+        // Delete link from goal
+        function deleteLink(goalId, linkId) {
+            const goal = state.goals.find(g => g.id === goalId);
+            if (goal && goal.links) {
+                goal.links = goal.links.filter(l => l.id !== linkId);
+                saveState();
+                renderAll();
+            }
+        }
+
+        // Change goal color
+        function changeGoalColor(goalId) {
+            const goal = state.goals.find(g => g.id === goalId);
+            if (goal) {
+                const colors = ['#a855f7', '#f59e0b', '#ef4444', '#3b82f6', '#10b981', '#ec4899', '#8b5cf6', '#14b8a6'];
+                const colorNames = ['Purple', 'Orange', 'Red', 'Blue', 'Green', 'Pink', 'Violet', 'Teal'];
+                const colorChoice = prompt('Choose a color:\n' + colorNames.map((name, i) => `${i+1}. ${name}`).join('\n'));
+                const index = parseInt(colorChoice) - 1;
+                if (index >= 0 && index < colors.length) {
+                    goal.color = colors[index];
+                    saveState();
+                    renderAll();
+                }
             }
         }
 
