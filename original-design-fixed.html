@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quest Tracker - Original Design (Fixed)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Character Section */
+        .character-section {
+            background: #1a1a1a;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .character-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .pixel-character {
+            width: 64px;
+            height: 64px;
+            image-rendering: pixelated;
+            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPCEtLSBIYXQgLS0+CiAgPHJlY3QgeD0iNSIgeT0iMSIgd2lkdGg9IjYiIGhlaWdodD0iMSIgZmlsbD0iIzhhNWNmNiIvPgogIDxyZWN0IHg9IjQiIHk9IjIiIHdpZHRoPSI4IiBoZWlnaHQ9IjIiIGZpbGw9IiM4YTVjZjYiLz4KICA8IS0tIEhlYWQgLS0+CiAgPHJlY3QgeD0iNiIgeT0iNCIgd2lkdGg9IjQiIGhlaWdodD0iNCIgZmlsbD0iI2ZkYmNiNCIvPgogIDwhLS0gRXllcyAtLT4KICA8cmVjdCB4PSI3IiB5PSI1IiB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSIjMDAwIi8+CiAgPHJlY3QgeD0iOSIgeT0iNSIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0iIzAwMCIvPgogIDwhLS0gQmVhcmQgLS0+CiAgPHJlY3QgeD0iNiIgeT0iOCIgd2lkdGg9IjQiIGhlaWdodD0iMiIgZmlsbD0iI2FhYSIvPgogIDwhLS0gUm9iZSAtLT4KICA8cmVjdCB4PSI0IiB5PSIxMCIgd2lkdGg9IjgiIGhlaWdodD0iNCIgZmlsbD0iIzhhNWNmNiIvPgogIDxyZWN0IHg9IjUiIHk9IjE0IiB3aWR0aD0iNiIgaGVpZ2h0PSIxIiBmaWxsPSIjOGE1Y2Y2Ii8+Cjwvc3ZnPg==') no-repeat center;
+            background-size: contain;
+        }
+
+        .character-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #fbbf24;
+        }
+
+        .stats-panel {
+            flex: 1;
+            padding: 0 2rem;
+        }
+
+        .level-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fbbf24;
+            margin-bottom: 1rem;
+        }
+
+        .stat-bar {
+            margin-bottom: 0.75rem;
+        }
+
+        .stat-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+            color: #999;
+        }
+
+        .bar-wrapper {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .hp-bar { background: #ef4444; width: 100%; height: 100%; }
+        .mana-bar { background: #3b82f6; width: 100%; height: 100%; }
+        .exp-bar { background: #fbbf24; width: 100%; height: 100%; }
+
+        /* Goals Section */
+        .goals-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #a855f7;
+        }
+
+        .add-goal-btn {
+            background: #a855f7;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .add-goal-btn:hover {
+            background: #9333ea;
+        }
+
+        .goal-card {
+            background: #1a1a1a;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .goal-card.spiritual { border-left: 4px solid #a855f7; }
+        .goal-card.financial { border-left: 4px solid #f59e0b; }
+        .goal-card.health { border-left: 4px solid #ef4444; }
+        .goal-card.community { border-left: 4px solid #3b82f6; }
+        .goal-card.personal { border-left: 4px solid #10b981; }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .goal-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .goal-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .icon-btn:hover {
+            opacity: 1;
+        }
+
+        .goal-content {
+            padding: 1.5rem;
+        }
+
+        .indicators-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .indicator-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .hierarchy-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .hierarchy-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .hierarchy-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .hierarchy-label {
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #999;
+            margin-bottom: 0.5rem;
+        }
+
+        .habits-section {
+            margin-top: 1.5rem;
+        }
+
+        .habits-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .habit-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .habit-checkbox {
+            width: 2rem;
+            height: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0.25rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .habit-checkbox.checked {
+            background: #10b981;
+            border-color: #10b981;
+        }
+
+        .habit-checkbox.checked::after {
+            content: '✓';
+            color: white;
+        }
+
+        .add-habit-btn {
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            background: rgba(139, 92, 246, 0.2);
+            border: 1px solid rgba(139, 92, 246, 0.5);
+            color: #a855f7;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+
+        /* Quest Journal */
+        .quest-journal {
+            background: #1a1a1a;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .quest-journal h2 {
+            color: #a855f7;
+            margin-bottom: 1rem;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .complete-btn {
+            margin-top: 1rem;
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            font-size: 1.125rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .complete-btn:hover {
+            background: #059669;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+
+        select option {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .btn-primary {
+            background: #a855f7;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .btn-primary:hover {
+            background: #9333ea;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .version {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            color: #666;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Character Section -->
+        <div class="character-section">
+            <div class="character-wrapper">
+                <div class="pixel-character"></div>
+                <div class="character-name">DEVON THE WISE</div>
+            </div>
+            <div class="stats-panel">
+                <div class="level-display" id="levelDisplay">LEVEL 0</div>
+                <div class="stat-bar">
+                    <div class="stat-label">
+                        <span>HP</span>
+                        <span id="hpLabel">100/100</span>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="hp-bar" id="hpBar"></div>
+                    </div>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-label">
+                        <span>MANA</span>
+                        <span id="manaLabel">50/50</span>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="mana-bar" id="manaBar"></div>
+                    </div>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-label">
+                        <span>EXP</span>
+                        <span id="expLabel">0/100</span>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="exp-bar" id="expBar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Goals Section -->
+        <div class="goals-header">
+            <h1 class="section-title">Epic Goals</h1>
+            <button class="add-goal-btn" onclick="openGoalModal()">
+                <span>✨</span> New Goal
+            </button>
+        </div>
+
+        <div id="goalsContainer"></div>
+
+        <!-- Quest Journal -->
+        <div class="quest-journal">
+            <h2>Quest Journal</h2>
+            <textarea id="questJournal" placeholder="What epic battles did you win today? What dragons remain to slay tomorrow?"></textarea>
+            <button class="complete-btn" onclick="completeQuest()">
+                Complete Quest & Rest at Inn
+            </button>
+        </div>
+    </div>
+
+    <!-- Add Goal Modal -->
+    <div id="goalModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Create New Goal</h3>
+                <button class="close-btn" onclick="closeGoalModal()">×</button>
+            </div>
+            <div class="form-group">
+                <label>Goal Name</label>
+                <input type="text" id="goalName" placeholder="e.g., Build AI Trading System">
+            </div>
+            <div class="form-group">
+                <label>Category</label>
+                <select id="goalCategory">
+                    <option value="spiritual">Spirituality & Nervous System</option>
+                    <option value="financial">Financial & Wealth</option>
+                    <option value="health">Health & Fitness</option>
+                    <option value="community">Community & Relationships</option>
+                    <option value="personal">Personal Development</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Yearly Goal</label>
+                <input type="text" id="goalYearly" placeholder="e.g., 40% revenue growth">
+            </div>
+            <button class="btn-primary" onclick="saveGoal()">Create Goal</button>
+        </div>
+    </div>
+
+    <div class="version">Original Design - FIXED - Shows Sample Goal</div>
+
+    <script>
+        // State management
+        let state = {
+            level: 0,
+            hp: { current: 100, max: 100 },
+            mana: { current: 50, max: 50 },
+            exp: { current: 0, max: 100 },
+            goals: [],
+            journal: ''
+        };
+
+        // Initialize
+        function init() {
+            loadState();
+            renderAll();
+        }
+
+        // Load state from localStorage
+        function loadState() {
+            const saved = localStorage.getItem('questTracker');
+            if (saved) {
+                try {
+                    state = JSON.parse(saved);
+                } catch (e) {
+                    console.error('Failed to load state:', e);
+                }
+            }
+        }
+
+        // Save state to localStorage
+        function saveState() {
+            localStorage.setItem('questTracker', JSON.stringify(state));
+        }
+
+        // Render everything
+        function renderAll() {
+            renderStats();
+            renderGoals();
+            document.getElementById('questJournal').value = state.journal || '';
+        }
+
+        // Render character stats
+        function renderStats() {
+            document.getElementById('levelDisplay').textContent = `LEVEL ${state.level}`;
+            document.getElementById('hpLabel').textContent = `${state.hp.current}/${state.hp.max}`;
+            document.getElementById('manaLabel').textContent = `${state.mana.current}/${state.mana.max}`;
+            document.getElementById('expLabel').textContent = `${state.exp.current}/${state.exp.max}`;
+            
+            document.getElementById('hpBar').style.width = `${(state.hp.current / state.hp.max) * 100}%`;
+            document.getElementById('manaBar').style.width = `${(state.mana.current / state.mana.max) * 100}%`;
+            document.getElementById('expBar').style.width = `${(state.exp.current / state.exp.max) * 100}%`;
+        }
+
+        // Render goals
+        function renderGoals() {
+            const container = document.getElementById('goalsContainer');
+            
+            if (state.goals.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>No goals yet! Click "New Goal" to begin your quest.</p></div>';
+                return;
+            }
+            
+            container.innerHTML = state.goals.map(goal => `
+                <div class="goal-card ${goal.category}">
+                    <div class="goal-header">
+                        <h3 class="goal-title">${goal.name}</h3>
+                        <div class="goal-actions">
+                            <button class="icon-btn" onclick="deleteGoal('${goal.id}')">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="goal-content">
+                        <div class="indicators-section">
+                            <div><strong>Yearly Goal:</strong> ${goal.yearly}</div>
+                            <div class="indicator-row">
+                                <div>
+                                    <label>Lead Indicator (Actions)</label>
+                                    <input type="text" value="${goal.leadIndicator || ''}" 
+                                        onchange="updateGoal('${goal.id}', 'leadIndicator', this.value)"
+                                        placeholder="Actions I control">
+                                </div>
+                                <div>
+                                    <label>Lag Indicator (Results)</label>
+                                    <input type="text" value="${goal.lagIndicator || ''}" 
+                                        onchange="updateGoal('${goal.id}', 'lagIndicator', this.value)"
+                                        placeholder="Results I measure">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="hierarchy-grid">
+                            <div class="hierarchy-item" onclick="editPeriod('${goal.id}', 'quarterly')">
+                                <div class="hierarchy-label">QUARTERLY</div>
+                                <div>${goal.quarterly || 'Click to set'}</div>
+                            </div>
+                            <div class="hierarchy-item" onclick="editPeriod('${goal.id}', 'monthly')">
+                                <div class="hierarchy-label">MONTHLY</div>
+                                <div>${goal.monthly || 'Click to set'}</div>
+                            </div>
+                            <div class="hierarchy-item" onclick="editPeriod('${goal.id}', 'weekly')">
+                                <div class="hierarchy-label">WEEKLY</div>
+                                <div>${goal.weekly || 'Click to set'}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="habits-section">
+                            <div class="habits-header">
+                                <h4>Daily Habits</h4>
+                                <button class="add-habit-btn" onclick="addHabit('${goal.id}')">+ Add Habit</button>
+                            </div>
+                            ${renderHabits(goal.id)}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render habits for a goal
+        function renderHabits(goalId) {
+            const goal = state.goals.find(g => g.id === goalId);
+            if (!goal.habits || goal.habits.length === 0) {
+                return '<div style="color: #666; font-size: 0.875rem;">No habits yet</div>';
+            }
+            
+            return goal.habits.map(habit => `
+                <div class="habit-item">
+                    <div class="habit-checkbox ${habit.completed ? 'checked' : ''}" 
+                        onclick="toggleHabit('${goalId}', '${habit.id}')"></div>
+                    <div style="flex: 1;">${habit.name}</div>
+                    <button class="icon-btn" style="color: #ef4444;" 
+                        onclick="deleteHabit('${goalId}', '${habit.id}')">×</button>
+                </div>
+            `).join('');
+        }
+
+        // Modal functions
+        function openGoalModal() {
+            document.getElementById('goalModal').classList.add('active');
+            document.getElementById('goalName').focus();
+        }
+
+        function closeGoalModal() {
+            document.getElementById('goalModal').classList.remove('active');
+            document.getElementById('goalName').value = '';
+            document.getElementById('goalYearly').value = '';
+        }
+
+        // Save new goal
+        function saveGoal() {
+            const name = document.getElementById('goalName').value;
+            const category = document.getElementById('goalCategory').value;
+            const yearly = document.getElementById('goalYearly').value;
+            
+            if (!name) return;
+            
+            const newGoal = {
+                id: Date.now().toString(),
+                name: name,
+                category: category,
+                yearly: yearly || 'Define your yearly goal',
+                leadIndicator: '',
+                lagIndicator: '',
+                quarterly: '',
+                monthly: '',
+                weekly: '',
+                habits: []
+            };
+            
+            state.goals.push(newGoal);
+            
+            // Level up!
+            state.level++;
+            state.hp.max = 100 + (state.level * 10);
+            state.hp.current = state.hp.max;
+            state.mana.max = 50 + (state.level * 5);
+            state.mana.current = state.mana.max;
+            state.exp.max = 100 + (state.level * 50);
+            
+            saveState();
+            renderAll();
+            closeGoalModal();
+        }
+
+        // Update goal field
+        function updateGoal(goalId, field, value) {
+            const goal = state.goals.find(g => g.id === goalId);
+            if (goal) {
+                goal[field] = value;
+                saveState();
+            }
+        }
+
+        // Edit period
+        function editPeriod(goalId, period) {
+            const goal = state.goals.find(g => g.id === goalId);
+            if (goal) {
+                const newValue = prompt(`Set ${period} goal:`, goal[period] || '');
+                if (newValue !== null) {
+                    goal[period] = newValue;
+                    saveState();
+                    renderAll();
+                }
+            }
+        }
+
+        // Delete goal
+        function deleteGoal(goalId) {
+            if (confirm('Delete this goal?')) {
+                state.goals = state.goals.filter(g => g.id !== goalId);
+                
+                // Lose a level
+                if (state.level > 0) {
+                    state.level--;
+                    state.hp.max = 100 + (state.level * 10);
+                    state.hp.current = Math.min(state.hp.current, state.hp.max);
+                    state.mana.max = 50 + (state.level * 5);
+                    state.mana.current = Math.min(state.mana.current, state.mana.max);
+                    state.exp.max = 100 + (state.level * 50);
+                    state.exp.current = Math.min(state.exp.current, state.exp.max);
+                }
+                
+                saveState();
+                renderAll();
+            }
+        }
+
+        // Add habit
+        function addHabit(goalId) {
+            const goal = state.goals.find(g => g.id === goalId);
+            if (goal) {
+                const habitName = prompt('Habit name:');
+                if (habitName) {
+                    if (!goal.habits) goal.habits = [];
+                    goal.habits.push({
+                        id: Date.now().toString(),
+                        name: habitName,
+                        completed: false
+                    });
+                    saveState();
+                    renderAll();
+                }
+            }
+        }
+
+        // Toggle habit
+        function toggleHabit(goalId, habitId) {
+            const goal = state.goals.find(g => g.id === goalId);
+            if (goal) {
+                const habit = goal.habits.find(h => h.id === habitId);
+                if (habit) {
+                    habit.completed = !habit.completed;
+                    
+                    if (habit.completed) {
+                        // Gain EXP!
+                        state.exp.current += 10;
+                        if (state.exp.current >= state.exp.max) {
+                            state.exp.current -= state.exp.max;
+                            state.level++;
+                            state.hp.max = 100 + (state.level * 10);
+                            state.hp.current = state.hp.max;
+                            state.mana.max = 50 + (state.level * 5);
+                            state.mana.current = state.mana.max;
+                            state.exp.max = 100 + (state.level * 50);
+                            alert(`🎉 LEVEL UP! You're now Level ${state.level}!`);
+                        }
+                    }
+                    
+                    saveState();
+                    renderAll();
+                }
+            }
+        }
+
+        // Delete habit
+        function deleteHabit(goalId, habitId) {
+            const goal = state.goals.find(g => g.id === goalId);
+            if (goal) {
+                goal.habits = goal.habits.filter(h => h.id !== habitId);
+                saveState();
+                renderAll();
+            }
+        }
+
+        // Complete quest
+        function completeQuest() {
+            state.journal = document.getElementById('questJournal').value;
+            saveState();
+            
+            // Reset all habits for new day
+            state.goals.forEach(goal => {
+                if (goal.habits) {
+                    goal.habits.forEach(habit => {
+                        habit.completed = false;
+                    });
+                }
+            });
+            
+            // Restore some mana
+            state.mana.current = Math.min(state.mana.current + 20, state.mana.max);
+            
+            saveState();
+            renderAll();
+            
+            alert('Quest complete! You rest at the inn and restore 20 mana. Tomorrow brings new challenges!');
+        }
+
+        // Save journal on change
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('questJournal').addEventListener('input', (e) => {
+                state.journal = e.target.value;
+                saveState();
+            });
+            
+            // Always show sample goal for testing
+            if (state.goals.length === 0) {
+                state.goals.push({
+                    id: Date.now().toString(),
+                    name: 'Build AI Trading System',
+                    category: 'financial',
+                    yearly: '40% revenue growth + profitable crypto trading',
+                    leadIndicator: 'Daily chart reviews + AI system development',
+                    lagIndicator: 'Monthly revenue + portfolio growth %',
+                    quarterly: 'Launch AI crypto screener',
+                    monthly: 'Test 3 trading strategies',
+                    weekly: 'Review 20 charts',
+                    habits: [{
+                        id: (Date.now() + 1).toString(),
+                        name: 'Review Trading Charts',
+                        completed: false
+                    }]
+                });
+                state.level = 1;
+                state.hp.max = 110;
+                state.hp.current = 110;
+                state.mana.max = 55;
+                state.mana.current = 55;
+                state.exp.max = 150;
+                // Don't save yet - let user see the sample first
+                // saveState();
+            }
+            
+            init();
+        });
+    </script>
+</body>
+</html>
