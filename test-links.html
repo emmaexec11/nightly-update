@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Links LocalStorage</title>
+    <style>
+        body { background: #000; color: white; padding: 2rem; font-family: system-ui; }
+        button { padding: 0.5rem 1rem; margin: 1rem; }
+        pre { background: #333; padding: 1rem; border-radius: 0.5rem; }
+    </style>
+</head>
+<body>
+    <h1>localStorage Debug Test</h1>
+    <button onclick="checkStorage()">Check Current Storage</button>
+    <button onclick="testSave()">Test Save Link</button>
+    <button onclick="clearStorage()">Clear Storage</button>
+    
+    <div id="output"></div>
+    
+    <script>
+        function checkStorage() {
+            const data = localStorage.getItem('questTracker');
+            const output = document.getElementById('output');
+            if (data) {
+                const parsed = JSON.parse(data);
+                output.innerHTML = '<h2>Current Storage:</h2><pre>' + JSON.stringify(parsed, null, 2) + '</pre>';
+            } else {
+                output.innerHTML = '<h2>No data in localStorage</h2>';
+            }
+        }
+        
+        function testSave() {
+            let data = localStorage.getItem('questTracker');
+            let state = data ? JSON.parse(data) : { goals: [] };
+            
+            if (state.goals.length === 0) {
+                state.goals.push({
+                    id: Date.now().toString(),
+                    name: 'Test Goal',
+                    links: []
+                });
+            }
+            
+            state.goals[0].links.push({
+                id: Date.now().toString(),
+                name: 'Test Link ' + new Date().toLocaleTimeString(),
+                url: 'https://example.com'
+            });
+            
+            localStorage.setItem('questTracker', JSON.stringify(state));
+            checkStorage();
+        }
+        
+        function clearStorage() {
+            if (confirm('Clear all data?')) {
+                localStorage.removeItem('questTracker');
+                checkStorage();
+            }
+        }
+        
+        // Check on load
+        checkStorage();
+    </script>
+</body>
+</html>
