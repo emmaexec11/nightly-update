@@ -326,6 +326,74 @@
             background: rgba(255, 255, 255, 0.05) !important;
         }
 
+        /* Progress Bar Styles */
+        .progress-container {
+            width: 100%;
+            height: 24px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            position: relative;
+            margin: 0.5rem 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            border-radius: inherit;
+            transition: width 0.5s ease, background 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar.low {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.3) 50%, 
+                transparent 100%);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            100% { left: 100%; }
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: 700;
+            font-size: 0.875rem;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .habit-progress {
+            margin-top: 0.5rem;
+        }
+
+        .habit-progress .progress-container {
+            height: 16px;
+            margin: 0.25rem 0;
+        }
+
+        .goal-progress {
+            margin-bottom: 1rem;
+        }
+
         .habits-section {
             margin-top: 1.5rem;
         }
@@ -569,6 +637,136 @@
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
+
+        /* Progress Bar System */
+        .progress-bar-container {
+            width: 100%;
+            height: 18px;
+            background: #1a1a2e;
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .progress-bar-container.goal-bar {
+            height: 24px;
+            border-radius: 3px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 1px;
+            transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            min-width: 0;
+        }
+
+        .progress-bar-fill.bar-green {
+            background: linear-gradient(180deg, #4ade80 0%, #16a34a 50%, #15803d 100%);
+            box-shadow: 0 0 8px rgba(74, 222, 128, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .progress-bar-fill.bar-red {
+            background: linear-gradient(180deg, #f87171 0%, #dc2626 50%, #b91c1c 100%);
+            box-shadow: 0 0 8px rgba(248, 113, 113, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        /* Animated shine effect */
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            animation: barShine 3s ease-in-out infinite;
+        }
+
+        @keyframes barShine {
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: 100%; }
+        }
+
+        /* Pixel-style notches on the bar */
+        .progress-bar-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 9.8%,
+                rgba(0, 0, 0, 0.2) 9.8%,
+                rgba(0, 0, 0, 0.2) 10.2%
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.35rem;
+        }
+
+        .progress-label-text {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #999;
+        }
+
+        .progress-label-pct {
+            font-size: 0.8rem;
+            font-weight: 800;
+            font-family: 'Courier New', monospace;
+        }
+
+        .progress-label-pct.pct-green {
+            color: #4ade80;
+            text-shadow: 0 0 6px rgba(74, 222, 128, 0.5);
+        }
+
+        .progress-label-pct.pct-red {
+            color: #f87171;
+            text-shadow: 0 0 6px rgba(248, 113, 113, 0.5);
+        }
+
+        .goal-progress-wrapper {
+            padding: 0.75rem 1.5rem 0 1.5rem;
+        }
+
+        .habit-progress-wrapper {
+            flex: 1;
+            min-width: 0;
+            margin-left: 0.5rem;
+        }
+
+        .habit-item-with-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .habit-name-col {
+            min-width: 120px;
+            max-width: 200px;
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body>
@@ -646,7 +844,7 @@
         </div>
     </div>
 
-    <div class="version">v1.7 - Tab-Style Links</div>
+    <div class="version">v1.8 - Progress Bars</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
@@ -742,6 +940,10 @@
                             if (!goal.habits) {
                                 goal.habits = [];
                             }
+                            // Ensure habits have history arrays
+                            goal.habits.forEach(habit => {
+                                initializeHabitHistory(habit);
+                            });
                             // Remove old lead/lag indicators if they exist
                             delete goal.leadIndicator;
                             delete goal.lagIndicator;
@@ -789,6 +991,52 @@
             return colors[category] || '#a855f7';
         }
 
+        // Calculate habit progress
+        function calculateHabitProgress(habit) {
+            if (!habit.history || habit.history.length === 0) {
+                return 0;
+            }
+            
+            const totalDays = habit.history.length;
+            const completedDays = habit.history.filter(h => h.completed).length;
+            return Math.round((completedDays / totalDays) * 100);
+        }
+
+        // Calculate goal progress
+        function calculateGoalProgress(goal) {
+            if (!goal.habits || goal.habits.length === 0) {
+                return 0;
+            }
+            
+            const habitProgresses = goal.habits.map(habit => calculateHabitProgress(habit));
+            const totalProgress = habitProgresses.reduce((sum, progress) => sum + progress, 0);
+            return Math.round(totalProgress / goal.habits.length);
+        }
+
+        // Render goal progress bar
+        function renderGoalProgress(goal) {
+            const progress = calculateGoalProgress(goal);
+            return `
+                <div class="progress-container">
+                    <div class="progress-bar ${progress >= 80 ? '' : 'low'}" style="width: ${progress}%">
+                        <span class="progress-text">${progress}%</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Initialize habit history if not exists
+        function initializeHabitHistory(habit) {
+            if (!habit.history) {
+                habit.history = [];
+                // Add today as first entry
+                habit.history.push({
+                    date: new Date().toISOString().split('T')[0],
+                    completed: habit.completed || false
+                });
+            }
+        }
+
         // Render goals
         function renderGoals() {
             const container = document.getElementById('goalsContainer');
@@ -808,6 +1056,9 @@
                             <button class="icon-btn" onclick="changeGoalColor('${goal.id}')" title="Change color">🎨</button>
                             <button class="icon-btn" onclick="deleteGoal('${goal.id}')">🗑️</button>
                         </div>
+                    </div>
+                    <div class="goal-progress">
+                        ${renderGoalProgress(goal)}
                     </div>
                     <div class="goal-content">
                         <div class="indicators-section">
@@ -885,15 +1136,27 @@
                 return '<div style="color: #666; font-size: 0.875rem;">No habits yet</div>';
             }
             
-            return goal.habits.map(habit => `
-                <div class="habit-item">
-                    <div class="habit-checkbox ${habit.completed ? 'checked' : ''}" 
-                        onclick="toggleHabit('${goalId}', '${habit.id}')"></div>
-                    <div style="flex: 1;">${habit.name}</div>
-                    <button class="icon-btn" style="color: #ef4444;" 
-                        onclick="deleteHabit('${goalId}', '${habit.id}')">×</button>
-                </div>
-            `).join('');
+            return goal.habits.map(habit => {
+                const progress = calculateHabitProgress(habit);
+                return `
+                    <div class="habit-item">
+                        <div class="habit-checkbox ${habit.completed ? 'checked' : ''}" 
+                            onclick="toggleHabit('${goalId}', '${habit.id}')"></div>
+                        <div style="flex: 1;">
+                            <div>${habit.name}</div>
+                            <div class="habit-progress">
+                                <div class="progress-container">
+                                    <div class="progress-bar ${progress >= 80 ? '' : 'low'}" style="width: ${progress}%">
+                                        <span class="progress-text">${progress}%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="icon-btn" style="color: #ef4444;" 
+                            onclick="deleteHabit('${goalId}', '${habit.id}')">×</button>
+                    </div>
+                `;
+            }).join('');
         }
 
         // Modal functions
@@ -987,11 +1250,16 @@
                 const habitName = prompt('Habit name:');
                 if (habitName) {
                     if (!goal.habits) goal.habits = [];
-                    goal.habits.push({
+                    const newHabit = {
                         id: Date.now().toString(),
                         name: habitName,
-                        completed: false
-                    });
+                        completed: false,
+                        history: [{
+                            date: new Date().toISOString().split('T')[0],
+                            completed: false
+                        }]
+                    };
+                    goal.habits.push(newHabit);
                     saveState();
                     renderAll();
                 }
@@ -1005,6 +1273,19 @@
                 const habit = goal.habits.find(h => h.id === habitId);
                 if (habit) {
                     habit.completed = !habit.completed;
+                    
+                    // Initialize history if not exists
+                    initializeHabitHistory(habit);
+                    
+                    // Update today's history
+                    const today = new Date().toISOString().split('T')[0];
+                    let todayEntry = habit.history.find(h => h.date === today);
+                    if (!todayEntry) {
+                        todayEntry = { date: today, completed: habit.completed };
+                        habit.history.push(todayEntry);
+                    } else {
+                        todayEntry.completed = habit.completed;
+                    }
                     
                     if (habit.completed) {
                         // Gain EXP!
