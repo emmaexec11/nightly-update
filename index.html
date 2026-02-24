@@ -537,6 +537,14 @@
             if (saved) {
                 try {
                     state = JSON.parse(saved);
+                    // Ensure all goals have names (fix for old data)
+                    if (state.goals) {
+                        state.goals.forEach((goal, index) => {
+                            if (!goal.name) {
+                                goal.name = goal.title || `Goal ${index + 1}`;
+                            }
+                        });
+                    }
                 } catch (e) {
                     console.error('Failed to load state:', e);
                 }
