@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Ultimate RPG Quest Tracker - Full Experience v7.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --bg-card: #1a1a1a;
+            --bg-hover: #242424;
+            --border: rgba(255,255,255,0.1);
+            --border-hover: rgba(255,255,255,0.2);
+            --text-primary: #fff;
+            --text-secondary: #b4b4b4;
+            --text-muted: #666;
+            --hp: #ef4444;
+            --mana: #3b82f6;
+            --exp: #fbbf24;
+            --success: #10b981;
+            --purple: #a855f7;
+            --orange: #f97316;
+            --pixel-font: 'Press Start 2P', monospace;
+            --modern-font: 'Inter', -apple-system, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--modern-font);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            background-image:
+                radial-gradient(circle at 20% 50%, rgba(168,85,247,0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(59,130,246,0.05) 0%, transparent 50%);
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        /* ── Character Section ── */
+        .character-section {
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
+            border: 2px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .character-section::before {
+            content: '';
+            position: absolute; inset: -2px;
+            background: linear-gradient(45deg, var(--purple), var(--mana), var(--exp));
+            border-radius: 1.5rem;
+            opacity: 0.4;
+            z-index: -1;
+            animation: glow 3s ease infinite;
+        }
+        @keyframes glow { 0%,100%{opacity:.3} 50%{opacity:.6} }
+
+        .character-wrapper {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+        .character-display { text-align: center; }
+        .pixel-character {
+            width: 100px; height: 100px;
+            image-rendering: pixelated;
+            filter: drop-shadow(0 0 20px rgba(168,85,247,.5));
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+        .character-name {
+            font-family: var(--pixel-font);
+            font-size: .7rem;
+            margin-top: .5rem;
+            color: var(--exp);
+            text-shadow: 2px 2px 0 rgba(0,0,0,.5);
+        }
+
+        .stats-panel { display: flex; flex-direction: column; gap: 1rem; }
+        .level-display {
+            font-size: 1.75rem; font-weight: 800;
+            background: linear-gradient(to bottom, var(--exp), var(--orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: .25rem;
+        }
+        .stat-bar {
+            background: rgba(0,0,0,.5);
+            border: 1px solid var(--border);
+            border-radius: .5rem;
+            padding: .5rem .75rem;
+        }
+        .stat-label {
+            font-size: .75rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: .1em;
+            margin-bottom: .25rem;
+            display: flex; justify-content: space-between;
+        }
+        .bar-track {
+            height: .75rem;
+            background: rgba(0,0,0,.5);
+            border-radius: .375rem;
+            overflow: hidden;
+        }
+        .bar-fill {
+            height: 100%; border-radius: .5rem;
+            transition: width .5s ease;
+            position: relative; overflow: hidden;
+        }
+        .bar-fill::after {
+            content:''; position:absolute; inset:0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
+
+        .hp-fill   { background: linear-gradient(90deg, var(--hp), #dc2626); }
+        .mana-fill { background: linear-gradient(90deg, var(--mana), #2563eb); }
+        .exp-fill  { background: linear-gradient(90deg, var(--exp), #f59e0b); }
+
+        /* ── Section Header ── */
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+        .section-title {
+            font-size: 2rem; font-weight: 700;
+            display: flex; align-items: center; gap: 1rem;
+        }
+        .title-icon {
+            width: 2.5rem; height: 2.5rem;
+            background: linear-gradient(135deg, var(--purple), var(--mana));
+            border-radius: .75rem;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+        }
+        .add-goal-btn {
+            padding: .75rem 1.5rem;
+            background: var(--purple); border: none; border-radius: .75rem;
+            color: #fff; font-weight: 600; font-size: 1rem;
+            cursor: pointer; transition: all .2s ease;
+            display: flex; align-items: center; gap: .5rem;
+        }
+        .add-goal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(168,85,247,.3);
+        }
+
+        /* ── Goal Card ── */
+        .goal-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        .goal-header {
+            padding: 1.25rem 1.5rem;
+            background: var(--bg-card);
+            border-bottom: 2px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .goal-header h3 { font-size: 1.4rem; font-weight: 700; }
+        .goal-category-badge {
+            font-family: var(--pixel-font);
+            font-size: .5rem;
+            padding: .25rem .75rem;
+            border-radius: .5rem;
+            margin-left: .75rem;
+        }
+        .goal-actions { display: flex; gap: .5rem; }
+        .icon-btn {
+            width: 2rem; height: 2rem;
+            background: rgba(255,255,255,.05);
+            border: 1px solid var(--border); border-radius: .5rem;
+            color: var(--text-secondary);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all .2s ease; font-size: .9rem;
+        }
+        .icon-btn:hover {
+            background: rgba(255,255,255,.1);
+            color: var(--text-primary);
+        }
+
+        .goal-body { padding: 1.5rem; }
+
+        /* Yearly + indicators */
+        .yearly-row {
+            margin-bottom: 1.25rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .yearly-label { font-size: .75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; }
+        .yearly-text  { font-size: 1.125rem; margin-top: .25rem; }
+        .indicator-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+            margin-top: .75rem;
+        }
+        .indicator-label { font-size: .7rem; color: var(--text-muted); }
+        .indicator-input {
+            width: 100%; background: var(--bg-primary);
+            border: 1px solid var(--border); padding: .5rem .625rem;
+            color: var(--text-primary); font-size: .85rem;
+            border-radius: .35rem; margin-top: .25rem;
+            font-family: inherit; transition: border-color .2s;
+        }
+        .indicator-input:focus { outline: none; border-color: var(--purple); }
+
+        /* Period grid */
+        .period-grid {
+            display: grid; grid-template-columns: repeat(4,1fr);
+            gap: .75rem; margin-bottom: 1.5rem;
+        }
+        .period-box {
+            background: rgba(255,255,255,.03);
+            border: 1px solid var(--border);
+            border-radius: .5rem;
+            padding: .75rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all .2s ease;
+        }
+        .period-box:hover {
+            background: rgba(255,255,255,.06);
+            border-color: var(--border-hover);
+            transform: translateY(-1px);
+        }
+        .period-box-label {
+            font-family: var(--pixel-font);
+            font-size: .45rem;
+            margin-bottom: .4rem;
+        }
+        .period-box-value {
+            font-size: .85rem;
+            color: var(--text-secondary);
+            word-break: break-word;
+        }
+
+        /* Habits inside goal */
+        .habits-section-label {
+            font-size: .8rem; font-weight: 600;
+            text-transform: uppercase; color: var(--text-secondary);
+            margin-bottom: .75rem;
+        }
+        .habit-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: .75rem;
+            padding: 1rem 1.25rem;
+            display: flex; align-items: center; gap: 1rem;
+            margin-bottom: .5rem;
+            transition: all .2s ease;
+        }
+        .habit-item:hover {
+            background: var(--bg-hover);
+            border-color: var(--border-hover);
+            transform: translateX(4px);
+        }
+        .habit-check {
+            width: 2.5rem; height: 2.5rem; min-width: 2.5rem;
+            background: rgba(255,255,255,.05);
+            border: 2px solid var(--border);
+            border-radius: .625rem;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all .2s ease;
+            font-size: 1.25rem; color: transparent;
+        }
+        .habit-check:hover { border-color: var(--success); background: rgba(16,185,129,.1); }
+        .habit-check.done {
+            background: var(--success); border-color: var(--success); color: #fff;
+        }
+        .habit-content { flex: 1; }
+        .habit-name-text { font-size: 1rem; font-weight: 600; }
+        .habit-meta {
+            font-size: .8rem; color: var(--text-secondary);
+            display: flex; gap: 1.5rem; margin-top: .25rem;
+        }
+        .habit-meta .val { font-weight: 600; color: var(--success); }
+        .habit-edit-actions {
+            display: flex; gap: .35rem;
+            opacity: 0; transition: opacity .2s;
+        }
+        .habit-item:hover .habit-edit-actions { opacity: 1; }
+        .small-btn {
+            padding: .35rem .65rem;
+            background: rgba(255,255,255,.05);
+            border: 1px solid var(--border); border-radius: .35rem;
+            color: var(--text-secondary); cursor: pointer;
+            font-size: .8rem; transition: all .2s;
+        }
+        .small-btn:hover { background: rgba(255,255,255,.1); color: var(--text-primary); }
+        .small-btn.danger:hover { color: var(--hp); border-color: var(--hp); }
+
+        .add-habit-btn {
+            width: 100%; padding: 1rem;
+            background: rgba(168,85,247,.08);
+            border: 2px dashed rgba(168,85,247,.4);
+            border-radius: .75rem;
+            color: var(--purple);
+            font-size: .95rem; font-weight: 600;
+            cursor: pointer; transition: all .2s;
+            margin-top: .5rem;
+        }
+        .add-habit-btn:hover {
+            background: rgba(168,85,247,.15);
+            transform: translateY(-2px);
+        }
+
+        /* ── Quest Journal ── */
+        .journal-section {
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
+            border: 2px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        .journal-title {
+            font-size: 1.75rem; font-weight: 700; margin-bottom: 1.5rem;
+            background: linear-gradient(to right, var(--purple), var(--mana));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .journal-textarea {
+            width: 100%; min-height: 140px;
+            background: var(--bg-card); border: 2px solid var(--border);
+            border-radius: 1rem; padding: 1.25rem;
+            color: var(--text-primary); font-size: 1rem;
+            font-family: inherit; resize: vertical;
+            transition: border-color .2s;
+        }
+        .journal-textarea:focus { outline: none; border-color: var(--purple); }
+        .complete-btn {
+            margin-top: 1.5rem;
+            padding: 1.25rem 2.5rem;
+            background: linear-gradient(135deg, var(--success), #059669);
+            border: none; border-radius: 1rem;
+            color: #fff; font-size: 1.15rem; font-weight: 700;
+            cursor: pointer; transition: all .3s;
+            position: relative; overflow: hidden;
+        }
+        .complete-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(16,185,129,.4);
+        }
+        .complete-btn::before {
+            content:''; position:absolute;
+            top:-50%; left:-50%; width:200%; height:200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,.25), transparent);
+            transform: rotate(45deg); transition: all .5s;
+        }
+        .complete-btn:hover::before { animation: shine .5s ease; }
+        @keyframes shine { 0%{transform:translateX(-100%) translateY(-100%) rotate(45deg)} 100%{transform:translateX(100%) translateY(100%) rotate(45deg)} }
+
+        /* ── Modal System ── */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,.8);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
+            padding: 2rem;
+            opacity: 0; visibility: hidden;
+            transition: all .25s ease;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: 1.25rem;
+            width: 100%; max-width: 600px;
+            max-height: 90vh; overflow-y: auto;
+            transform: scale(.92) translateY(20px);
+            transition: transform .25s ease;
+        }
+        .modal-overlay.active .modal { transform: scale(1) translateY(0); }
+        .modal-head {
+            padding: 1.5rem 2rem;
+            border-bottom: 2px solid var(--border);
+        }
+        .modal-head h3 { font-size: 1.5rem; font-weight: 700; }
+        .modal-body { padding: 1.5rem 2rem; }
+        .modal-foot {
+            padding: 1.25rem 2rem;
+            border-top: 2px solid var(--border);
+            display: flex; justify-content: flex-end; gap: .75rem;
+        }
+
+        .form-group { margin-bottom: 1.25rem; }
+        .form-label {
+            display: block; font-size: .8rem; font-weight: 600;
+            color: var(--text-secondary); margin-bottom: .4rem;
+            text-transform: uppercase; letter-spacing: .05em;
+        }
+        .form-input, .form-select {
+            width: 100%; padding: .85rem 1rem;
+            background: var(--bg-card); border: 2px solid var(--border);
+            border-radius: .65rem; color: var(--text-primary);
+            font-size: .95rem; font-family: inherit;
+            transition: border-color .2s;
+        }
+        .form-input:focus, .form-select:focus { outline: none; border-color: var(--purple); }
+        .form-select option { background: var(--bg-card); color: var(--text-primary); }
+
+        .btn {
+            padding: .7rem 1.35rem;
+            border-radius: .65rem; font-weight: 600;
+            cursor: pointer; transition: all .2s; border: none;
+            font-size: .95rem;
+        }
+        .btn-cancel {
+            background: var(--bg-card); color: var(--text-primary);
+            border: 2px solid var(--border);
+        }
+        .btn-primary { background: var(--purple); color: #fff; }
+        .btn-danger  { background: var(--hp); color: #fff; }
+        .btn:hover { transform: translateY(-2px); }
+
+        /* Color picker */
+        .color-picker { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .35rem; }
+        .color-swatch {
+            width: 2.25rem; height: 2.25rem;
+            border-radius: .5rem;
+            border: 2px solid transparent;
+            cursor: pointer; transition: all .2s;
+        }
+        .color-swatch:hover { transform: scale(1.1); }
+        .color-swatch.picked { border-color: #fff; box-shadow: 0 0 0 3px rgba(255,255,255,.2); }
+
+        /* ── Level-up overlay ── */
+        .levelup-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,.85);
+            z-index: 2000;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden;
+            transition: all .4s;
+        }
+        .levelup-overlay.active { opacity: 1; visibility: visible; }
+        .levelup-text {
+            font-family: var(--pixel-font);
+            font-size: 2.5rem;
+            color: var(--exp);
+            text-shadow: 0 0 40px rgba(251,191,36,.6);
+            animation: levelPulse 1s ease infinite;
+        }
+        .levelup-sub {
+            font-size: 1.1rem; color: var(--text-secondary);
+            margin-top: 1rem;
+        }
+        @keyframes levelPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center; padding: 3rem; color: var(--text-muted);
+        }
+        .empty-state p:first-child { font-size: 1.2rem; margin-bottom: .5rem; }
+
+        /* Version tag */
+        .version-tag {
+            position: fixed; bottom: 10px; right: 10px;
+            color: #444; font-size: .7rem; z-index: 9999;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .character-wrapper { grid-template-columns: 80px 1fr; gap: 1rem; }
+            .pixel-character { width: 72px; height: 72px; }
+            .period-grid { grid-template-columns: repeat(2,1fr); }
+            .indicator-grid { grid-template-columns: 1fr; }
+            .container { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="version-tag">v7.0 - Ultimate RPG Experience - FULL COMPLEX VERSION</div>
+
+    <!-- ── Character ── -->
+    <div class="character-section">
+        <div class="character-wrapper">
+            <div class="character-display">
+                <svg class="pixel-character" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Hat -->
+                    <rect x="13" y="3" width="6" height="2" fill="#fbbf24"/>
+                    <rect x="12" y="5" width="8" height="2" fill="#fbbf24"/>
+                    <!-- Face -->
+                    <rect x="11" y="7" width="10" height="6" fill="#f9a8d4"/>
+                    <rect x="13" y="8" width="2" height="2" fill="#1e293b"/>
+                    <rect x="17" y="8" width="2" height="2" fill="#1e293b"/>
+                    <rect x="15" y="10" width="2" height="1" fill="#dc2626"/>
+                    <!-- Robe -->
+                    <rect x="10" y="13" width="12" height="8" fill="#a855f7"/>
+                    <rect x="12" y="14" width="8" height="1" fill="#fbbf24"/>
+                    <rect x="9" y="15" width="14" height="6" fill="#a855f7"/>
+                    <!-- Legs / Boots -->
+                    <rect x="11" y="21" width="4" height="4" fill="#475569"/>
+                    <rect x="17" y="21" width="4" height="4" fill="#475569"/>
+                    <rect x="10" y="25" width="5" height="3" fill="#1e293b"/>
+                    <rect x="17" y="25" width="5" height="3" fill="#1e293b"/>
+                    <!-- Staff -->
+                    <rect x="6" y="12" width="2" height="12" fill="#92400e"/>
+                    <rect x="5" y="10" width="4" height="3" fill="#3b82f6"/>
+                    <rect x="6" y="11" width="2" height="1" fill="#60a5fa"/>
+                    <!-- Sparkles -->
+                    <rect x="3" y="9" width="2" height="2" fill="#fbbf24" opacity=".8"/>
+                    <rect x="9" y="8" width="1" height="1" fill="#a855f7" opacity=".6"/>
+                    <rect x="4" y="12" width="1" height="1" fill="#60a5fa" opacity=".7"/>
+                </svg>
+                <div class="character-name">DEVON THE WISE</div>
+            </div>
+            <div class="stats-panel">
+                <div>
+                    <div class="level-display" id="levelDisplay">LEVEL 0</div>
+                    <div class="stat-bar">
+                        <div class="stat-label"><span>HP</span><span id="hpLabel">100/100</span></div>
+                        <div class="bar-track"><div class="bar-fill hp-fill" id="hpBar" style="width:100%"></div></div>
+                    </div>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-label"><span>MANA</span><span id="manaLabel">50/50</span></div>
+                    <div class="bar-track"><div class="bar-fill mana-fill" id="manaBar" style="width:100%"></div></div>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-label"><span>EXP</span><span id="expLabel">0/100</span></div>
+                    <div class="bar-track"><div class="bar-fill exp-fill" id="expBar" style="width:0%"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Goals ── -->
+    <div class="section-header">
+        <div class="section-title">
+            <div class="title-icon">&#x1F3AF;</div>
+            Epic Goals
+        </div>
+        <button class="add-goal-btn" onclick="openGoalModal()">
+            <span>+</span> New Goal
+        </button>
+    </div>
+    <div id="goalsContainer"></div>
+
+    <!-- ── Quest Journal ── -->
+    <div class="journal-section">
+        <h2 class="journal-title">Quest Journal</h2>
+        <textarea class="journal-textarea" id="journalText"
+            placeholder="What epic battles did you win today? What dragons remain to slay tomorrow?"></textarea>
+        <br>
+        <button class="complete-btn" onclick="completeQuest()">
+            Complete Quest &amp; Rest at Inn
+        </button>
+    </div>
+</div>
+
+<!-- ── Goal Modal ── -->
+<div id="goalModal" class="modal-overlay" onclick="if(event.target===this)closeModal('goalModal')">
+    <div class="modal">
+        <div class="modal-head"><h3 id="goalModalTitle">Create New Goal</h3></div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">Goal Title</label>
+                <input class="form-input" id="fGoalTitle" placeholder="What will you achieve?">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Category</label>
+                <select class="form-select" id="fGoalCategory">
+                    <option value="spirituality">Spirituality</option>
+                    <option value="financial">Financial</option>
+                    <option value="health">Health</option>
+                    <option value="community">Community</option>
+                    <option value="personal">Personal Development</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Yearly Goal</label>
+                <input class="form-input" id="fGoalYearly" placeholder="Your big-picture goal for the year">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Lead Indicator (actions I control)</label>
+                <input class="form-input" id="fGoalLead" placeholder="e.g., Review 20 charts per week">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Lag Indicator (results I measure)</label>
+                <input class="form-input" id="fGoalLag" placeholder="e.g., Monthly portfolio growth %">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Color Theme</label>
+                <div class="color-picker" id="goalColorPicker">
+                    <button class="color-swatch" style="background:#a855f7" data-color="#a855f7"></button>
+                    <button class="color-swatch" style="background:#f59e0b" data-color="#f59e0b"></button>
+                    <button class="color-swatch" style="background:#ef4444" data-color="#ef4444"></button>
+                    <button class="color-swatch" style="background:#3b82f6" data-color="#3b82f6"></button>
+                    <button class="color-swatch" style="background:#10b981" data-color="#10b981"></button>
+                    <button class="color-swatch" style="background:#ec4899" data-color="#ec4899"></button>
+                    <button class="color-swatch" style="background:#8b5cf6" data-color="#8b5cf6"></button>
+                    <button class="color-swatch" style="background:#14b8a6" data-color="#14b8a6"></button>
+                </div>
+            </div>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-cancel" onclick="closeModal('goalModal')">Cancel</button>
+            <button class="btn btn-primary" id="goalModalSave" onclick="saveGoal()">Create Goal</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Habit Modal ── -->
+<div id="habitModal" class="modal-overlay" onclick="if(event.target===this)closeModal('habitModal')">
+    <div class="modal" style="max-width:450px">
+        <div class="modal-head"><h3 id="habitModalTitle">Add Daily Habit</h3></div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">Habit Name</label>
+                <input class="form-input" id="fHabitName" placeholder="What will you practice daily?">
+            </div>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-cancel" onclick="closeModal('habitModal')">Cancel</button>
+            <button class="btn btn-primary" id="habitModalSave" onclick="saveHabit()">Add Habit</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Edit Field Modal ── -->
+<div id="editModal" class="modal-overlay" onclick="if(event.target===this)closeModal('editModal')">
+    <div class="modal" style="max-width:480px">
+        <div class="modal-head"><h3 id="editModalTitle">Edit</h3></div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label" id="editModalLabel">Value</label>
+                <input class="form-input" id="editModalInput">
+            </div>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-cancel" onclick="closeModal('editModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="saveEditField()">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Confirm Modal ── -->
+<div id="confirmModal" class="modal-overlay">
+    <div class="modal" style="max-width:420px">
+        <div class="modal-head"><h3 id="confirmTitle">Confirm</h3></div>
+        <div class="modal-body">
+            <p id="confirmMessage" style="color:var(--text-secondary);font-size:1rem;"></p>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-cancel" onclick="resolveConfirm(false)">Cancel</button>
+            <button class="btn btn-danger" id="confirmAction" onclick="resolveConfirm(true)">Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Level-up overlay ── -->
+<div class="levelup-overlay" id="levelUpOverlay">
+    <div class="levelup-text" id="levelUpText">LEVEL UP!</div>
+    <div class="levelup-sub" id="levelUpSub"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════
+const CATEGORY_COLORS = {
+    spirituality: '#a855f7',
+    financial: '#f59e0b',
+    health: '#ef4444',
+    community: '#3b82f6',
+    personal: '#10b981'
+};
+
+const CATEGORY_LABELS = {
+    spirituality: 'Spirituality',
+    financial: 'Financial',
+    health: 'Health',
+    community: 'Community',
+    personal: 'Personal Dev'
+};
+
+const SAMPLE_STATE = {
+    level: 1,
+    hp: { current: 110, max: 110 },
+    mana: { current: 55, max: 55 },
+    exp: { current: 0, max: 150 },
+    goals: [
+        {
+            id: 1,
+            title: 'Build AI Trading System',
+            category: 'financial',
+            color: '#f59e0b',
+            yearly: '40% revenue growth + profitable crypto trading',
+            lead: 'Daily chart reviews + AI system development',
+            lag: 'Monthly revenue + portfolio growth %',
+            quarterly: 'Launch AI crypto screener',
+            monthly: 'Test 3 trading strategies',
+            weekly: 'Review 20 charts',
+            habits: [
+                { id: 101, name: 'Review Trading Charts', done: false, streak: 0 },
+                { id: 102, name: 'Code AI trading bot for 1 hour', done: false, streak: 0 }
+            ]
+        }
+    ],
+    journal: '',
+    history: []
+};
+
+let state = null;
+
+function loadState() {
+    try {
+        const raw = localStorage.getItem('questTracker_ultimate_v7');
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && Array.isArray(parsed.goals)) {
+                state = parsed;
+                // Ensure all fields exist
+                state.level = state.level ?? 0;
+                state.hp = state.hp || { current: 100, max: 100 };
+                state.mana = state.mana || { current: 50, max: 50 };
+                state.exp = state.exp || { current: 0, max: 100 };
+                state.journal = state.journal || '';
+                state.history = state.history || [];
+                // Ensure each goal has habits array
+                state.goals.forEach(g => {
+                    g.habits = g.habits || [];
+                    g.lead = g.lead || '';
+                    g.lag = g.lag || '';
+                });
+                return;
+            }
+        }
+    } catch (e) {
+        console.warn('Failed to load state:', e);
+    }
+    state = JSON.parse(JSON.stringify(SAMPLE_STATE));
+}
+
+function saveState() {
+    localStorage.setItem('questTracker_ultimate_v7', JSON.stringify(state));
+}
+
+// ═══════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════
+function render() {
+    renderStats();
+    renderGoals();
+    document.getElementById('journalText').value = state.journal || '';
+}
+
+function renderStats() {
+    document.getElementById('levelDisplay').textContent = `LEVEL ${state.level}`;
+    document.getElementById('hpLabel').textContent = `${state.hp.current}/${state.hp.max}`;
+    document.getElementById('manaLabel').textContent = `${state.mana.current}/${state.mana.max}`;
+    document.getElementById('expLabel').textContent = `${state.exp.current}/${state.exp.max}`;
+    document.getElementById('hpBar').style.width = `${(state.hp.current / state.hp.max) * 100}%`;
+    document.getElementById('manaBar').style.width = `${(state.mana.current / state.mana.max) * 100}%`;
+    document.getElementById('expBar').style.width = `${(state.exp.current / state.exp.max) * 100}%`;
+}
+
+function renderGoals() {
+    const c = document.getElementById('goalsContainer');
+    if (!state.goals.length) {
+        c.innerHTML = '<div class="empty-state"><p>No quests yet!</p><p>Click "New Goal" to begin your adventure.</p></div>';
+        return;
+    }
+    c.innerHTML = state.goals.map(g => {
+        const color = g.color || CATEGORY_COLORS[g.category] || '#a855f7';
+        const catLabel = CATEGORY_LABELS[g.category] || g.category;
+        return `
+        <div class="goal-card" style="border-left:4px solid ${color}">
+            <div class="goal-header">
+                <h3>${esc(g.title)}
+                    <span class="goal-category-badge" style="background:${color}22;color:${color};border:1px solid ${color}44">${catLabel}</span>
+                </h3>
+                <div class="goal-actions">
+                    <button class="icon-btn" onclick="openEditGoal(${g.id})" title="Edit goal">&#9881;</button>
+                    <button class="icon-btn" onclick="deleteGoal(${g.id})" title="Delete goal">&#128465;</button>
+                </div>
+            </div>
+            <div class="goal-body">
+                <div class="yearly-row">
+                    <div class="yearly-label">YEARLY GOAL</div>
+                    <div class="yearly-text">${esc(g.yearly)}</div>
+                    <div class="indicator-grid">
+                        <div>
+                            <div class="indicator-label">Lead Indicator (Actions)</div>
+                            <input class="indicator-input" value="${esc(g.lead)}"
+                                onchange="updateField(${g.id},'lead',this.value)" placeholder="Actions I control">
+                        </div>
+                        <div>
+                            <div class="indicator-label">Lag Indicator (Results)</div>
+                            <input class="indicator-input" value="${esc(g.lag)}"
+                                onchange="updateField(${g.id},'lag',this.value)" placeholder="Results I measure">
+                        </div>
+                    </div>
+                </div>
+                <div class="period-grid">
+                    ${['quarterly','monthly','weekly'].map(p => `
+                        <div class="period-box" onclick="editPeriod(${g.id},'${p}')" style="border-color:${color}22">
+                            <div class="period-box-label" style="color:${color}">${p.toUpperCase()}</div>
+                            <div class="period-box-value">${esc(g[p] || 'Click to set')}</div>
+                        </div>
+                    `).join('')}
+                    <div class="period-box" onclick="editPeriod(${g.id},'yearly')" style="border-color:${color}22">
+                        <div class="period-box-label" style="color:${color}">YEARLY</div>
+                        <div class="period-box-value">${esc(g.yearly || 'Click to set')}</div>
+                    </div>
+                </div>
+                <div class="habits-section-label">Daily Habits</div>
+                ${g.habits.map(h => `
+                    <div class="habit-item">
+                        <div class="habit-check ${h.done?'done':''}" onclick="toggleHabit(${g.id},${h.id})">${h.done?'&#10003;':''}</div>
+                        <div class="habit-content">
+                            <div class="habit-name-text">${esc(h.name)}</div>
+                            <div class="habit-meta">
+                                <span>&#x1F525; <span class="val">${h.streak}</span> streak</span>
+                            </div>
+                        </div>
+                        <div class="habit-edit-actions">
+                            <button class="small-btn" onclick="event.stopPropagation();editHabitName(${g.id},${h.id})">&#9998;</button>
+                            <button class="small-btn danger" onclick="event.stopPropagation();deleteHabit(${g.id},${h.id})">&#128465;</button>
+                        </div>
+                    </div>
+                `).join('')}
+                <button class="add-habit-btn" onclick="openHabitModal(${g.id})">+ Add Habit</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function esc(str) {
+    if (!str) return '';
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ═══════════════════════════════════════════
+//  MODAL HELPERS
+// ═══════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+// ── Confirm modal ──
+let _confirmResolve = null;
+function showConfirm(title, message, actionLabel) {
+    return new Promise(resolve => {
+        _confirmResolve = resolve;
+        document.getElementById('confirmTitle').textContent = title;
+        document.getElementById('confirmMessage').textContent = message;
+        document.getElementById('confirmAction').textContent = actionLabel || 'Delete';
+        openModal('confirmModal');
+    });
+}
+function resolveConfirm(val) {
+    closeModal('confirmModal');
+    if (_confirmResolve) { _confirmResolve(val); _confirmResolve = null; }
+}
+
+// ── Edit field modal ──
+let _editFieldCb = null;
+function openEditField(title, label, value, cb) {
+    document.getElementById('editModalTitle').textContent = title;
+    document.getElementById('editModalLabel').textContent = label;
+    document.getElementById('editModalInput').value = value || '';
+    _editFieldCb = cb;
+    openModal('editModal');
+    setTimeout(() => document.getElementById('editModalInput').focus(), 100);
+}
+function saveEditField() {
+    const v = document.getElementById('editModalInput').value;
+    if (_editFieldCb && v) _editFieldCb(v);
+    _editFieldCb = null;
+    closeModal('editModal');
+}
+document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && document.getElementById('editModal').classList.contains('active')) {
+        saveEditField();
+    }
+});
+
+// ═══════════════════════════════════════════
+//  GOAL CRUD
+// ═══════════════════════════════════════════
+let _editingGoalId = null;
+
+function openGoalModal(editId) {
+    _editingGoalId = editId || null;
+    if (_editingGoalId) {
+        const g = state.goals.find(x => x.id === _editingGoalId);
+        if (!g) return;
+        document.getElementById('goalModalTitle').textContent = 'Edit Goal';
+        document.getElementById('goalModalSave').textContent = 'Save Changes';
+        document.getElementById('fGoalTitle').value = g.title;
+        document.getElementById('fGoalCategory').value = g.category;
+        document.getElementById('fGoalYearly').value = g.yearly || '';
+        document.getElementById('fGoalLead').value = g.lead || '';
+        document.getElementById('fGoalLag').value = g.lag || '';
+        setPickedColor(g.color || CATEGORY_COLORS[g.category] || '#a855f7');
+    } else {
+        document.getElementById('goalModalTitle').textContent = 'Create New Goal';
+        document.getElementById('goalModalSave').textContent = 'Create Goal';
+        document.getElementById('fGoalTitle').value = '';
+        document.getElementById('fGoalCategory').value = 'spirituality';
+        document.getElementById('fGoalYearly').value = '';
+        document.getElementById('fGoalLead').value = '';
+        document.getElementById('fGoalLag').value = '';
+        setPickedColor('#a855f7');
+    }
+    openModal('goalModal');
+    setTimeout(() => document.getElementById('fGoalTitle').focus(), 100);
+}
+
+function openEditGoal(id) { openGoalModal(id); }
+
+function saveGoal() {
+    const title = document.getElementById('fGoalTitle').value.trim();
+    if (!title) return;
+    const category = document.getElementById('fGoalCategory').value;
+    const yearly = document.getElementById('fGoalYearly').value.trim();
+    const lead = document.getElementById('fGoalLead').value.trim();
+    const lag = document.getElementById('fGoalLag').value.trim();
+    const picked = document.querySelector('#goalColorPicker .color-swatch.picked');
+    const color = picked ? picked.dataset.color : CATEGORY_COLORS[category];
+
+    if (_editingGoalId) {
+        const g = state.goals.find(x => x.id === _editingGoalId);
+        if (g) {
+            g.title = title;
+            g.category = category;
+            g.yearly = yearly || g.yearly;
+            g.lead = lead;
+            g.lag = lag;
+            g.color = color;
+        }
+    } else {
+        const newGoal = {
+            id: Date.now(),
+            title,
+            category,
+            color,
+            yearly: yearly || 'Define yearly goal',
+            lead: lead || 'Actions I control',
+            lag: lag || 'Results I measure',
+            quarterly: 'Define quarterly milestone',
+            monthly: 'Define monthly target',
+            weekly: 'Define weekly goal',
+            habits: []
+        };
+        state.goals.push(newGoal);
+        gainExp(25); // EXP for adding a goal
+    }
+    _editingGoalId = null;
+    saveState();
+    render();
+    closeModal('goalModal');
+}
+
+async function deleteGoal(id) {
+    const ok = await showConfirm('Delete Goal', 'Delete this goal and all its habits? This cannot be undone.', 'Delete');
+    if (!ok) return;
+    state.goals = state.goals.filter(g => g.id !== id);
+    saveState();
+    render();
+}
+
+function updateField(goalId, field, value) {
+    const g = state.goals.find(x => x.id === goalId);
+    if (g) { g[field] = value; saveState(); }
+}
+
+function editPeriod(goalId, period) {
+    const g = state.goals.find(x => x.id === goalId);
+    if (!g) return;
+    const labels = { yearly:'Yearly Goal', quarterly:'Quarterly Milestone', monthly:'Monthly Target', weekly:'Weekly Goal' };
+    openEditField(`Edit ${labels[period]}`, `${g.title} — ${labels[period]}`, g[period], v => {
+        g[period] = v;
+        saveState();
+        render();
+    });
+}
+
+// ═══════════════════════════════════════════
+//  HABIT CRUD
+// ═══════════════════════════════════════════
+let _habitGoalId = null;
+let _editingHabitId = null;
+
+function openHabitModal(goalId, editHabitId) {
+    _habitGoalId = goalId;
+    _editingHabitId = editHabitId || null;
+    if (_editingHabitId) {
+        const g = state.goals.find(x => x.id === goalId);
+        const h = g?.habits.find(x => x.id === _editingHabitId);
+        document.getElementById('habitModalTitle').textContent = 'Edit Habit';
+        document.getElementById('habitModalSave').textContent = 'Save';
+        document.getElementById('fHabitName').value = h?.name || '';
+    } else {
+        document.getElementById('habitModalTitle').textContent = 'Add Daily Habit';
+        document.getElementById('habitModalSave').textContent = 'Add Habit';
+        document.getElementById('fHabitName').value = '';
+    }
+    openModal('habitModal');
+    setTimeout(() => document.getElementById('fHabitName').focus(), 100);
+}
+
+function saveHabit() {
+    const name = document.getElementById('fHabitName').value.trim();
+    if (!name) return;
+    const g = state.goals.find(x => x.id === _habitGoalId);
+    if (!g) return;
+
+    if (_editingHabitId) {
+        const h = g.habits.find(x => x.id === _editingHabitId);
+        if (h) h.name = name;
+    } else {
+        g.habits.push({ id: Date.now(), name, done: false, streak: 0 });
+    }
+    _editingHabitId = null;
+    saveState();
+    render();
+    closeModal('habitModal');
+}
+
+function editHabitName(goalId, habitId) {
+    openHabitModal(goalId, habitId);
+}
+
+async function deleteHabit(goalId, habitId) {
+    const ok = await showConfirm('Remove Habit', 'Remove this habit?', 'Remove');
+    if (!ok) return;
+    const g = state.goals.find(x => x.id === goalId);
+    if (g) { g.habits = g.habits.filter(h => h.id !== habitId); saveState(); render(); }
+}
+
+function toggleHabit(goalId, habitId) {
+    const g = state.goals.find(x => x.id === goalId);
+    if (!g) return;
+    const h = g.habits.find(x => x.id === habitId);
+    if (!h) return;
+
+    h.done = !h.done;
+    if (h.done) {
+        h.streak++;
+        gainExp(50);
+        state.mana.current = Math.min(state.mana.current + 5, state.mana.max);
+    } else {
+        h.streak = Math.max(0, h.streak - 1);
+        state.exp.current = Math.max(0, state.exp.current - 50);
+        state.hp.current = Math.max(1, state.hp.current - 5);
+    }
+    saveState();
+    render();
+}
+
+// ═══════════════════════════════════════════
+//  LEVELING SYSTEM
+// ═══════════════════════════════════════════
+function gainExp(amount) {
+    state.exp.current += amount;
+    while (state.exp.current >= state.exp.max) {
+        state.exp.current -= state.exp.max;
+        state.level++;
+        state.exp.max = 100 + state.level * 75;
+        state.hp.max = 100 + state.level * 15;
+        state.hp.current = state.hp.max;
+        state.mana.max = 50 + state.level * 10;
+        state.mana.current = state.mana.max;
+        showLevelUp();
+    }
+}
+
+function showLevelUp() {
+    const overlay = document.getElementById('levelUpOverlay');
+    document.getElementById('levelUpText').textContent = `LEVEL ${state.level}!`;
+    document.getElementById('levelUpSub').textContent = `HP and Mana fully restored. Keep questing!`;
+    overlay.classList.add('active');
+    setTimeout(() => overlay.classList.remove('active'), 2500);
+}
+
+// ═══════════════════════════════════════════
+//  QUEST JOURNAL / REST AT INN
+// ═══════════════════════════════════════════
+function completeQuest() {
+    const textarea = document.getElementById('journalText');
+    const entry = textarea.value.trim();
+    if (!entry) return;
+
+    // Archive journal entry
+    state.history.push({
+        date: new Date().toISOString().slice(0, 10),
+        text: entry
+    });
+
+    // Reset daily habits (uncheck all)
+    state.goals.forEach(g => {
+        g.habits.forEach(h => { h.done = false; });
+    });
+
+    // Rest at inn: restore HP and Mana
+    state.hp.current = state.hp.max;
+    state.mana.current = state.mana.max;
+    state.journal = '';
+    textarea.value = '';
+
+    saveState();
+    render();
+
+    // Brief celebration
+    const overlay = document.getElementById('levelUpOverlay');
+    document.getElementById('levelUpText').textContent = 'QUEST COMPLETE';
+    document.getElementById('levelUpSub').textContent = 'Rest well, brave warrior. Tomorrow brings new adventures!';
+    overlay.classList.add('active');
+    setTimeout(() => overlay.classList.remove('active'), 2200);
+}
+
+// Save journal text as user types
+document.getElementById('journalText').addEventListener('input', function() {
+    state.journal = this.value;
+    saveState();
+});
+
+// ═══════════════════════════════════════════
+//  COLOR PICKER
+// ═══════════════════════════════════════════
+function setPickedColor(color) {
+    document.querySelectorAll('#goalColorPicker .color-swatch').forEach(s => {
+        s.classList.toggle('picked', s.dataset.color === color);
+    });
+}
+document.querySelectorAll('#goalColorPicker .color-swatch').forEach(s => {
+    s.addEventListener('click', () => setPickedColor(s.dataset.color));
+});
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+loadState();
+render();
+</script>
+</body>
+</html>
