@@ -1,0 +1,23 @@
+Version 1.9.1 - Goal Separation Fix
+===================================
+Time: Monday Feb 24, 2026 at 12:43 PM PST
+
+ISSUE FIXED:
+- New goals were appearing INSIDE existing goal cards
+- Each goal should have its own separate card with border
+
+CAUSE:
+- Missing closing </div> tag in indicators-section
+- This caused HTML structure to break
+
+SOLUTION:
+- Added missing </div> tag
+- Each goal now properly separated
+- Added "New Goal" button at bottom
+
+RESULT:
+- Each goal has its own card
+- Each goal has its own color border
+- Goals are properly separated
+
+If you see this, the fix is deployed!
