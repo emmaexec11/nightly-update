@@ -916,51 +916,8 @@
 
             <div class="goals-container" id="goalsContainer">
                 <!-- Goals will be rendered here -->
-                <div style="padding: 2rem; text-align: center; color: #666;">
-                    <p>Loading goals...</p>
-                    <p style="font-size: 0.875rem;">If goals don't appear, check browser console for errors.</p>
-                </div>
             </div>
         </div>
-
-        <!-- Manual Goals Display (Temporary for debugging) -->
-        <div class="manual-goals-section" style="margin: 2rem 0; padding: 2rem; background: rgba(255,255,255,0.05); border-radius: 1rem;">
-            <h3 style="margin-bottom: 1.5rem; color: #a855f7;">Your 5 Yearly Goals:</h3>
-            
-            <div style="display: grid; gap: 1rem;">
-                <div style="padding: 1rem; background: #1a1a1a; border-left: 4px solid #a855f7; border-radius: 0.5rem;">
-                    <h4>1. Spirituality & Nervous System</h4>
-                    <p style="color: #999; font-size: 0.875rem;">Yearly: Reduce anxiety by 80%</p>
-                    <p style="color: #666; font-size: 0.75rem;">Daily Habits: Morning Routine, Meditation</p>
-                </div>
-                
-                <div style="padding: 1rem; background: #1a1a1a; border-left: 4px solid #f59e0b; border-radius: 0.5rem;">
-                    <h4>2. Financial & Wealth Goal</h4>
-                    <p style="color: #999; font-size: 0.875rem;">Yearly: 40% Revenue Growth</p>
-                    <p style="color: #666; font-size: 0.75rem;">Daily Habits: Review Trading Charts</p>
-                </div>
-                
-                <div style="padding: 1rem; background: #1a1a1a; border-left: 4px solid #ef4444; border-radius: 0.5rem;">
-                    <h4>3. Health & Fitness</h4>
-                    <p style="color: #999; font-size: 0.875rem;">Yearly: Get to 10% body fat</p>
-                    <p style="color: #666; font-size: 0.75rem;">Daily Habits: Morning Workout</p>
-                </div>
-                
-                <div style="padding: 1rem; background: #1a1a1a; border-left: 4px solid #3b82f6; border-radius: 0.5rem;">
-                    <h4>4. Community & Relationships</h4>
-                    <p style="color: #999; font-size: 0.875rem;">Yearly: Deepen key relationships</p>
-                    <p style="color: #666; font-size: 0.75rem;">Daily Habits: To be added</p>
-                </div>
-                
-                <div style="padding: 1rem; background: #1a1a1a; border-left: 4px solid #10b981; border-radius: 0.5rem;">
-                    <h4>5. Personal Development</h4>
-                    <p style="color: #999; font-size: 0.875rem;">Yearly: Read 52 books</p>
-                    <p style="color: #666; font-size: 0.75rem;">Daily Habits: To be added</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Habits are now inside each goal -->
 
         <!-- Reflection Section -->
         <div class="reflection-section">
@@ -1132,6 +1089,8 @@
                 title: 'Spirituality & Nervous System',
                 category: 'spiritual',
                 yearly: 'Define your yearly spiritual goal',
+                leadIndicator: 'Actions I control (e.g., daily meditation)',
+                lagIndicator: 'Results I measure (e.g., anxiety levels)',
                 quarterly: 'Define quarterly milestone',
                 monthly: 'Define monthly target',
                 weekly: 'Define weekly practice'
@@ -1683,9 +1642,105 @@
         // Initialize on load
         init();
         
-        // Force render goals immediately for debugging
-        console.log('Forcing render with', state.goals.length, 'goals');
-        renderGoals();
+        // Force render goals with basic HTML if JavaScript fails
+        if (!document.getElementById('goalsContainer').innerHTML || document.getElementById('goalsContainer').innerHTML.trim() === '<!-- Goals will be rendered here -->') {
+            document.getElementById('goalsContainer').innerHTML = `
+                <div class="goal-card spiritual" style="border-left-color: #a855f7;">
+                    <div class="goal-header">
+                        <h3 class="goal-title">1. Spirituality & Nervous System</h3>
+                    </div>
+                    <div class="goal-content" style="padding: 1.5rem;">
+                        <div class="lead-lag-section" style="margin-bottom: 1.5rem;">
+                            <div style="margin-bottom: 1rem;">
+                                <label style="font-size: 0.875rem; color: #999;">YEARLY GOAL</label>
+                                <input type="text" value="Reduce anxiety by 80%" style="width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 0.5rem; color: white; margin-top: 0.25rem;">
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div>
+                                    <label style="font-size: 0.75rem; color: #666;">Lead Indicator (Actions)</label>
+                                    <input type="text" placeholder="Actions I control" style="width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 0.5rem; color: white; margin-top: 0.25rem; font-size: 0.875rem;">
+                                </div>
+                                <div>
+                                    <label style="font-size: 0.75rem; color: #666;">Lag Indicator (Results)</label>
+                                    <input type="text" placeholder="Results I measure" style="width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 0.5rem; color: white; margin-top: 0.25rem; font-size: 0.875rem;">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="hierarchy-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                            <div class="hierarchy-item">
+                                <div class="hierarchy-label">QUARTERLY</div>
+                                <div class="hierarchy-value">Build meditation habit</div>
+                            </div>
+                            <div class="hierarchy-item">
+                                <div class="hierarchy-label">MONTHLY</div>
+                                <div class="hierarchy-value">21 days consistent</div>
+                            </div>
+                            <div class="hierarchy-item">
+                                <div class="hierarchy-label">WEEKLY</div>
+                                <div class="hierarchy-value">6/7 days complete</div>
+                            </div>
+                        </div>
+                        
+                        <h4 style="color: #999; font-size: 0.875rem; margin-bottom: 0.75rem;">DAILY HABITS</h4>
+                        <div class="habit-item">
+                            <div class="habit-checkbox">✓</div>
+                            <div class="habit-name">Morning Routine</div>
+                        </div>
+                        <div class="habit-item">
+                            <div class="habit-checkbox"></div>
+                            <div class="habit-name">Meditation</div>
+                        </div>
+                    </div>
+                </div>
+                
+                ${state.goals.slice(1).map((goal, index) => `
+                    <div class="goal-card ${goal.category}">
+                        <div class="goal-header">
+                            <h3 class="goal-title">${index + 2}. ${goal.title}</h3>
+                        </div>
+                        <div class="goal-content" style="padding: 1.5rem;">
+                            <div class="lead-lag-section" style="margin-bottom: 1.5rem;">
+                                <div style="margin-bottom: 1rem;">
+                                    <label style="font-size: 0.875rem; color: #999;">YEARLY GOAL</label>
+                                    <input type="text" value="${goal.yearly}" style="width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 0.5rem; color: white; margin-top: 0.25rem;">
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                    <div>
+                                        <label style="font-size: 0.75rem; color: #666;">Lead Indicator (Actions)</label>
+                                        <input type="text" placeholder="Actions I control" style="width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 0.5rem; color: white; margin-top: 0.25rem; font-size: 0.875rem;">
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 0.75rem; color: #666;">Lag Indicator (Results)</label>
+                                        <input type="text" placeholder="Results I measure" style="width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 0.5rem; color: white; margin-top: 0.25rem; font-size: 0.875rem;">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="hierarchy-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                                <div class="hierarchy-item">
+                                    <div class="hierarchy-label">QUARTERLY</div>
+                                    <div class="hierarchy-value">${goal.quarterly}</div>
+                                </div>
+                                <div class="hierarchy-item">
+                                    <div class="hierarchy-label">MONTHLY</div>
+                                    <div class="hierarchy-value">${goal.monthly}</div>
+                                </div>
+                                <div class="hierarchy-item">
+                                    <div class="hierarchy-label">WEEKLY</div>
+                                    <div class="hierarchy-value">${goal.weekly}</div>
+                                </div>
+                            </div>
+                            
+                            <h4 style="color: #999; font-size: 0.875rem; margin-bottom: 0.75rem;">DAILY HABITS</h4>
+                            ${index === 0 ? '<div class="habit-item"><div class="habit-checkbox"></div><div class="habit-name">Review Trading Charts</div></div>' : 
+                              index === 1 ? '<div class="habit-item"><div class="habit-checkbox"></div><div class="habit-name">Morning Workout</div></div>' :
+                              '<p style="color: #666; font-size: 0.875rem;">No habits yet - add some!</p>'}
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+        }
     </script>
 </body>
 </html>
