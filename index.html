@@ -149,8 +149,15 @@
         }
 
         .goal-title {
-            font-size: 1.5rem;
-            font-weight: bold;
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin: 0;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .goal-title:hover {
+            opacity: 0.8;
         }
 
         .goal-actions {
@@ -481,9 +488,9 @@
         }
 
         .color-swatch {
-            width: 60px;
-            height: 60px;
-            border-radius: 0.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 0.375rem;
             cursor: pointer;
             transition: transform 0.2s;
             border: 2px solid transparent;
@@ -593,7 +600,7 @@
         </div>
     </div>
 
-    <div class="version">v1.3 - Professional UI</div>
+    <div class="version">v1.4 - Professional Edit Modals</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
@@ -601,6 +608,10 @@
             <div class="modal-header">
                 <h3 class="modal-title">Choose Goal Color</h3>
                 <button class="close-btn" onclick="closeColorPicker()">×</button>
+            </div>
+            <div style="padding: 1rem;">
+                <input type="color" id="colorWheel" style="width: 100%; height: 150px; border: none; border-radius: 0.5rem; cursor: pointer;" onchange="selectColor(this.value)">
+                <p style="margin: 1rem 0 0.5rem 0; color: #999; font-size: 0.875rem;">Quick Colors:</p>
             </div>
             <div class="color-swatches">
                 <div class="color-swatch" style="background: #a855f7" onclick="selectColor('#a855f7')"></div>
@@ -612,6 +623,20 @@
                 <div class="color-swatch" style="background: #8b5cf6" onclick="selectColor('#8b5cf6')"></div>
                 <div class="color-swatch" style="background: #14b8a6" onclick="selectColor('#14b8a6')"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- Text Edit Modal -->
+    <div id="textEditModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="editModalTitle">Edit Text</h3>
+                <button class="close-btn" onclick="closeTextEdit()">×</button>
+            </div>
+            <div class="form-group">
+                <textarea id="editTextArea" style="width: 100%; min-height: 100px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); color: white; padding: 1rem; border-radius: 0.5rem; font-size: 1rem; font-family: inherit;"></textarea>
+            </div>
+            <button class="btn-primary" onclick="saveTextEdit()">Save</button>
         </div>
     </div>
 
@@ -700,10 +725,9 @@
             container.innerHTML = state.goals.map(goal => `
                 <div class="goal-card ${goal.category}" style="border-left-color: ${goal.color || getCategoryColor(goal.category)}">
                     <div class="goal-header">
-                        <input type="text" class="goal-title editable-text" 
+                        <h3 class="goal-title" 
                             style="color: ${goal.color || getCategoryColor(goal.category)}" 
-                            value="${goal.name}" 
-                            onchange="updateGoal('${goal.id}', 'name', this.value)">
+                            onclick="editGoalTitle('${goal.id}')">${goal.name}</h3>
                         <div class="goal-actions">
                             <button class="icon-btn" onclick="changeGoalColor('${goal.id}')" title="Change color">🎨</button>
                             <button class="icon-btn" onclick="deleteGoal('${goal.id}')">🗑️</button>
@@ -711,30 +735,33 @@
                     </div>
                     <div class="goal-content">
                         <div class="indicators-section">
-                            <div style="margin-bottom: 1rem;">
-                                <label style="font-size: 0.875rem; color: #999;">Yearly Goal</label>
-                                <div style="margin-top: 0.5rem;">
-                                    <input type="text" class="editable-text" 
-                                        style="font-size: 1.125rem; font-weight: 500;"
-                                        value="${goal.yearly || ''}" 
-                                        onchange="updateGoal('${goal.id}', 'yearly', this.value)"
-                                        placeholder="Define your yearly goal">
+                            <div style="margin-bottom: 1.5rem;">
+                                <label style="font-size: 0.875rem; color: #999; text-transform: uppercase; letter-spacing: 0.05em;">Yearly Goal</label>
+                                <div style="margin-top: 0.5rem; padding: 1rem; background: rgba(255, 255, 255, 0.03); border-radius: 0.5rem; cursor: pointer; transition: all 0.2s;"
+                                    onclick="editGoalField('${goal.id}', 'yearly', 'Yearly Goal')"
+                                    onmouseover="this.style.background='rgba(255, 255, 255, 0.06)'"
+                                    onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'">
+                                    <div style="font-size: 1.125rem; font-weight: 500;">${goal.yearly || 'Click to define yearly goal'}</div>
                                 </div>
                             </div>
                             <div class="indicator-row">
                                 <div>
-                                    <label>Lead Indicator (Actions)</label>
-                                    <input type="text" class="editable-text" 
-                                        value="${goal.leadIndicator || ''}" 
-                                        onchange="updateGoal('${goal.id}', 'leadIndicator', this.value)"
-                                        placeholder="Actions I control">
+                                    <label style="font-size: 0.75rem; color: #999; text-transform: uppercase;">Lead Indicator (Actions)</label>
+                                    <div style="margin-top: 0.25rem; padding: 0.75rem; background: rgba(255, 255, 255, 0.03); border-radius: 0.375rem; cursor: pointer; transition: all 0.2s;"
+                                        onclick="editGoalField('${goal.id}', 'leadIndicator', 'Lead Indicator')"
+                                        onmouseover="this.style.background='rgba(255, 255, 255, 0.06)'"
+                                        onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'">
+                                        <div style="font-size: 0.875rem;">${goal.leadIndicator || 'Click to add actions you control'}</div>
+                                    </div>
                                 </div>
                                 <div>
-                                    <label>Lag Indicator (Results)</label>
-                                    <input type="text" class="editable-text" 
-                                        value="${goal.lagIndicator || ''}" 
-                                        onchange="updateGoal('${goal.id}', 'lagIndicator', this.value)"
-                                        placeholder="Results I measure">
+                                    <label style="font-size: 0.75rem; color: #999; text-transform: uppercase;">Lag Indicator (Results)</label>
+                                    <div style="margin-top: 0.25rem; padding: 0.75rem; background: rgba(255, 255, 255, 0.03); border-radius: 0.375rem; cursor: pointer; transition: all 0.2s;"
+                                        onclick="editGoalField('${goal.id}', 'lagIndicator', 'Lag Indicator')"
+                                        onmouseover="this.style.background='rgba(255, 255, 255, 0.06)'"
+                                        onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'">
+                                        <div style="font-size: 0.875rem;">${goal.lagIndicator || 'Click to add results you measure'}</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -867,15 +894,12 @@
 
         // Edit period
         function editPeriod(goalId, period) {
-            const goal = state.goals.find(g => g.id === goalId);
-            if (goal) {
-                const newValue = prompt(`Set ${period} goal:`, goal[period] || '');
-                if (newValue !== null) {
-                    goal[period] = newValue;
-                    saveState();
-                    renderAll();
-                }
-            }
+            const periodTitles = {
+                quarterly: 'Quarterly Goal',
+                monthly: 'Monthly Goal',
+                weekly: 'Weekly Goal'
+            };
+            editGoalField(goalId, period, periodTitles[period]);
         }
 
         // Delete goal
@@ -1010,6 +1034,52 @@
             closeColorPicker();
         }
 
+        // Edit text fields
+        let currentEditGoalId = null;
+        let currentEditField = null;
+        
+        function editGoalTitle(goalId) {
+            const goal = state.goals.find(g => g.id === goalId);
+            if (goal) {
+                currentEditGoalId = goalId;
+                currentEditField = 'name';
+                document.getElementById('editModalTitle').textContent = 'Edit Goal Title';
+                document.getElementById('editTextArea').value = goal.name;
+                document.getElementById('textEditModal').classList.add('active');
+                document.getElementById('editTextArea').focus();
+            }
+        }
+        
+        function editGoalField(goalId, field, title) {
+            const goal = state.goals.find(g => g.id === goalId);
+            if (goal) {
+                currentEditGoalId = goalId;
+                currentEditField = field;
+                document.getElementById('editModalTitle').textContent = `Edit ${title}`;
+                document.getElementById('editTextArea').value = goal[field] || '';
+                document.getElementById('textEditModal').classList.add('active');
+                document.getElementById('editTextArea').focus();
+            }
+        }
+        
+        function closeTextEdit() {
+            document.getElementById('textEditModal').classList.remove('active');
+            currentEditGoalId = null;
+            currentEditField = null;
+        }
+        
+        function saveTextEdit() {
+            if (currentEditGoalId && currentEditField) {
+                const goal = state.goals.find(g => g.id === currentEditGoalId);
+                if (goal) {
+                    goal[currentEditField] = document.getElementById('editTextArea').value;
+                    saveState();
+                    renderAll();
+                }
+            }
+            closeTextEdit();
+        }
+        
         // Complete quest
         function completeQuest() {
             state.journal = document.getElementById('questJournal').value;
