@@ -1214,19 +1214,12 @@
                     saveEditModal();
                 }
             });
-
-            // FORCE SHOW GOALS FOR DEBUGGING
-            if (state.goals.length === 0) {
-                alert("ERROR: No goals in state after init!");
-            }
-            console.log("Init complete, rendering", state.goals.length, "goals");
         }
 
         // Render goals
         function renderGoals() {
             const container = document.getElementById('goalsContainer');
-            console.log("RenderGoals: Rendering", state.goals.length, "goals");
-
+            
             // Debug - show how many goals we have
             if (!state.goals || state.goals.length === 0) {
                 container.innerHTML = '<div style="color: red; font-size: 2rem;">NO GOALS FOUND IN STATE!</div>';

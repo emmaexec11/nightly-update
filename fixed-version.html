@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goal Tracker - Fixed Version</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --bg-card: #1a1a1a;
+            --border: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #b4b4b4;
+            --success: #10b981;
+            --purple: #a855f7;
+            --orange: #f97316;
+            --hp: #ef4444;
+            --mana: #3b82f6;
+            --exp: #fbbf24;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Character section */
+        .character-section {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .level-display {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--exp);
+        }
+
+        /* Goals section */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .goal-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .goal-card.spiritual { border-left: 4px solid var(--purple); }
+        .goal-card.financial { border-left: 4px solid var(--orange); }
+        .goal-card.health { border-left: 4px solid var(--hp); }
+        .goal-card.community { border-left: 4px solid var(--mana); }
+        .goal-card.personal { border-left: 4px solid var(--success); }
+
+        .goal-header {
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .goal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .goal-content {
+            padding: 1.5rem;
+        }
+
+        .hierarchy-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .hierarchy-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .hierarchy-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .hierarchy-label {
+            font-size: 0.625rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .hierarchy-value {
+            font-size: 0.875rem;
+            color: var(--text-primary);
+        }
+
+        .habit-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .habit-checkbox {
+            width: 3rem;
+            height: 3rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .habit-checkbox.checked {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .habit-checkbox.checked::after {
+            content: '✓';
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .habit-name {
+            font-size: 1.125rem;
+            font-weight: 500;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--purple);
+            border: none;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .quest-journal {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .quest-journal h2 {
+            margin-bottom: 1rem;
+            color: var(--purple);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            color: var(--text-primary);
+            padding: 1rem;
+            font-family: inherit;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Character Section -->
+        <div class="character-section">
+            <div class="level-display">LEVEL 18</div>
+            <div>HP: 180/200 | EXP: 8.2k | Streak: 12 days</div>
+        </div>
+
+        <!-- Goals Section -->
+        <div class="section-header">
+            <h2 class="section-title">Epic Goals</h2>
+            <button class="btn" onclick="alert('Add new goal')">+ New Goal</button>
+        </div>
+
+        <div id="goalsContainer"></div>
+
+        <!-- Quest Journal -->
+        <div class="quest-journal">
+            <h2>Quest Journal</h2>
+            <textarea placeholder="What epic battles did you win today?"></textarea>
+            <br><br>
+            <button class="btn">Complete Quest & Rest at Inn</button>
+        </div>
+    </div>
+
+    <script>
+        // Clear localStorage on every load for testing
+        localStorage.clear();
+        
+        // Define goals directly - no localStorage complexity
+        const goals = [
+            {
+                id: 1,
+                title: 'Spirituality & Nervous System',
+                category: 'spiritual',
+                yearly: 'Reduce anxiety by 80%',
+                quarterly: 'Implement morning routine',
+                monthly: 'Master meditation',
+                weekly: 'Complete routines 6/7 days',
+                habits: [
+                    { id: 1, name: 'Morning Routine', completed: false },
+                    { id: 2, name: 'Meditation', completed: false }
+                ]
+            },
+            {
+                id: 2,
+                title: 'Financial & Wealth Goal',
+                category: 'financial',
+                yearly: '40% Revenue Growth',
+                quarterly: 'Launch new products',
+                monthly: 'Optimize ads',
+                weekly: 'Review metrics daily',
+                habits: [
+                    { id: 3, name: 'Review Trading Charts', completed: false }
+                ]
+            },
+            {
+                id: 3,
+                title: 'Health & Fitness',
+                category: 'health',
+                yearly: 'Get to 10% body fat',
+                quarterly: 'Build strength routine',
+                monthly: 'Track all meals',
+                weekly: 'Workout 5x per week',
+                habits: [
+                    { id: 4, name: 'Morning Workout', completed: false }
+                ]
+            },
+            {
+                id: 4,
+                title: 'Community & Relationships',
+                category: 'community',
+                yearly: 'Deepen key relationships',
+                quarterly: 'Weekly friend meetups',
+                monthly: 'Plan group activities',
+                weekly: 'Reach out to 3 people',
+                habits: []
+            },
+            {
+                id: 5,
+                title: 'Personal Development',
+                category: 'personal',
+                yearly: 'Read 52 books',
+                quarterly: 'Complete online course',
+                monthly: 'Learn new skill',
+                weekly: '5 hours learning',
+                habits: []
+            }
+        ];
+
+        function editGoalPeriod(goalId, period) {
+            const goal = goals.find(g => g.id === goalId);
+            const newValue = prompt(`Edit ${period} goal:`, goal[period]);
+            if (newValue) {
+                goal[period] = newValue;
+                renderGoals();
+            }
+        }
+
+        function toggleHabit(habitId) {
+            goals.forEach(goal => {
+                const habit = goal.habits.find(h => h.id === habitId);
+                if (habit) {
+                    habit.completed = !habit.completed;
+                }
+            });
+            renderGoals();
+        }
+
+        function renderGoals() {
+            const container = document.getElementById('goalsContainer');
+            
+            container.innerHTML = goals.map(goal => `
+                <div class="goal-card ${goal.category}">
+                    <div class="goal-header">
+                        <h3 class="goal-title">${goal.title}</h3>
+                    </div>
+                    <div class="goal-content">
+                        <div class="hierarchy-grid">
+                            <div class="hierarchy-item" onclick="editGoalPeriod(${goal.id}, 'yearly')">
+                                <div class="hierarchy-label">YEARLY</div>
+                                <div class="hierarchy-value">${goal.yearly}</div>
+                            </div>
+                            <div class="hierarchy-item" onclick="editGoalPeriod(${goal.id}, 'quarterly')">
+                                <div class="hierarchy-label">QUARTERLY</div>
+                                <div class="hierarchy-value">${goal.quarterly}</div>
+                            </div>
+                            <div class="hierarchy-item" onclick="editGoalPeriod(${goal.id}, 'monthly')">
+                                <div class="hierarchy-label">MONTHLY</div>
+                                <div class="hierarchy-value">${goal.monthly}</div>
+                            </div>
+                            <div class="hierarchy-item" onclick="editGoalPeriod(${goal.id}, 'weekly')">
+                                <div class="hierarchy-label">WEEKLY</div>
+                                <div class="hierarchy-value">${goal.weekly}</div>
+                            </div>
+                        </div>
+                        
+                        <h4 style="margin: 1rem 0 0.5rem 0; color: var(--text-secondary); font-size: 0.875rem;">DAILY HABITS</h4>
+                        
+                        ${goal.habits.map(habit => `
+                            <div class="habit-item">
+                                <div class="habit-checkbox ${habit.completed ? 'checked' : ''}" onclick="toggleHabit(${habit.id})"></div>
+                                <div class="habit-name">${habit.name}</div>
+                            </div>
+                        `).join('')}
+                        
+                        ${goal.habits.length === 0 ? '<p style="color: var(--text-secondary); font-size: 0.875rem;">No habits yet - add some!</p>' : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render immediately
+        renderGoals();
+        console.log('Rendered', goals.length, 'goals');
+    </script>
+</body>
+</html>
