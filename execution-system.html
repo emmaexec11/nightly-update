@@ -545,13 +545,11 @@
 
         /* Edit Actions */
         .edit-actions {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
             display: flex;
             gap: 0.5rem;
             opacity: 0;
             transition: opacity 0.2s ease;
+            flex-shrink: 0;
         }
 
         .habit-item:hover .edit-actions,
@@ -1012,6 +1010,37 @@
         </div>
     </div>
 
+    <!-- Confirm Modal -->
+    <div id="confirmModal" class="modal-overlay">
+        <div class="modal" style="max-width: 420px;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="confirmModalTitle">Confirm</h3>
+            </div>
+            <div class="modal-body">
+                <p id="confirmModalMessage" style="color: var(--text-secondary); font-size: 1.05rem;"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeConfirmModal(false)">Cancel</button>
+                <button class="btn btn-primary" id="confirmModalAction" style="background: var(--hp);">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Modal (replaces alert) -->
+    <div id="notifyModal" class="modal-overlay">
+        <div class="modal" style="max-width: 420px;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="notifyModalTitle">Notice</h3>
+            </div>
+            <div class="modal-body">
+                <p id="notifyModalMessage" style="color: var(--text-secondary); font-size: 1.05rem; text-align: center;"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeNotifyModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Goal Settings Modal -->
     <div id="goalSettingsModal" class="modal-overlay">
         <div class="modal">
@@ -1055,80 +1084,122 @@
     </div>
 
     <script>
-        // State
+        // Default goals - always available as fallback
+        const DEFAULT_GOALS = [
+            {
+                id: 1,
+                title: 'Spirituality & Nervous System',
+                category: 'spiritual',
+                yearly: 'Define your yearly spiritual goal',
+                quarterly: 'Define quarterly milestone',
+                monthly: 'Define monthly target',
+                weekly: 'Define weekly practice'
+            },
+            {
+                id: 2,
+                title: 'Financial & Wealth Goal',
+                category: 'financial',
+                yearly: 'Define your yearly financial goal',
+                quarterly: 'Define quarterly milestone',
+                monthly: 'Define monthly target',
+                weekly: 'Define weekly actions'
+            },
+            {
+                id: 3,
+                title: 'Health & Fitness',
+                category: 'health',
+                yearly: 'Define your yearly health goal',
+                quarterly: 'Define quarterly milestone',
+                monthly: 'Define monthly target',
+                weekly: 'Define weekly workouts'
+            },
+            {
+                id: 4,
+                title: 'Community & Relationships',
+                category: 'community',
+                yearly: 'Define your yearly relationship goal',
+                quarterly: 'Define quarterly milestone',
+                monthly: 'Define monthly target',
+                weekly: 'Define weekly connections'
+            },
+            {
+                id: 5,
+                title: 'Personal Development',
+                category: 'personal',
+                yearly: 'Define your yearly growth goal',
+                quarterly: 'Define quarterly milestone',
+                monthly: 'Define monthly target',
+                weekly: 'Define weekly learning'
+            }
+        ];
+
+        const DEFAULT_HABITS = [
+            { id: 1, goalId: 1, name: 'Morning Routine', frequency: 'daily', completed: false, streak: 12, successRate: 85 },
+            { id: 2, goalId: 1, name: 'Meditation', frequency: 'daily', completed: true, streak: 8, successRate: 92 },
+            { id: 3, goalId: 2, name: 'Review Trading Charts', frequency: 'daily', completed: false, streak: 24, successRate: 96 },
+            { id: 4, goalId: 3, name: 'Workout', frequency: 'daily', completed: false, streak: 15, successRate: 88 }
+        ];
+
+        // State - starts with defaults, loadState() may override
         let state = {
-            goals: [
-                {
-                    id: 1,
-                    title: 'Spirituality & Nervous System',
-                    category: 'spiritual',
-                    yearly: 'Define your yearly spiritual goal',
-                    quarterly: 'Define quarterly milestone',
-                    monthly: 'Define monthly target',
-                    weekly: 'Define weekly practice'
-                },
-                {
-                    id: 2,
-                    title: 'Financial & Wealth Goal',
-                    category: 'financial',
-                    yearly: 'Define your yearly financial goal',
-                    quarterly: 'Define quarterly milestone',
-                    monthly: 'Define monthly target',
-                    weekly: 'Define weekly actions'
-                },
-                {
-                    id: 3,
-                    title: 'Health & Fitness',
-                    category: 'health',
-                    yearly: 'Define your yearly health goal',
-                    quarterly: 'Define quarterly milestone',
-                    monthly: 'Define monthly target',
-                    weekly: 'Define weekly workouts'
-                },
-                {
-                    id: 4,
-                    title: 'Community & Relationships',
-                    category: 'community',
-                    yearly: 'Define your yearly relationship goal',
-                    quarterly: 'Define quarterly milestone',
-                    monthly: 'Define monthly target',
-                    weekly: 'Define weekly connections'
-                },
-                {
-                    id: 5,
-                    title: 'Personal Development',
-                    category: 'personal',
-                    yearly: 'Define your yearly growth goal',
-                    quarterly: 'Define quarterly milestone',
-                    monthly: 'Define monthly target',
-                    weekly: 'Define weekly learning'
-                }
-            ],
-            habits: [
-                { id: 1, goalId: 1, name: 'Morning Routine', frequency: 'daily', completed: false, streak: 12, successRate: 85 },
-                { id: 2, goalId: 1, name: 'Meditation', frequency: 'daily', completed: true, streak: 8, successRate: 92 },
-                { id: 3, goalId: 2, name: 'Review Trading Charts', frequency: 'daily', completed: false, streak: 24, successRate: 96 },
-                { id: 4, goalId: 3, name: 'Workout', frequency: 'daily', completed: false, streak: 15, successRate: 88 }
-            ],
+            goals: JSON.parse(JSON.stringify(DEFAULT_GOALS)),
+            habits: JSON.parse(JSON.stringify(DEFAULT_HABITS)),
             level: 18,
             hp: { current: 180, max: 200 },
             mana: { current: 145, max: 150 },
             exp: { current: 8240, max: 10000 }
         };
 
-        // Initialize
-        function init() {
-            // FORCE CLEAR OLD DATA AND USE DEFAULTS
-            localStorage.removeItem('questTracker');
+        // Load state from localStorage - only override if valid data exists
+        function loadState() {
+            try {
+                const saved = localStorage.getItem('questTracker');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    // Only use saved state if it has valid goals array with entries
+                    if (parsed && Array.isArray(parsed.goals) && parsed.goals.length > 0) {
+                        state = parsed;
+                        // Ensure habits array exists
+                        if (!Array.isArray(state.habits)) {
+                            state.habits = JSON.parse(JSON.stringify(DEFAULT_HABITS));
+                        }
+                    } else {
+                        // Bad data in localStorage - clear it and keep defaults
+                        localStorage.removeItem('questTracker');
+                    }
+                }
+            } catch (e) {
+                // Corrupted localStorage - clear and use defaults
+                console.warn('Failed to load saved state, using defaults:', e);
+                localStorage.removeItem('questTracker');
+            }
+            // Also clean up old storage keys from previous versions
             localStorage.removeItem('executionSystem');
             localStorage.removeItem('modernTracker');
-            
-            // Make sure state has goals
-            console.log('Goals in state:', state.goals.length);
-            
+        }
+
+        // Save state
+        function saveState() {
+            localStorage.setItem('questTracker', JSON.stringify(state));
+        }
+
+        // Initialize
+        function init() {
+            console.log('Init: Starting initialization');
+            loadState();
+            console.log('Init: After loadState, goals:', state.goals ? state.goals.length : 'undefined');
+
+            // Final safety net: if goals are somehow empty, restore defaults
+            if (!state.goals || state.goals.length === 0) {
+                console.log('Init: No goals found, using defaults');
+                state.goals = JSON.parse(JSON.stringify(DEFAULT_GOALS));
+                state.habits = JSON.parse(JSON.stringify(DEFAULT_HABITS));
+            }
+
+            console.log('Init: Final state has', state.goals.length, 'goals');
             renderGoals();
             updateStats();
-            
+
             // Color picker functionality
             document.querySelectorAll('.color-option').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -1143,25 +1214,6 @@
                     saveEditModal();
                 }
             });
-        }
-
-        // Load state from localStorage
-        function loadState() {
-            const saved = localStorage.getItem('questTracker');
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                // If old format (goals object instead of array) or empty goals, reset
-                if (!Array.isArray(parsed.goals) || parsed.goals.length === 0) {
-                    localStorage.removeItem('questTracker');
-                } else {
-                    state = parsed;
-                }
-            }
-        }
-
-        // Save state
-        function saveState() {
-            localStorage.setItem('questTracker', JSON.stringify(state));
         }
 
         // Render goals
@@ -1234,14 +1286,12 @@
                             <div class="stat-item">
                                 <span class="stat-value">🔥 ${habit.streak}</span>
                                 <span>Streak</span>
-                                    <div class="edit-actions">
-                                        <button class="edit-icon-btn" onclick="editHabit(${habit.id})">
-                                            <span>✏️</span> Edit
-                                        </button>
-                                    </div>
-                                </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="edit-actions">
+                        <button class="edit-icon-btn" onclick="event.stopPropagation(); editHabit(${habit.id})">✏️ Edit</button>
+                        <button class="edit-icon-btn" onclick="event.stopPropagation(); deleteHabit(${habit.id})" style="color: var(--hp);">🗑️ Delete</button>
                     </div>
                 </div>
             `).join('');
@@ -1296,7 +1346,7 @@
                         state.hp.current = state.hp.max;
                         state.mana.max += 10;
                         state.mana.current = state.mana.max;
-                        alert(`🎉 LEVEL UP! You are now level ${state.level}!`);
+                        showNotify('Level Up!', `You are now level ${state.level}! Your HP and Mana have been fully restored.`);
                     }
                 } else {
                     // Deduct stats
@@ -1491,8 +1541,41 @@
             return colors[category] || '#a855f7';
         }
 
-        function deleteGoal(id) {
-            if (confirm('Delete this goal and all its habits?')) {
+        // Confirm modal logic
+        let confirmModalResolve = null;
+
+        function showConfirm(title, message, actionLabel) {
+            return new Promise(resolve => {
+                confirmModalResolve = resolve;
+                document.getElementById('confirmModalTitle').textContent = title;
+                document.getElementById('confirmModalMessage').textContent = message;
+                document.getElementById('confirmModalAction').textContent = actionLabel || 'Delete';
+                document.getElementById('confirmModalAction').onclick = () => closeConfirmModal(true);
+                document.getElementById('confirmModal').classList.add('active');
+            });
+        }
+
+        function closeConfirmModal(result) {
+            document.getElementById('confirmModal').classList.remove('active');
+            if (confirmModalResolve) {
+                confirmModalResolve(result);
+                confirmModalResolve = null;
+            }
+        }
+
+        function showNotify(title, message) {
+            document.getElementById('notifyModalTitle').textContent = title;
+            document.getElementById('notifyModalMessage').textContent = message;
+            document.getElementById('notifyModal').classList.add('active');
+        }
+
+        function closeNotifyModal() {
+            document.getElementById('notifyModal').classList.remove('active');
+        }
+
+        async function deleteGoal(id) {
+            const confirmed = await showConfirm('Delete Goal', 'Delete this goal and all its habits? This cannot be undone.', 'Delete');
+            if (confirmed) {
                 state.goals = state.goals.filter(g => g.id !== id);
                 state.habits = state.habits.filter(h => h.goalId !== id);
                 saveState();
@@ -1516,8 +1599,9 @@
             }
         }
 
-        function deleteHabit(id) {
-            if (confirm('Remove this training from your regimen?')) {
+        async function deleteHabit(id) {
+            const confirmed = await showConfirm('Remove Training', 'Remove this training from your regimen?', 'Remove');
+            if (confirmed) {
                 state.habits = state.habits.filter(h => h.id !== id);
                 saveState();
                 renderGoals();
@@ -1531,7 +1615,7 @@
         function completeDay() {
             const textarea = document.querySelector('.reflection-textarea');
             if (textarea.value) {
-                alert('🌙 Quest journal saved! Rest well, brave warrior. Tomorrow brings new adventures!');
+                showNotify('Quest Complete', 'Quest journal saved! Rest well, brave warrior. Tomorrow brings new adventures!');
                 textarea.value = '';
                 
                 // Reset daily habits
@@ -1555,4 +1639,4 @@
         init();
     </script>
 </body>
-</html>/* cache bust: Mon Feb 23 08:59:31 PST 2026 */
+</html>

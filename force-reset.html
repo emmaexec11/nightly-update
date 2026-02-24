@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Force Reset</title>
+    <script>
+        // Clear ALL localStorage entries that might interfere
+        localStorage.removeItem('questTracker');
+        localStorage.removeItem('executionSystem');
+        localStorage.removeItem('modernTracker');
+        localStorage.removeItem('goalTracker');
+        localStorage.removeItem('habitTracker');
+        
+        // Clear everything just to be sure
+        localStorage.clear();
+        
+        console.log('All localStorage cleared!');
+        
+        // Redirect to the main app
+        window.location.href = 'execution-system.html';
+    </script>
+</head>
+<body>
+    <p>Resetting and redirecting...</p>
+</body>
+</html>

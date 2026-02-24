@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Test Goals</title>
+    <style>
+        body { background: #000; color: #fff; font-family: Arial; padding: 2rem; }
+        .goal { background: #222; padding: 1rem; margin: 1rem 0; border-left: 4px solid #a855f7; }
+    </style>
+</head>
+<body>
+    <h1>Test - Goals Should Appear Below:</h1>
+    <div id="test"></div>
+    
+    <script>
+        // Clear ALL localStorage
+        localStorage.clear();
+        
+        const goals = [
+            'Spirituality & Nervous System',
+            'Financial & Wealth Goal',
+            'Health & Fitness',
+            'Community & Relationships',
+            'Personal Development'
+        ];
+        
+        const container = document.getElementById('test');
+        container.innerHTML = '<h2>Found ' + goals.length + ' goals:</h2>';
+        
+        goals.forEach(goal => {
+            container.innerHTML += '<div class="goal">' + goal + '</div>';
+        });
+        
+        container.innerHTML += '<br><button onclick="window.location.href=\'execution-system.html\'">Go to Main Tracker</button>';
+    </script>
+</body>
+</html>
