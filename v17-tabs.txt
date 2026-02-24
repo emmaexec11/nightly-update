@@ -1,0 +1,28 @@
+Version 1.7 - Tab-Style Links
+=============================
+Time: Monday Feb 24, 2026 at 12:04 PM PST
+
+NEW TAB SYSTEM:
+
+1. CHROME-STYLE TABS
+   - Horizontal layout (not vertical)
+   - Rounded top corners like browser tabs
+   - Clean white text (not blue)
+   - Link icon 🔗 for each tab
+
+2. PROFESSIONAL LOOK
+   - Subtle hover effects
+   - Semi-transparent backgrounds
+   - Clean borders
+   - Smooth transitions
+
+3. EASY TO USE
+   - Click tab to open link in new window
+   - × button to remove (like closing a tab)
+   - + button to add new tabs
+   - Dashed border on add button
+
+WHAT IT LOOKS LIKE:
+[🔗 Notion] [🔗 Shopify Analytics] [🔗 Reports] [+]
+
+If you see this, v1.7 tab system is live!
