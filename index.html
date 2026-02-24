@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quest Tracker - Level Up Your Life</title>
+    <title>Quest Tracker - Nightly Update</title>
     <style>
         * {
             margin: 0;
@@ -512,7 +512,7 @@
         </div>
     </div>
 
-    <div class="version">v5.0 - Working Edition</div>
+    <div class="version">v1.0</div>
 
     <script>
         // State management
@@ -826,8 +826,8 @@
                 saveState();
             });
             
-            // Add sample goal if fresh start
-            if (state.goals.length === 0 && !localStorage.getItem('questTrackerInitialized')) {
+            // Always show sample goal for testing
+            if (state.goals.length === 0) {
                 state.goals.push({
                     id: Date.now().toString(),
                     name: 'Build AI Trading System',
@@ -850,8 +850,8 @@
                 state.mana.max = 55;
                 state.mana.current = 55;
                 state.exp.max = 150;
-                localStorage.setItem('questTrackerInitialized', 'true');
-                saveState();
+                // Don't save yet - let user see the sample first
+                // saveState();
             }
             
             init();
