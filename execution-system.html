@@ -1185,18 +1185,14 @@
 
         // Initialize
         function init() {
-            console.log('Init: Starting initialization');
             loadState();
-            console.log('Init: After loadState, goals:', state.goals ? state.goals.length : 'undefined');
 
             // Final safety net: if goals are somehow empty, restore defaults
             if (!state.goals || state.goals.length === 0) {
-                console.log('Init: No goals found, using defaults');
                 state.goals = JSON.parse(JSON.stringify(DEFAULT_GOALS));
                 state.habits = JSON.parse(JSON.stringify(DEFAULT_HABITS));
             }
 
-            console.log('Init: Final state has', state.goals.length, 'goals');
             renderGoals();
             updateStats();
 
@@ -1227,10 +1223,11 @@
             const container = document.getElementById('goalsContainer');
             console.log("RenderGoals: Rendering", state.goals.length, "goals");
 
-            // Debug - show how many goals we have
+            // Ensure we have goals
             if (!state.goals || state.goals.length === 0) {
-                container.innerHTML = '<div style="color: red; font-size: 2rem;">NO GOALS FOUND IN STATE!</div>';
-                return;
+                // This should never happen, but if it does, use defaults
+                state.goals = JSON.parse(JSON.stringify(DEFAULT_GOALS));
+                state.habits = JSON.parse(JSON.stringify(DEFAULT_HABITS));
             }
             
             container.innerHTML = state.goals.map(goal => {
