@@ -600,7 +600,7 @@
         </div>
     </div>
 
-    <div class="version">v1.4 - Professional Edit Modals</div>
+    <div class="version">v1.5 - Lead/Lag Reorganized</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
@@ -744,27 +744,6 @@
                                     <div style="font-size: 1.125rem; font-weight: 500;">${goal.yearly || 'Click to define yearly goal'}</div>
                                 </div>
                             </div>
-                            <div class="indicator-row">
-                                <div>
-                                    <label style="font-size: 0.75rem; color: #999; text-transform: uppercase;">Lead Indicator (Actions)</label>
-                                    <div style="margin-top: 0.25rem; padding: 0.75rem; background: rgba(255, 255, 255, 0.03); border-radius: 0.375rem; cursor: pointer; transition: all 0.2s;"
-                                        onclick="editGoalField('${goal.id}', 'leadIndicator', 'Lead Indicator')"
-                                        onmouseover="this.style.background='rgba(255, 255, 255, 0.06)'"
-                                        onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'">
-                                        <div style="font-size: 0.875rem;">${goal.leadIndicator || 'Click to add actions you control'}</div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label style="font-size: 0.75rem; color: #999; text-transform: uppercase;">Lag Indicator (Results)</label>
-                                    <div style="margin-top: 0.25rem; padding: 0.75rem; background: rgba(255, 255, 255, 0.03); border-radius: 0.375rem; cursor: pointer; transition: all 0.2s;"
-                                        onclick="editGoalField('${goal.id}', 'lagIndicator', 'Lag Indicator')"
-                                        onmouseover="this.style.background='rgba(255, 255, 255, 0.06)'"
-                                        onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'">
-                                        <div style="font-size: 0.875rem;">${goal.lagIndicator || 'Click to add results you measure'}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         
                         <div class="hierarchy-grid">
                             <div class="hierarchy-item" onclick="editPeriod('${goal.id}', 'quarterly')">
@@ -783,7 +762,7 @@
                         
                         <div class="links-section">
                             <div class="section-header">
-                                <h4>Quick Links</h4>
+                                <h4 style="color: ${goal.color || getCategoryColor(goal.category)}">Lag Indicators / Analytics</h4>
                                 <button class="add-link-btn" onclick="addLink('${goal.id}')">+ Add Link</button>
                             </div>
                             <div class="links-container">
@@ -793,7 +772,7 @@
                         
                         <div class="habits-section">
                             <div class="habits-header">
-                                <h4>Daily Habits</h4>
+                                <h4 style="color: ${goal.color || getCategoryColor(goal.category)}">Lead Indicators</h4>
                                 <button class="add-habit-btn" onclick="addHabit('${goal.id}')">+ Add Habit</button>
                             </div>
                             ${renderHabits(goal.id)}
