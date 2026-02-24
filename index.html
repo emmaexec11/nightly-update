@@ -186,7 +186,7 @@
             margin-top: 1rem;
         }
 
-        input[type="text"] {
+        input[type="text"]:not(.editable-text) {
             width: 100%;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -472,6 +472,50 @@
             color: #666;
             font-size: 0.75rem;
         }
+
+        .color-swatches {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .color-swatch {
+            width: 60px;
+            height: 60px;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .color-swatch:hover {
+            transform: scale(1.1);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .editable-text {
+            background: transparent;
+            border: none;
+            color: inherit;
+            font-size: inherit;
+            font-weight: inherit;
+            font-family: inherit;
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            transition: background 0.2s;
+        }
+
+        .editable-text:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .editable-text:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -549,7 +593,27 @@
         </div>
     </div>
 
-    <div class="version">v1.2 - Links & Colors Added</div>
+    <div class="version">v1.3 - Professional UI</div>
+
+    <!-- Color Picker Modal -->
+    <div id="colorPickerModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Choose Goal Color</h3>
+                <button class="close-btn" onclick="closeColorPicker()">×</button>
+            </div>
+            <div class="color-swatches">
+                <div class="color-swatch" style="background: #a855f7" onclick="selectColor('#a855f7')"></div>
+                <div class="color-swatch" style="background: #f59e0b" onclick="selectColor('#f59e0b')"></div>
+                <div class="color-swatch" style="background: #ef4444" onclick="selectColor('#ef4444')"></div>
+                <div class="color-swatch" style="background: #3b82f6" onclick="selectColor('#3b82f6')"></div>
+                <div class="color-swatch" style="background: #10b981" onclick="selectColor('#10b981')"></div>
+                <div class="color-swatch" style="background: #ec4899" onclick="selectColor('#ec4899')"></div>
+                <div class="color-swatch" style="background: #8b5cf6" onclick="selectColor('#8b5cf6')"></div>
+                <div class="color-swatch" style="background: #14b8a6" onclick="selectColor('#14b8a6')"></div>
+            </div>
+        </div>
+    </div>
 
     <script>
         // State management
@@ -636,7 +700,10 @@
             container.innerHTML = state.goals.map(goal => `
                 <div class="goal-card ${goal.category}" style="border-left-color: ${goal.color || getCategoryColor(goal.category)}">
                     <div class="goal-header">
-                        <h3 class="goal-title" style="color: ${goal.color || getCategoryColor(goal.category)}">${goal.name}</h3>
+                        <input type="text" class="goal-title editable-text" 
+                            style="color: ${goal.color || getCategoryColor(goal.category)}" 
+                            value="${goal.name}" 
+                            onchange="updateGoal('${goal.id}', 'name', this.value)">
                         <div class="goal-actions">
                             <button class="icon-btn" onclick="changeGoalColor('${goal.id}')" title="Change color">🎨</button>
                             <button class="icon-btn" onclick="deleteGoal('${goal.id}')">🗑️</button>
@@ -644,22 +711,28 @@
                     </div>
                     <div class="goal-content">
                         <div class="indicators-section">
-                            <div>
-                                <label>Yearly Goal</label>
-                                <input type="text" value="${goal.yearly || ''}" 
-                                    onchange="updateGoal('${goal.id}', 'yearly', this.value)"
-                                    placeholder="Define your yearly goal">
+                            <div style="margin-bottom: 1rem;">
+                                <label style="font-size: 0.875rem; color: #999;">Yearly Goal</label>
+                                <div style="margin-top: 0.5rem;">
+                                    <input type="text" class="editable-text" 
+                                        style="font-size: 1.125rem; font-weight: 500;"
+                                        value="${goal.yearly || ''}" 
+                                        onchange="updateGoal('${goal.id}', 'yearly', this.value)"
+                                        placeholder="Define your yearly goal">
+                                </div>
                             </div>
                             <div class="indicator-row">
                                 <div>
                                     <label>Lead Indicator (Actions)</label>
-                                    <input type="text" value="${goal.leadIndicator || ''}" 
+                                    <input type="text" class="editable-text" 
+                                        value="${goal.leadIndicator || ''}" 
                                         onchange="updateGoal('${goal.id}', 'leadIndicator', this.value)"
                                         placeholder="Actions I control">
                                 </div>
                                 <div>
                                     <label>Lag Indicator (Results)</label>
-                                    <input type="text" value="${goal.lagIndicator || ''}" 
+                                    <input type="text" class="editable-text" 
+                                        value="${goal.lagIndicator || ''}" 
                                         onchange="updateGoal('${goal.id}', 'lagIndicator', this.value)"
                                         placeholder="Results I measure">
                                 </div>
@@ -913,19 +986,28 @@
         }
 
         // Change goal color
+        let currentColorGoalId = null;
+        
         function changeGoalColor(goalId) {
-            const goal = state.goals.find(g => g.id === goalId);
-            if (goal) {
-                const colors = ['#a855f7', '#f59e0b', '#ef4444', '#3b82f6', '#10b981', '#ec4899', '#8b5cf6', '#14b8a6'];
-                const colorNames = ['Purple', 'Orange', 'Red', 'Blue', 'Green', 'Pink', 'Violet', 'Teal'];
-                const colorChoice = prompt('Choose a color:\n' + colorNames.map((name, i) => `${i+1}. ${name}`).join('\n'));
-                const index = parseInt(colorChoice) - 1;
-                if (index >= 0 && index < colors.length) {
-                    goal.color = colors[index];
+            currentColorGoalId = goalId;
+            document.getElementById('colorPickerModal').classList.add('active');
+        }
+        
+        function closeColorPicker() {
+            document.getElementById('colorPickerModal').classList.remove('active');
+            currentColorGoalId = null;
+        }
+        
+        function selectColor(color) {
+            if (currentColorGoalId) {
+                const goal = state.goals.find(g => g.id === currentColorGoalId);
+                if (goal) {
+                    goal.color = color;
                     saveState();
                     renderAll();
                 }
             }
+            closeColorPicker();
         }
 
         // Complete quest
