@@ -7,6 +7,7 @@
     <meta http-equiv="expires" content="0">
     <meta http-equiv="pragma" content="no-cache">
     <title>Quest Tracker - Nightly Update</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -392,6 +393,225 @@
 
         .goal-progress {
             margin-bottom: 1rem;
+        }
+
+        /* Gamified Modal Styles */
+        .gamified-modal {
+            border: 3px solid #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        .retro-header {
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 1rem;
+        }
+
+        .pixel-icon {
+            font-size: 1.5rem;
+            filter: drop-shadow(0 0 3px rgba(0, 255, 0, 0.8));
+        }
+
+        .habit-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #00ff00;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-box::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #00ff00, #00ff00 50%, transparent 50%);
+            z-index: -1;
+            animation: borderRotate 3s linear infinite;
+        }
+
+        @keyframes borderRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #00ff00;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #00ff00, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-family: 'Courier New', monospace;
+        }
+
+        .streak-fire {
+            display: inline-block;
+            animation: fireFlicker 1s ease-in-out infinite;
+        }
+
+        @keyframes fireFlicker {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(-5deg); }
+            75% { transform: scale(0.95) rotate(5deg); }
+        }
+
+        .frequency-section {
+            margin: 1.5rem 0;
+        }
+
+        .section-label {
+            font-size: 0.875rem;
+            color: #00ff00;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
+        }
+
+        .retro-select {
+            width: 100%;
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #00ff00;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 0.25rem;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+        }
+
+        .weekday-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            justify-content: center;
+        }
+
+        .day-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #333;
+            background: rgba(255, 255, 255, 0.05);
+            color: #666;
+            font-weight: bold;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .day-btn.active {
+            background: #00ff00;
+            color: #000;
+            border-color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        .retro-input {
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #00ff00;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            width: 60px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+        }
+
+        .habit-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.25rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid #00ff00;
+            border-radius: 0.5rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .calendar-day.completed {
+            background: #00ff00;
+            color: #000;
+            border-color: #00ff00;
+        }
+
+        .calendar-day.missed {
+            background: #ff0000;
+            color: #fff;
+            border-color: #ff0000;
+        }
+
+        .calendar-day.not-scheduled {
+            background: rgba(139, 92, 246, 0.2);
+            color: #666;
+            cursor: default;
+        }
+
+        .calendar-day.future {
+            opacity: 0.3;
+            cursor: default;
+        }
+
+        .calendar-day:hover:not(.not-scheduled):not(.future) {
+            transform: scale(1.1);
+            z-index: 1;
+        }
+
+        .retro-textarea {
+            width: 100%;
+            background: rgba(0, 255, 0, 0.05);
+            border: 2px solid #00ff00;
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: 'Courier New', monospace;
+            resize: none;
+        }
+
+        .retro-save-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(45deg, #00ff00, #00ffff);
+            color: #000;
+            border: none;
+            font-weight: 900;
+            font-size: 1.125rem;
+            letter-spacing: 0.05em;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
+        }
+
+        .retro-save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 255, 0, 0.5);
         }
 
         .habits-section {
@@ -844,7 +1064,7 @@
         </div>
     </div>
 
-    <div class="version">v1.8 - Progress Bars</div>
+    <div class="version">v1.9 - Gamified Habit Details</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
@@ -900,6 +1120,77 @@
                 <input type="text" id="linkUrl" placeholder="https://..." style="width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); color: white; padding: 0.75rem; border-radius: 0.375rem;">
             </div>
             <button class="btn-primary" onclick="saveLinkModal()">Add Link</button>
+        </div>
+    </div>
+
+    <!-- Habit Details Modal -->
+    <div id="habitDetailsModal" class="modal">
+        <div class="modal-content gamified-modal" style="max-width: 600px;">
+            <div class="modal-header retro-header">
+                <h3 class="modal-title">
+                    <span class="pixel-icon">🎮</span> 
+                    <span id="habitDetailTitle">Habit Details</span>
+                </h3>
+                <button class="close-btn retro-btn" onclick="closeHabitModal()">×</button>
+            </div>
+            
+            <div class="habit-stats">
+                <div class="stat-box">
+                    <div class="stat-label">SUCCESS RATE</div>
+                    <div class="stat-value" id="habitSuccessRate">0%</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">CURRENT STREAK</div>
+                    <div class="stat-value">
+                        <span id="habitStreak">0</span>
+                        <span class="streak-fire">🔥</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="frequency-section">
+                <div class="section-label">FREQUENCY</div>
+                <select id="habitFrequency" class="retro-select" onchange="updateHabitFrequency()">
+                    <option value="daily">Every Day</option>
+                    <option value="weekdays">Weekdays Only</option>
+                    <option value="weekends">Weekends Only</option>
+                    <option value="weekly">X Days per Week</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="custom">Custom Days</option>
+                </select>
+                
+                <div id="weekdaySelector" class="weekday-selector" style="display: none;">
+                    <button class="day-btn" data-day="0">S</button>
+                    <button class="day-btn" data-day="1">M</button>
+                    <button class="day-btn" data-day="2">T</button>
+                    <button class="day-btn" data-day="3">W</button>
+                    <button class="day-btn" data-day="4">T</button>
+                    <button class="day-btn" data-day="5">F</button>
+                    <button class="day-btn" data-day="6">S</button>
+                </div>
+                
+                <div id="weeklyConfig" style="display: none;">
+                    <input type="number" id="daysPerWeek" min="1" max="7" value="3" class="retro-input">
+                    <span class="config-label">days per week</span>
+                </div>
+                
+                <div id="monthlyConfig" style="display: none;">
+                    <span class="config-label">Day of month:</span>
+                    <input type="number" id="dayOfMonth" min="1" max="31" value="1" class="retro-input">
+                </div>
+            </div>
+            
+            <div class="calendar-section">
+                <div class="section-label">LAST 30 DAYS</div>
+                <div id="habitCalendar" class="habit-calendar"></div>
+            </div>
+            
+            <div class="notes-section">
+                <div class="section-label">NOTES / STEPS</div>
+                <textarea id="habitNotes" class="retro-textarea" placeholder="Add steps or notes for this habit..." rows="3"></textarea>
+            </div>
+            
+            <button class="btn-primary retro-save-btn" onclick="saveHabitDetails()">💾 SAVE</button>
         </div>
     </div>
 
@@ -1143,7 +1434,7 @@
                         <div class="habit-checkbox ${habit.completed ? 'checked' : ''}" 
                             onclick="toggleHabit('${goalId}', '${habit.id}')"></div>
                         <div style="flex: 1;">
-                            <div>${habit.name}</div>
+                            <div class="habit-name" onclick="openHabitModal('${goalId}', '${habit.id}')" style="cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#00ff00'" onmouseout="this.style.color=''">${habit.name}</div>
                             <div class="habit-progress">
                                 <div class="progress-container">
                                     <div class="progress-bar ${progress >= 80 ? '' : 'low'}" style="width: ${progress}%">
@@ -1435,6 +1726,261 @@
             closeTextEdit();
         }
         
+        // Habit Details Modal
+        let currentHabitGoalId = null;
+        let currentHabitId = null;
+        
+        function openHabitModal(goalId, habitId) {
+            const goal = state.goals.find(g => g.id === goalId);
+            const habit = goal?.habits?.find(h => h.id === habitId);
+            
+            if (!habit) return;
+            
+            currentHabitGoalId = goalId;
+            currentHabitId = habitId;
+            
+            // Set title
+            document.getElementById('habitDetailTitle').textContent = habit.name;
+            
+            // Calculate and display success rate
+            const successRate = calculateHabitProgress(habit);
+            document.getElementById('habitSuccessRate').textContent = successRate + '%';
+            
+            // Calculate streak
+            const streak = calculateStreak(habit);
+            document.getElementById('habitStreak').textContent = streak;
+            
+            // Set frequency
+            const frequency = habit.frequency || 'daily';
+            document.getElementById('habitFrequency').value = frequency;
+            updateFrequencyUI(frequency, habit);
+            
+            // Set notes
+            document.getElementById('habitNotes').value = habit.notes || '';
+            
+            // Render calendar
+            renderHabitCalendar(habit);
+            
+            // Show modal
+            document.getElementById('habitDetailsModal').classList.add('active');
+        }
+        
+        function closeHabitModal() {
+            document.getElementById('habitDetailsModal').classList.remove('active');
+            currentHabitGoalId = null;
+            currentHabitId = null;
+        }
+        
+        function updateHabitFrequency() {
+            const frequency = document.getElementById('habitFrequency').value;
+            const goal = state.goals.find(g => g.id === currentHabitGoalId);
+            const habit = goal?.habits?.find(h => h.id === currentHabitId);
+            
+            if (habit) {
+                updateFrequencyUI(frequency, habit);
+            }
+        }
+        
+        function updateFrequencyUI(frequency, habit) {
+            // Hide all configs first
+            document.getElementById('weekdaySelector').style.display = 'none';
+            document.getElementById('weeklyConfig').style.display = 'none';
+            document.getElementById('monthlyConfig').style.display = 'none';
+            
+            switch(frequency) {
+                case 'custom':
+                    document.getElementById('weekdaySelector').style.display = 'flex';
+                    // Set active days
+                    const days = habit.customDays || [1,2,3,4,5]; // Default weekdays
+                    document.querySelectorAll('.day-btn').forEach(btn => {
+                        const day = parseInt(btn.dataset.day);
+                        btn.classList.toggle('active', days.includes(day));
+                    });
+                    break;
+                case 'weekly':
+                    document.getElementById('weeklyConfig').style.display = 'block';
+                    document.getElementById('daysPerWeek').value = habit.daysPerWeek || 3;
+                    break;
+                case 'monthly':
+                    document.getElementById('monthlyConfig').style.display = 'block';
+                    document.getElementById('dayOfMonth').value = habit.dayOfMonth || 1;
+                    break;
+                case 'weekdays':
+                    // Preset for weekdays
+                    break;
+                case 'weekends':
+                    // Preset for weekends
+                    break;
+            }
+        }
+        
+        function calculateStreak(habit) {
+            if (!habit.history || habit.history.length === 0) return 0;
+            
+            let streak = 0;
+            const today = new Date();
+            const sortedHistory = [...habit.history].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            for (const entry of sortedHistory) {
+                const entryDate = new Date(entry.date);
+                if (entryDate > today) continue;
+                
+                if (entry.completed) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+            
+            return streak;
+        }
+        
+        function renderHabitCalendar(habit) {
+            const calendar = document.getElementById('habitCalendar');
+            calendar.innerHTML = '';
+            
+            // Get last 30 days
+            const today = new Date();
+            const days = [];
+            
+            for (let i = 29; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                days.push(date);
+            }
+            
+            // Add day headers
+            const dayHeaders = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+            dayHeaders.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'calendar-header';
+                header.textContent = day;
+                header.style.color = '#00ff00';
+                header.style.fontSize = '0.75rem';
+                header.style.textAlign = 'center';
+                calendar.appendChild(header);
+            });
+            
+            // Add empty cells for first week alignment
+            const firstDay = days[0].getDay();
+            for (let i = 0; i < firstDay; i++) {
+                calendar.appendChild(document.createElement('div'));
+            }
+            
+            // Add days
+            days.forEach(date => {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'calendar-day';
+                dayEl.textContent = date.getDate();
+                
+                const dateStr = date.toISOString().split('T')[0];
+                const entry = habit.history?.find(h => h.date === dateStr);
+                const isScheduled = isHabitScheduledForDate(habit, date);
+                
+                if (date > today) {
+                    dayEl.classList.add('future');
+                } else if (!isScheduled) {
+                    dayEl.classList.add('not-scheduled');
+                } else if (entry?.completed) {
+                    dayEl.classList.add('completed');
+                } else {
+                    dayEl.classList.add('missed');
+                }
+                
+                if (isScheduled && date <= today) {
+                    dayEl.onclick = () => toggleCalendarDay(dateStr);
+                }
+                
+                calendar.appendChild(dayEl);
+            });
+        }
+        
+        function isHabitScheduledForDate(habit, date) {
+            const frequency = habit.frequency || 'daily';
+            const dayOfWeek = date.getDay();
+            
+            switch(frequency) {
+                case 'daily':
+                    return true;
+                case 'weekdays':
+                    return dayOfWeek >= 1 && dayOfWeek <= 5;
+                case 'weekends':
+                    return dayOfWeek === 0 || dayOfWeek === 6;
+                case 'custom':
+                    return (habit.customDays || []).includes(dayOfWeek);
+                case 'monthly':
+                    return date.getDate() === (habit.dayOfMonth || 1);
+                case 'weekly':
+                    // This is more complex - would need to track which days were selected
+                    return true; // Simplified for now
+                default:
+                    return true;
+            }
+        }
+        
+        function toggleCalendarDay(dateStr) {
+            const goal = state.goals.find(g => g.id === currentHabitGoalId);
+            const habit = goal?.habits?.find(h => h.id === currentHabitId);
+            
+            if (!habit) return;
+            
+            let entry = habit.history.find(h => h.date === dateStr);
+            if (!entry) {
+                entry = { date: dateStr, completed: true };
+                habit.history.push(entry);
+            } else {
+                entry.completed = !entry.completed;
+            }
+            
+            saveState();
+            renderHabitCalendar(habit);
+            
+            // Update success rate
+            const successRate = calculateHabitProgress(habit);
+            document.getElementById('habitSuccessRate').textContent = successRate + '%';
+            
+            // Update streak
+            const streak = calculateStreak(habit);
+            document.getElementById('habitStreak').textContent = streak;
+        }
+        
+        function saveHabitDetails() {
+            const goal = state.goals.find(g => g.id === currentHabitGoalId);
+            const habit = goal?.habits?.find(h => h.id === currentHabitId);
+            
+            if (!habit) return;
+            
+            // Save frequency settings
+            habit.frequency = document.getElementById('habitFrequency').value;
+            
+            switch(habit.frequency) {
+                case 'custom':
+                    habit.customDays = Array.from(document.querySelectorAll('.day-btn.active'))
+                        .map(btn => parseInt(btn.dataset.day));
+                    break;
+                case 'weekly':
+                    habit.daysPerWeek = parseInt(document.getElementById('daysPerWeek').value);
+                    break;
+                case 'monthly':
+                    habit.dayOfMonth = parseInt(document.getElementById('dayOfMonth').value);
+                    break;
+            }
+            
+            // Save notes
+            habit.notes = document.getElementById('habitNotes').value;
+            
+            saveState();
+            renderAll();
+            closeHabitModal();
+        }
+        
+        // Add click handlers for day buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('day-btn')) {
+                e.target.classList.toggle('active');
+            }
+        });
+
         // Complete quest
         function completeQuest() {
             state.journal = document.getElementById('questJournal').value;
