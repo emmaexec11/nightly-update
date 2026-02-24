@@ -1,0 +1,29 @@
+Version 1.6 - Bold Yearly + Fixed Links
+========================================
+Time: Monday Feb 24, 2026 at 11:47 AM PST
+
+FIXES APPLIED:
+
+1. YEARLY GOAL TEXT
+   - Now BOLD (700 weight)
+   - Bigger font (1.375rem)
+   - Better line height
+
+2. LINKS NOW SAVE PROPERLY
+   - Fixed data structure issues
+   - Modal instead of prompts
+   - Cleans up old localStorage data
+   - Ensures links array exists
+
+3. DATA CLEANUP
+   - Removes old lead/lag indicators
+   - Ensures all arrays initialized
+   - Better error handling
+
+HOW TO ADD LINKS:
+- Click "+ Add Link" button
+- Enter name in modal (e.g., "Notion Dashboard")
+- Enter URL (e.g., "https://notion.so/...")
+- Click "Add Link"
+
+If you see this, v1.6 is working!
