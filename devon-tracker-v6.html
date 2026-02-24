@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devon's Quest Tracker v6 - Local</title>
+    <style>
+        body { background: #000; color: #fff; font-family: -apple-system, sans-serif; padding: 2rem; margin: 0; }
+        .header { background: #1a1a1a; border: 2px solid #333; border-radius: 1rem; padding: 1.5rem; margin-bottom: 2rem; }
+        .character { font-size: 3rem; margin-bottom: 1rem; }
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+        .stat { text-align: center; }
+        .stat-label { color: #999; font-size: 0.875rem; }
+        .stat-value { font-size: 1.5rem; font-weight: bold; }
+        h1 { color: #a855f7; margin-bottom: 2rem; }
+        .goal { background: #1a1a1a; border-left: 4px solid #f59e0b; padding: 1.5rem; margin-bottom: 1.5rem; border-radius: 0.5rem; }
+        .btn { background: #a855f7; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; cursor: pointer; font-size: 1rem; }
+        .btn:hover { background: #9333ea; }
+        .habit { display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: #2a2a2a; margin: 0.5rem 0; border-radius: 0.25rem; }
+        .checkbox { width: 2rem; height: 2rem; background: #444; border-radius: 0.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .checkbox.checked { background: #10b981; }
+        .checkbox.checked::after { content: '✓'; color: white; font-size: 1.25rem; }
+        input[type="text"] { background: #2a2a2a; border: 1px solid #444; color: white; padding: 0.5rem; width: 100%; margin: 0.5rem 0; border-radius: 0.25rem; }
+        .quest-journal { background: #1a1a1a; padding: 2rem; margin-top: 2rem; border-radius: 1rem; text-align: center; }
+        textarea { width: 100%; min-height: 100px; background: #2a2a2a; border: 1px solid #444; color: white; padding: 1rem; border-radius: 0.5rem; }
+        .version { position: fixed; bottom: 10px; right: 10px; color: #666; font-size: 0.75rem; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="character">🧙‍♂️</div>
+        <h2>DEVON THE WISE</h2>
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-label">LEVEL</div>
+                <div class="stat-value" id="level">1</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">HP</div>
+                <div class="stat-value" id="hp">110/110</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">EXP</div>
+                <div class="stat-value" id="exp">0/150</div>
+            </div>
+        </div>
+    </div>
+
+    <h1>Epic Goals</h1>
+    <button class="btn" onclick="addGoal()">✨ New Goal</button>
+
+    <div id="goals">
+        <div class="goal">
+            <h3>Build AI Trading System</h3>
+            <p><strong>Yearly:</strong> 40% revenue growth + profitable crypto trading</p>
+            <label>Lead Indicator (Actions you control):</label>
+            <input type="text" value="Daily chart reviews + AI system development">
+            <label>Lag Indicator (Results you measure):</label>
+            <input type="text" value="Monthly revenue + portfolio growth %">
+            <h4>Daily Habits</h4>
+            <div class="habit">
+                <div class="checkbox" onclick="toggleCheck(this)"></div>
+                <span>Review Trading Charts</span>
+            </div>
+            <button class="btn" style="background: #ef4444; margin-top: 1rem;" onclick="deleteGoal(this)">Delete Goal</button>
+        </div>
+    </div>
+
+    <div class="quest-journal">
+        <h2>Quest Journal</h2>
+        <textarea placeholder="What epic battles did you win today?"></textarea>
+        <br><br>
+        <button class="btn" style="background: #10b981;">Complete Quest & Rest at Inn</button>
+    </div>
+
+    <div class="version">v6.0 - Local Edition - ${new Date().toLocaleString()}</div>
+
+    <script>
+        let level = 1;
+        let exp = 0;
+        
+        function addGoal() {
+            const name = prompt('Goal name:');
+            if (!name) return;
+            
+            const goalHtml = \`
+                <div class="goal">
+                    <h3>\${name}</h3>
+                    <p><strong>Yearly:</strong> Define your yearly goal</p>
+                    <label>Lead Indicator (Actions you control):</label>
+                    <input type="text" placeholder="Actions I control">
+                    <label>Lag Indicator (Results you measure):</label>
+                    <input type="text" placeholder="Results I measure">
+                    <h4>Daily Habits</h4>
+                    <div class="habit">
+                        <div class="checkbox" onclick="toggleCheck(this)"></div>
+                        <span>New Habit</span>
+                    </div>
+                    <button class="btn" style="background: #ef4444; margin-top: 1rem;" onclick="deleteGoal(this)">Delete Goal</button>
+                </div>
+            \`;
+            
+            document.getElementById('goals').insertAdjacentHTML('beforeend', goalHtml);
+            levelUp();
+        }
+        
+        function deleteGoal(btn) {
+            if (confirm('Delete this goal?')) {
+                btn.closest('.goal').remove();
+                levelDown();
+            }
+        }
+        
+        function toggleCheck(checkbox) {
+            checkbox.classList.toggle('checked');
+            if (checkbox.classList.contains('checked')) {
+                exp += 10;
+                document.getElementById('exp').textContent = exp + '/150';
+                if (exp >= 150) {
+                    levelUp();
+                    exp = 0;
+                }
+            }
+        }
+        
+        function levelUp() {
+            level++;
+            document.getElementById('level').textContent = level;
+            document.getElementById('hp').textContent = (100 + level * 10) + '/' + (100 + level * 10);
+            document.getElementById('exp').textContent = exp + '/' + (100 + level * 50);
+            alert('🎉 LEVEL UP! You are now Level ' + level + '!');
+        }
+        
+        function levelDown() {
+            if (level > 0) {
+                level--;
+                document.getElementById('level').textContent = level;
+                document.getElementById('hp').textContent = (100 + level * 10) + '/' + (100 + level * 10);
+            }
+        }
+    </script>
+</body>
+</html>
