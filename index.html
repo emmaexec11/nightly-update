@@ -567,6 +567,18 @@
             document.getElementById('expBar').style.width = `${(state.exp.current / state.exp.max) * 100}%`;
         }
 
+        // Get color for category
+        function getCategoryColor(category) {
+            const colors = {
+                spiritual: '#a855f7',
+                financial: '#f59e0b',
+                health: '#ef4444',
+                community: '#3b82f6',
+                personal: '#10b981'
+            };
+            return colors[category] || '#a855f7';
+        }
+
         // Render goals
         function renderGoals() {
             const container = document.getElementById('goalsContainer');
@@ -579,7 +591,7 @@
             container.innerHTML = state.goals.map(goal => `
                 <div class="goal-card ${goal.category}">
                     <div class="goal-header">
-                        <h3 class="goal-title">${goal.name}</h3>
+                        <h3 class="goal-title" style="color: ${getCategoryColor(goal.category)}">${goal.name}</h3>
                         <div class="goal-actions">
                             <button class="icon-btn" onclick="deleteGoal('${goal.id}')">🗑️</button>
                         </div>
