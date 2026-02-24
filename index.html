@@ -631,6 +631,29 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(0, 255, 0, 0.5);
         }
+        
+        .new-goal-btn {
+            width: 100%;
+            padding: 2rem;
+            background: rgba(139, 92, 246, 0.1);
+            border: 2px dashed rgba(139, 92, 246, 0.5);
+            color: #a855f7;
+            font-size: 1.125rem;
+            font-weight: 600;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .new-goal-btn:hover {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: rgba(139, 92, 246, 0.8);
+            transform: translateY(-2px);
+        }
 
         .habits-section {
             margin-top: 1.5rem;
@@ -1082,7 +1105,7 @@
         </div>
     </div>
 
-    <div class="version">v1.9 - Gamified Habit Details</div>
+    <div class="version">v1.9.1 - Fixed Goal Separation</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
@@ -1382,6 +1405,7 @@
                                     <div style="font-size: 1.375rem; font-weight: 700; line-height: 1.4;">${goal.yearly || 'Click to define yearly goal'}</div>
                                 </div>
                             </div>
+                        </div>
                         
                         <div class="hierarchy-grid">
                             <div class="hierarchy-item" onclick="editPeriod('${goal.id}', 'quarterly')">
@@ -1419,6 +1443,13 @@
                     </div>
                 </div>
             `).join('');
+            
+            // Add the "New Goal" button at the end
+            container.innerHTML += `
+                <button class="new-goal-btn" onclick="openGoalModal()">
+                    <span style="font-size: 1.5rem;">+</span> New Goal
+                </button>
+            `;
         }
 
         // Render links for a goal
