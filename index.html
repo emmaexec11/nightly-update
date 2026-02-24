@@ -1210,6 +1210,13 @@
 
         // Initialize
         function init() {
+            // Force clear old data on version change
+            const VERSION = 'v3.1-force-clear';
+            if (localStorage.getItem('appVersion') !== VERSION) {
+                localStorage.clear();
+                localStorage.setItem('appVersion', VERSION);
+            }
+            
             loadState();
 
             // Final safety net: if goals are somehow empty, restore defaults
