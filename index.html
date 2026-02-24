@@ -600,7 +600,7 @@
         </div>
     </div>
 
-    <div class="version">v1.5 - Lead/Lag Reorganized</div>
+    <div class="version">v1.6 - Bold Yearly + Fixed Links</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
@@ -640,6 +640,25 @@
         </div>
     </div>
 
+    <!-- Add Link Modal -->
+    <div id="addLinkModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Analytics Link</h3>
+                <button class="close-btn" onclick="closeLinkModal()">×</button>
+            </div>
+            <div class="form-group">
+                <label>Link Name</label>
+                <input type="text" id="linkName" placeholder="e.g., Notion Dashboard, Shopify Analytics" style="width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); color: white; padding: 0.75rem; border-radius: 0.375rem;">
+            </div>
+            <div class="form-group">
+                <label>URL</label>
+                <input type="text" id="linkUrl" placeholder="https://..." style="width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); color: white; padding: 0.75rem; border-radius: 0.375rem;">
+            </div>
+            <button class="btn-primary" onclick="saveLinkModal()">Add Link</button>
+        </div>
+    </div>
+
     <script>
         // State management
         let state = {
@@ -663,12 +682,23 @@
             if (saved) {
                 try {
                     state = JSON.parse(saved);
-                    // Ensure all goals have names (fix for old data)
+                    // Ensure all goals have proper structure (fix for old data)
                     if (state.goals) {
                         state.goals.forEach((goal, index) => {
                             if (!goal.name) {
                                 goal.name = goal.title || `Goal ${index + 1}`;
                             }
+                            // Ensure links array exists
+                            if (!goal.links) {
+                                goal.links = [];
+                            }
+                            // Ensure habits array exists
+                            if (!goal.habits) {
+                                goal.habits = [];
+                            }
+                            // Remove old lead/lag indicators if they exist
+                            delete goal.leadIndicator;
+                            delete goal.lagIndicator;
                         });
                     }
                 } catch (e) {
@@ -741,7 +771,7 @@
                                     onclick="editGoalField('${goal.id}', 'yearly', 'Yearly Goal')"
                                     onmouseover="this.style.background='rgba(255, 255, 255, 0.06)'"
                                     onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'">
-                                    <div style="font-size: 1.125rem; font-weight: 500;">${goal.yearly || 'Click to define yearly goal'}</div>
+                                    <div style="font-size: 1.375rem; font-weight: 700; line-height: 1.4;">${goal.yearly || 'Click to define yearly goal'}</div>
                                 </div>
                             </div>
                         
@@ -958,21 +988,38 @@
         }
 
         // Add link to goal
+        let currentLinkGoalId = null;
+        
         function addLink(goalId) {
-            const goal = state.goals.find(g => g.id === goalId);
-            if (goal) {
-                const linkName = prompt('Link name (e.g., Notion Dashboard):');
-                const linkUrl = prompt('Link URL:');
-                if (linkName && linkUrl) {
-                    if (!goal.links) goal.links = [];
-                    goal.links.push({
-                        id: Date.now().toString(),
-                        name: linkName,
-                        url: linkUrl.startsWith('http') ? linkUrl : 'https://' + linkUrl
-                    });
-                    saveState();
-                    renderAll();
-                }
+            currentLinkGoalId = goalId;
+            document.getElementById('linkName').value = '';
+            document.getElementById('linkUrl').value = '';
+            document.getElementById('addLinkModal').classList.add('active');
+            document.getElementById('linkName').focus();
+        }
+        
+        function closeLinkModal() {
+            document.getElementById('addLinkModal').classList.remove('active');
+            currentLinkGoalId = null;
+        }
+        
+        function saveLinkModal() {
+            if (!currentLinkGoalId) return;
+            
+            const goal = state.goals.find(g => g.id === currentLinkGoalId);
+            const linkName = document.getElementById('linkName').value.trim();
+            const linkUrl = document.getElementById('linkUrl').value.trim();
+            
+            if (goal && linkName && linkUrl) {
+                if (!goal.links) goal.links = [];
+                goal.links.push({
+                    id: Date.now().toString(),
+                    name: linkName,
+                    url: linkUrl.startsWith('http') ? linkUrl : 'https://' + linkUrl
+                });
+                saveState();
+                renderAll();
+                closeLinkModal();
             }
         }
 
