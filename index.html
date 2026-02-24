@@ -869,11 +869,11 @@
                 </div>
                 <div class="stats-panel">
                     <div>
-                        <div class="level-display">LEVEL 0</div>
+                        <div class="level-display">LEVEL 1</div>
                         <div class="stat-bar">
                             <div class="stat-label">
                                 <span>HP</span>
-                                <span>100/100</span>
+                                <span>110/110</span>
                             </div>
                             <div class="bar-container">
                                 <div class="bar-fill hp-bar" style="width: 90%"></div>
@@ -883,7 +883,7 @@
                     <div class="stat-bar">
                         <div class="stat-label">
                             <span>MANA</span>
-                            <span>50/50</span>
+                            <span>55/55</span>
                         </div>
                         <div class="bar-container">
                             <div class="bar-fill mana-bar" style="width: 97%"></div>
@@ -892,7 +892,7 @@
                     <div class="stat-bar">
                         <div class="stat-label">
                             <span>EXP</span>
-                            <span>0/100</span>
+                            <span>0/150</span>
                         </div>
                         <div class="bar-container">
                             <div class="bar-fill exp-bar" style="width: 82%"></div>
@@ -1142,13 +1142,36 @@
 
         // State - starts with defaults, loadState() may override
         let state = {
-            goals: [],
-            habits: [],
-            level: 0,
-            hp: { current: 100, max: 100 },
-            mana: { current: 50, max: 50 },
-            exp: { current: 0, max: 100 },
-            totalDaysActive: 0,
+            goals: [
+                {
+                    id: 1708961968000,
+                    title: "Build AI Trading System",
+                    category: "financial",
+                    yearly: "40% revenue growth + profitable crypto trading",
+                    leadIndicator: "Daily chart reviews + AI system development",
+                    lagIndicator: "Monthly revenue + portfolio growth %",
+                    quarterly: "Launch AI crypto screener",
+                    monthly: "Test 3 trading strategies",
+                    weekly: "Review 20 charts",
+                    color: "#f59e0b"
+                }
+            ],
+            habits: [
+                {
+                    id: 1708961969000,
+                    goalId: 1708961968000,
+                    name: "Review Trading Charts",
+                    frequency: "daily",
+                    completed: false,
+                    streak: 0,
+                    successRate: 0
+                }
+            ],
+            level: 1,
+            hp: { current: 110, max: 110 },
+            mana: { current: 55, max: 55 },
+            exp: { current: 0, max: 150 },
+            totalDaysActive: 1,
             currentStreak: 0
         };
 
