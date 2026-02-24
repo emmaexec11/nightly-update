@@ -1,0 +1,22 @@
+Version 1.2 Changes - Feb 24, 2026 at 11:12 AM PST
+==================================================
+
+NEW FEATURES ADDED:
+
+1. COLOR PICKER (🎨 icon)
+   - Click the paint palette icon next to any goal
+   - Choose from 8 colors
+   - Changes both title and border color
+
+2. LINKS SECTION
+   - New "Quick Links" section before Daily Habits
+   - Click "+ Add Link" to add Notion, Shopify, etc.
+   - Links open in new tabs automatically
+   - Delete links with × button
+
+3. EVERYTHING IS EDITABLE
+   - All text fields are clickable
+   - Quarterly/Monthly/Weekly boxes work
+   - Add Habit button is functional
+
+If you see this file, deployment worked!
