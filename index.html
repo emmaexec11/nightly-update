@@ -1142,12 +1142,14 @@
 
         // State - starts with defaults, loadState() may override
         let state = {
-            goals: JSON.parse(JSON.stringify(DEFAULT_GOALS)),
-            habits: JSON.parse(JSON.stringify(DEFAULT_HABITS)),
-            level: 18,
-            hp: { current: 180, max: 200 },
-            mana: { current: 145, max: 150 },
-            exp: { current: 8240, max: 10000 }
+            goals: [],
+            habits: [],
+            level: 0,
+            hp: { current: 100, max: 100 },
+            mana: { current: 50, max: 50 },
+            exp: { current: 0, max: 100 },
+            totalDaysActive: 0,
+            currentStreak: 0
         };
 
         // Load state from localStorage - only override if valid data exists
@@ -1223,11 +1225,15 @@
             const container = document.getElementById('goalsContainer');
             console.log("RenderGoals: Rendering", state.goals.length, "goals");
 
-            // Ensure we have goals
+            // Check if we have goals
             if (!state.goals || state.goals.length === 0) {
-                // This should never happen, but if it does, use defaults
-                state.goals = JSON.parse(JSON.stringify(DEFAULT_GOALS));
-                state.habits = JSON.parse(JSON.stringify(DEFAULT_HABITS));
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: #666;">
+                        <p style="font-size: 1.25rem; margin-bottom: 1rem;">No goals yet!</p>
+                        <p>Click "New Goal" to start your journey.</p>
+                    </div>
+                `;
+                return;
             }
             
             container.innerHTML = state.goals.map(goal => {
@@ -1242,6 +1248,30 @@
                         </div>
                     </div>
                     <div class="goal-hierarchy">
+                        <div style="margin-bottom: 1.5rem;">
+                            <div style="margin-bottom: 1rem;">
+                                <label style="font-size: 0.875rem; color: #999;">YEARLY GOAL</label>
+                                <div style="font-size: 1.125rem; margin-top: 0.25rem;">${goal.yearly}</div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div>
+                                    <label style="font-size: 0.75rem; color: #666;">Lead Indicator (Actions)</label>
+                                    <input type="text" 
+                                        value="${goal.leadIndicator || ''}" 
+                                        onchange="updateGoalField(${goal.id}, 'leadIndicator', this.value)"
+                                        placeholder="Actions I control"
+                                        style="width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 0.5rem; color: white; margin-top: 0.25rem; font-size: 0.875rem; border-radius: 0.25rem;">
+                                </div>
+                                <div>
+                                    <label style="font-size: 0.75rem; color: #666;">Lag Indicator (Results)</label>
+                                    <input type="text" 
+                                        value="${goal.lagIndicator || ''}" 
+                                        onchange="updateGoalField(${goal.id}, 'lagIndicator', this.value)"
+                                        placeholder="Results I measure"
+                                        style="width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 0.5rem; color: white; margin-top: 0.25rem; font-size: 0.875rem; border-radius: 0.25rem;">
+                                </div>
+                            </div>
+                        </div>
                         <div class="hierarchy-grid">
                             <div class="hierarchy-item" onclick="editGoalPeriod(${goal.id}, 'yearly')" style="cursor: pointer; border-color: ${goalColor}20;">
                                 <div class="hierarchy-label" style="color: ${goalColor};">YEARLY</div>
@@ -1405,6 +1435,8 @@
                     title: name,
                     category: category,
                     yearly: yearly || 'Define yearly goal',
+                    leadIndicator: 'Actions I control',
+                    lagIndicator: 'Results I measure',
                     quarterly: 'Define quarterly milestone',
                     monthly: 'Define monthly target',
                     weekly: 'Define weekly goal'
@@ -1639,108 +1671,40 @@
             }
         }
 
+        // Update goal field directly
+        function updateGoalField(goalId, field, value) {
+            const goal = state.goals.find(g => g.id === goalId);
+            if (goal) {
+                goal[field] = value;
+                saveState();
+            }
+        }
+        
+        // Calculate stats for leveling
+        function calculateLevel() {
+            const totalGoals = state.goals.length;
+            const completedHabits = state.habits.filter(h => h.completed).length;
+            const totalHabits = state.habits.length;
+            
+            // Simple leveling: 1 level per goal + bonus for habits
+            const newLevel = totalGoals + Math.floor(completedHabits / 3);
+            
+            if (newLevel !== state.level) {
+                state.level = newLevel;
+                state.hp.max = 100 + (newLevel * 10);
+                state.hp.current = state.hp.max;
+                state.mana.max = 50 + (newLevel * 5);
+                state.mana.current = state.mana.max;
+                state.exp.max = 100 + (newLevel * 50);
+                updateStats();
+            }
+        }
+
         // Initialize on load
         init();
+        calculateLevel();
         
-        // Force render goals with basic HTML if JavaScript fails
-        if (!document.getElementById('goalsContainer').innerHTML || document.getElementById('goalsContainer').innerHTML.trim() === '<!-- Goals will be rendered here -->') {
-            document.getElementById('goalsContainer').innerHTML = `
-                <div class="goal-card spiritual" style="border-left-color: #a855f7;">
-                    <div class="goal-header">
-                        <h3 class="goal-title">1. Spirituality & Nervous System</h3>
-                    </div>
-                    <div class="goal-content" style="padding: 1.5rem;">
-                        <div class="lead-lag-section" style="margin-bottom: 1.5rem;">
-                            <div style="margin-bottom: 1rem;">
-                                <label style="font-size: 0.875rem; color: #999;">YEARLY GOAL</label>
-                                <input type="text" value="Reduce anxiety by 80%" style="width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 0.5rem; color: white; margin-top: 0.25rem;">
-                            </div>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                                <div>
-                                    <label style="font-size: 0.75rem; color: #666;">Lead Indicator (Actions)</label>
-                                    <input type="text" placeholder="Actions I control" style="width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 0.5rem; color: white; margin-top: 0.25rem; font-size: 0.875rem;">
-                                </div>
-                                <div>
-                                    <label style="font-size: 0.75rem; color: #666;">Lag Indicator (Results)</label>
-                                    <input type="text" placeholder="Results I measure" style="width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 0.5rem; color: white; margin-top: 0.25rem; font-size: 0.875rem;">
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="hierarchy-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
-                            <div class="hierarchy-item">
-                                <div class="hierarchy-label">QUARTERLY</div>
-                                <div class="hierarchy-value">Build meditation habit</div>
-                            </div>
-                            <div class="hierarchy-item">
-                                <div class="hierarchy-label">MONTHLY</div>
-                                <div class="hierarchy-value">21 days consistent</div>
-                            </div>
-                            <div class="hierarchy-item">
-                                <div class="hierarchy-label">WEEKLY</div>
-                                <div class="hierarchy-value">6/7 days complete</div>
-                            </div>
-                        </div>
-                        
-                        <h4 style="color: #999; font-size: 0.875rem; margin-bottom: 0.75rem;">DAILY HABITS</h4>
-                        <div class="habit-item">
-                            <div class="habit-checkbox">✓</div>
-                            <div class="habit-name">Morning Routine</div>
-                        </div>
-                        <div class="habit-item">
-                            <div class="habit-checkbox"></div>
-                            <div class="habit-name">Meditation</div>
-                        </div>
-                    </div>
-                </div>
-                
-                ${state.goals.slice(1).map((goal, index) => `
-                    <div class="goal-card ${goal.category}">
-                        <div class="goal-header">
-                            <h3 class="goal-title">${index + 2}. ${goal.title}</h3>
-                        </div>
-                        <div class="goal-content" style="padding: 1.5rem;">
-                            <div class="lead-lag-section" style="margin-bottom: 1.5rem;">
-                                <div style="margin-bottom: 1rem;">
-                                    <label style="font-size: 0.875rem; color: #999;">YEARLY GOAL</label>
-                                    <input type="text" value="${goal.yearly}" style="width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 0.5rem; color: white; margin-top: 0.25rem;">
-                                </div>
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                                    <div>
-                                        <label style="font-size: 0.75rem; color: #666;">Lead Indicator (Actions)</label>
-                                        <input type="text" placeholder="Actions I control" style="width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 0.5rem; color: white; margin-top: 0.25rem; font-size: 0.875rem;">
-                                    </div>
-                                    <div>
-                                        <label style="font-size: 0.75rem; color: #666;">Lag Indicator (Results)</label>
-                                        <input type="text" placeholder="Results I measure" style="width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 0.5rem; color: white; margin-top: 0.25rem; font-size: 0.875rem;">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="hierarchy-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
-                                <div class="hierarchy-item">
-                                    <div class="hierarchy-label">QUARTERLY</div>
-                                    <div class="hierarchy-value">${goal.quarterly}</div>
-                                </div>
-                                <div class="hierarchy-item">
-                                    <div class="hierarchy-label">MONTHLY</div>
-                                    <div class="hierarchy-value">${goal.monthly}</div>
-                                </div>
-                                <div class="hierarchy-item">
-                                    <div class="hierarchy-label">WEEKLY</div>
-                                    <div class="hierarchy-value">${goal.weekly}</div>
-                                </div>
-                            </div>
-                            
-                            <h4 style="color: #999; font-size: 0.875rem; margin-bottom: 0.75rem;">DAILY HABITS</h4>
-                            ${index === 0 ? '<div class="habit-item"><div class="habit-checkbox"></div><div class="habit-name">Review Trading Charts</div></div>' : 
-                              index === 1 ? '<div class="habit-item"><div class="habit-checkbox"></div><div class="habit-name">Morning Workout</div></div>' :
-                              '<p style="color: #666; font-size: 0.875rem;">No habits yet - add some!</p>'}
-                        </div>
-                    </div>
-                `).join('')}
-            `;
-        }
+        // Removed fallback HTML - JavaScript handles everything now
     </script>
 </body>
 </html>
