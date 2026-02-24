@@ -103,7 +103,7 @@
         .section-title {
             font-size: 2rem;
             font-weight: bold;
-            color: #a855f7;
+            color: #ffffff;
         }
 
         .add-goal-btn {
@@ -494,20 +494,6 @@
                 <label>Goal Name</label>
                 <input type="text" id="goalName" placeholder="e.g., Build AI Trading System">
             </div>
-            <div class="form-group">
-                <label>Category</label>
-                <select id="goalCategory">
-                    <option value="spiritual">Spirituality & Nervous System</option>
-                    <option value="financial">Financial & Wealth</option>
-                    <option value="health">Health & Fitness</option>
-                    <option value="community">Community & Relationships</option>
-                    <option value="personal">Personal Development</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Yearly Goal</label>
-                <input type="text" id="goalYearly" placeholder="e.g., 40% revenue growth">
-            </div>
             <button class="btn-primary" onclick="saveGoal()">Create Goal</button>
         </div>
     </div>
@@ -606,7 +592,12 @@
                     </div>
                     <div class="goal-content">
                         <div class="indicators-section">
-                            <div><strong>Yearly Goal:</strong> ${goal.yearly}</div>
+                            <div>
+                                <label>Yearly Goal</label>
+                                <input type="text" value="${goal.yearly || ''}" 
+                                    onchange="updateGoal('${goal.id}', 'yearly', this.value)"
+                                    placeholder="Define your yearly goal">
+                            </div>
                             <div class="indicator-row">
                                 <div>
                                     <label>Lead Indicator (Actions)</label>
@@ -677,22 +668,19 @@
         function closeGoalModal() {
             document.getElementById('goalModal').classList.remove('active');
             document.getElementById('goalName').value = '';
-            document.getElementById('goalYearly').value = '';
         }
 
         // Save new goal
         function saveGoal() {
             const name = document.getElementById('goalName').value;
-            const category = document.getElementById('goalCategory').value;
-            const yearly = document.getElementById('goalYearly').value;
             
             if (!name) return;
             
             const newGoal = {
                 id: Date.now().toString(),
                 name: name,
-                category: category,
-                yearly: yearly || 'Define your yearly goal',
+                category: 'personal',  // Default category
+                yearly: 'Define your yearly goal',
                 leadIndicator: '',
                 lagIndicator: '',
                 quarterly: '',
