@@ -127,12 +127,20 @@
             background: #9333ea;
         }
 
+        #goalsContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
         .goal-card {
             background: #1a1a1a;
             border: 2px solid rgba(255, 255, 255, 0.1);
             border-radius: 1rem;
             margin-bottom: 1.5rem;
             overflow: hidden;
+            position: relative;
+            isolation: isolate;
         }
 
         .goal-card.spiritual { border-left: 4px solid #a855f7; }
@@ -1105,7 +1113,7 @@
         </div>
     </div>
 
-    <div class="version">v1.9.1 - Fixed Goal Separation</div>
+    <div class="version">v1.9.2 - Goal Separation Fix</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
