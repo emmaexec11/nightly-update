@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Goals Structure</title>
+    <style>
+        body { background: #000; color: white; padding: 2rem; font-family: system-ui; }
+        pre { background: #333; padding: 1rem; border-radius: 0.5rem; white-space: pre-wrap; }
+        .goal { border: 2px solid #00ff00; margin: 1rem 0; padding: 1rem; }
+    </style>
+</head>
+<body>
+    <h1>Goals Debug</h1>
+    <button onclick="checkGoals()">Check Goals Structure</button>
+    <button onclick="visualizeGoals()">Visualize Goals</button>
+    <button onclick="resetGoals()">Reset to Test Data</button>
+    
+    <div id="output"></div>
+    
+    <script>
+        function checkGoals() {
+            const data = localStorage.getItem('questTracker');
+            const output = document.getElementById('output');
+            
+            if (!data) {
+                output.innerHTML = '<h2>No data found</h2>';
+                return;
+            }
+            
+            const state = JSON.parse(data);
+            output.innerHTML = `
+                <h2>Number of goals: ${state.goals?.length || 0}</h2>
+                <pre>${JSON.stringify(state.goals, null, 2)}</pre>
+            `;
+        }
+        
+        function visualizeGoals() {
+            const data = localStorage.getItem('questTracker');
+            if (!data) return;
+            
+            const state = JSON.parse(data);
+            const output = document.getElementById('output');
+            
+            output.innerHTML = '<h2>Visual Structure:</h2>';
+            
+            state.goals?.forEach((goal, index) => {
+                output.innerHTML += `
+                    <div class="goal">
+                        <h3>Goal ${index + 1}: ${goal.name}</h3>
+                        <p>ID: ${goal.id}</p>
+                        <p>Category: ${goal.category}</p>
+                        <p>Habits: ${goal.habits?.length || 0}</p>
+                        <p>Links: ${goal.links?.length || 0}</p>
+                    </div>
+                `;
+            });
+        }
+        
+        function resetGoals() {
+            const testState = {
+                goals: [
+                    {
+                        id: "1",
+                        name: "Goal One",
+                        category: "personal",
+                        yearly: "Test goal one",
+                        habits: [],
+                        links: []
+                    },
+                    {
+                        id: "2", 
+                        name: "Goal Two",
+                        category: "financial",
+                        yearly: "Test goal two",
+                        habits: [],
+                        links: []
+                    }
+                ],
+                exp: { current: 0, max: 100 },
+                level: 1
+            };
+            
+            localStorage.setItem('questTracker', JSON.stringify(testState));
+            checkGoals();
+        }
+        
+        // Check on load
+        checkGoals();
+    </script>
+</body>
+</html>
