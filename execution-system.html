@@ -916,6 +916,10 @@
 
             <div class="goals-container" id="goalsContainer">
                 <!-- Goals will be rendered here -->
+                <div style="padding: 2rem; text-align: center; color: #666;">
+                    <p>Loading goals...</p>
+                    <p style="font-size: 0.875rem;">If goals don't appear, check browser console for errors.</p>
+                </div>
             </div>
         </div>
 
@@ -1641,6 +1645,10 @@
 
         // Initialize on load
         init();
+        
+        // Force render goals immediately for debugging
+        console.log('Forcing render with', state.goals.length, 'goals');
+        renderGoals();
     </script>
 </body>
 </html>
