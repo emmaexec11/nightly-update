@@ -1,0 +1,27 @@
+Version 1.5 - Simplified Lead/Lag Structure
+===========================================
+Time: Monday Feb 24, 2026 at 11:42 AM PST
+
+CHANGES MADE:
+
+1. REMOVED LEAD/LAG INDICATOR SECTION
+   - No more separate lead/lag boxes
+   - Cleaner, simpler layout
+
+2. HABITS = LEAD INDICATORS
+   - Section renamed to "Lead Indicators"
+   - Title shows in goal color
+   - Habits are your action items
+
+3. LINKS = LAG INDICATORS/ANALYTICS
+   - Section renamed to "Lag Indicators / Analytics" 
+   - Title shows in goal color
+   - Links to your analytics dashboards
+
+WHY IT'S BETTER:
+- Habits ARE your lead indicators (actions you control)
+- Links ARE your lag indicators (analytics to measure)
+- Yearly/Quarterly/Monthly/Weekly ARE your goals
+- No redundant fields
+
+If you see this, v1.5 is deployed!
