@@ -346,6 +346,12 @@
             position: relative;
             margin: 0.5rem 0;
         }
+        
+        .goal-progress .progress-container {
+            margin: 1rem;
+            height: 32px;
+            position: relative;
+        }
 
         .progress-bar {
             height: 100%;
@@ -358,6 +364,10 @@
 
         .progress-bar.low {
             background: linear-gradient(90deg, #ef4444, #dc2626);
+        }
+        
+        .progress-bar.warning {
+            background: linear-gradient(90deg, #fbbf24, #f59e0b);
         }
 
         .progress-bar::after {
@@ -398,7 +408,7 @@
             transform: translate(-50%, -50%);
             color: white;
             font-weight: 900;
-            font-size: 0.875rem;
+            font-size: 1.125rem;
             text-shadow: 
                 0 0 3px rgba(0, 0, 0, 0.8),
                 0 0 6px rgba(0, 255, 0, 0.5),
@@ -407,14 +417,48 @@
             font-family: 'Courier New', monospace;
             letter-spacing: 0.05em;
         }
+        
+        .habit-progress .progress-text {
+            font-size: 0.75rem;
+        }
+        
+        .progress-character {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            animation: bounce 1s ease-in-out infinite;
+            z-index: 2;
+            filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.8));
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(-50%); }
+            50% { transform: translateY(-60%); }
+        }
 
         .habit-progress {
             margin-top: 0.5rem;
         }
 
         .habit-progress .progress-container {
-            height: 16px;
+            height: 12px;
             margin: 0.25rem 0;
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .habit-progress .progress-bar {
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+        }
+        
+        .habit-progress .progress-bar.low {
+            background: linear-gradient(90deg, #dc2626, #b91c1c);
+        }
+        
+        .habit-progress .progress-bar.warning {
+            background: linear-gradient(90deg, #f59e0b, #d97706);
         }
 
         .goal-progress {
@@ -685,26 +729,40 @@
         }
 
         .habit-checkbox {
-            width: 2rem;
-            height: 2rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 0.25rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0.5rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.25rem;
+            font-size: 1.5rem;
+            transition: all 0.2s;
+        }
+        
+        .habit-checkbox:hover {
+            border-color: rgba(16, 185, 129, 0.6);
+            transform: scale(1.05);
         }
 
         .habit-checkbox.checked {
             background: #10b981;
             border-color: #10b981;
+            animation: glowGreen 0.5s ease;
+        }
+        
+        @keyframes glowGreen {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.8); }
+            50% { box-shadow: 0 0 25px 10px rgba(16, 185, 129, 0.6); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
         }
 
         .habit-checkbox.checked::after {
             content: '✓';
             color: white;
+            font-weight: bold;
         }
 
         .add-habit-btn {
@@ -1113,7 +1171,7 @@
         </div>
     </div>
 
-    <div class="version">v1.9.2 - Goal Separation Fix</div>
+    <div class="version">v2.0 - Enhanced Progress Bars</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
@@ -1358,11 +1416,21 @@
         // Render goal progress bar
         function renderGoalProgress(goal) {
             const progress = calculateGoalProgress(goal);
+            let colorClass = '';
+            if (progress >= 80) {
+                colorClass = '';
+            } else if (progress >= 50) {
+                colorClass = 'warning';
+            } else {
+                colorClass = 'low';
+            }
+            
             return `
                 <div class="progress-container">
-                    <div class="progress-bar ${progress >= 80 ? '' : 'low'}" style="width: ${progress}%">
+                    <div class="progress-bar ${colorClass}" style="width: ${progress}%">
                         <span class="progress-text">${progress}%</span>
                     </div>
+                    <span class="progress-character" style="left: ${Math.max(2, progress - 2)}%">🏃</span>
                 </div>
             `;
         }
@@ -1481,6 +1549,15 @@
             
             return goal.habits.map(habit => {
                 const progress = calculateHabitProgress(habit);
+                let colorClass = '';
+                if (progress >= 80) {
+                    colorClass = '';
+                } else if (progress >= 50) {
+                    colorClass = 'warning';
+                } else {
+                    colorClass = 'low';
+                }
+                
                 return `
                     <div class="habit-item">
                         <div class="habit-checkbox ${habit.completed ? 'checked' : ''}" 
@@ -1489,7 +1566,7 @@
                             <div class="habit-name" onclick="openHabitModal('${goalId}', '${habit.id}')" style="cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#00ff00'" onmouseout="this.style.color=''">${habit.name}</div>
                             <div class="habit-progress">
                                 <div class="progress-container">
-                                    <div class="progress-bar ${progress >= 80 ? '' : 'low'}" style="width: ${progress}%">
+                                    <div class="progress-bar ${colorClass}" style="width: ${progress}%">
                                         <span class="progress-text">${progress}%</span>
                                     </div>
                                 </div>
