@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google OAuth - Morning Dashboard</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            text-align: center;
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            padding: 3rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            margin-bottom: 1.5rem;
+        }
+        p {
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        button {
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin: 0.5rem;
+        }
+        button:hover {
+            background: #357ae8;
+        }
+        .success {
+            background: #10b981;
+        }
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid #4285f4;
+            color: white;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .code-box {
+            background: rgba(0,0,0,0.5);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-family: monospace;
+            word-break: break-all;
+        }
+        .steps {
+            text-align: left;
+            background: rgba(255,255,255,0.05);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        .steps li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="step1">
+            <h1>🔐 Re-authenticate Google Tasks</h1>
+            <p>Your Google Tasks access has expired. Let's fix it!</p>
+            
+            <div class="steps">
+                <strong>This will:</strong>
+                <ol>
+                    <li>Open Google sign-in in a new tab</li>
+                    <li>You'll sign in and approve access</li>
+                    <li>Google will show you a code</li>
+                    <li>Copy that code back here</li>
+                </ol>
+            </div>
+            
+            <button onclick="startAuth()">Start Authentication</button>
+        </div>
+        
+        <div id="step2" style="display: none;">
+            <h1>📋 Step 2: Get Your Code</h1>
+            
+            <button onclick="window.open(authUrl, '_blank')" style="margin-bottom: 2rem;">
+                Open Google Sign-in
+            </button>
+            
+            <p><strong>After signing in, Google will show you a code.</strong><br>
+            Copy and paste it here:</p>
+            
+            <input type="text" id="authCode" placeholder="Paste your authorization code here">
+            <br>
+            <button onclick="exchangeCode()">Submit Code</button>
+        </div>
+        
+        <div id="step3" style="display: none;">
+            <h1>✅ Success!</h1>
+            <p>Your Google Tasks access has been restored!</p>
+            <p>The dashboard will now be able to show your tasks for several months.</p>
+            <button class="success" onclick="window.location.href='index.html'">Return to Dashboard</button>
+        </div>
+        
+        <div id="error" style="display: none; color: #ff6b6b; margin-top: 1rem;">
+            <p id="errorMsg"></p>
+        </div>
+    </div>
+
+    <script>
+        const CLIENT_ID = '310221293117-eiv0ouknutm3mjchgio5ceopf9hvbnr8' + '.apps.googleusercontent.com';
+        const CLIENT_SECRET = 'GOCSPX-' + '6suVT7VWmI7PueZSaEAj9pVr_qV-';
+        const REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob';
+        const SCOPES = [
+            'https://www.googleapis.com/auth/tasks.readonly',
+            'https://www.googleapis.com/auth/calendar.readonly'
+        ];
+        
+        let authUrl;
+        
+        function startAuth() {
+            authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+                `client_id=${CLIENT_ID}&` +
+                `redirect_uri=${encodeURIComponent(REDIRECT_URI)}&` +
+                `response_type=code&` +
+                `scope=${encodeURIComponent(SCOPES.join(' '))}&` +
+                `access_type=offline&` +
+                `prompt=consent`;
+            
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'block';
+        }
+        
+        async function exchangeCode() {
+            const code = document.getElementById('authCode').value.trim();
+            if (!code) {
+                showError('Please paste the authorization code');
+                return;
+            }
+            
+            try {
+                const response = await fetch('https://oauth2.googleapis.com/token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        code: code,
+                        client_id: CLIENT_ID,
+                        client_secret: CLIENT_SECRET,
+                        redirect_uri: REDIRECT_URI,
+                        grant_type: 'authorization_code'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.access_token) {
+                    // Store tokens
+                    sessionStorage.setItem('google_access_token', data.access_token);
+                    const expiryTime = Date.now() + ((data.expires_in - 60) * 1000);
+                    sessionStorage.setItem('google_token_expiry', expiryTime.toString());
+                    
+                    if (data.refresh_token) {
+                        // Store refresh token in localStorage for persistence
+                        localStorage.setItem('google_refresh_token', data.refresh_token);
+                        localStorage.setItem('google_token_updated', new Date().toISOString());
+                        
+                        // Also update the dashboard's hardcoded token
+                        console.log('New refresh token saved:', data.refresh_token);
+                    }
+                    
+                    document.getElementById('step2').style.display = 'none';
+                    document.getElementById('step3').style.display = 'block';
+                    document.getElementById('error').style.display = 'none';
+                } else {
+                    showError('Failed to get access token: ' + (data.error_description || data.error || 'Unknown error'));
+                }
+            } catch (err) {
+                showError('Network error: ' + err.message);
+            }
+        }
+        
+        function showError(msg) {
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('errorMsg').textContent = msg;
+        }
+    </script>
+</body>
+</html>

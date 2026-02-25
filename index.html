@@ -1711,6 +1711,8 @@
                     <div style="display: flex; align-items: center; gap: var(--space-md);">
                         <span class="last-updated" id="tasksLastUpdated"></span>
                         <button class="refresh-btn" onclick="loadGoogleTasks()">↻</button>
+                        <button class="refresh-btn" onclick="window.open('oauth-redirect.html', '_blank')" style="background: #4285f4; color: white;" title="Re-authenticate Google Access">🔐 Auth</button>
+                        <button class="refresh-btn" onclick="window.open('oauth-redirect.html', '_blank')" style="background: #4285f4; color: white;" title="Re-authenticate Google Access">🔐 Auth</button>
                     </div>
                 </div>
                 <div id="tasksContainer" class="tasks-container">
@@ -1724,6 +1726,8 @@
                     <h2 class="section-title">📅 Tomorrow's Schedule</h2>
                     <div style="display: flex; align-items: center; gap: var(--space-md);">
                         <span class="last-updated" id="calendarLastUpdated"></span>
+                        <button class="refresh-btn" onclick="window.open('oauth-redirect.html', '_blank')" style="background: #4285f4; color: white;" title="Re-authenticate Google Access">🔐 Auth</button>
+                        <button class="refresh-btn" onclick="window.open('oauth-redirect.html', '_blank')" style="background: #4285f4; color: white;" title="Re-authenticate Google Access">🔐 Auth</button>
                         <button class="refresh-btn" onclick="toggleCalendarExpand()" id="expandBtn" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">Expand ↓</button>
                         <button class="refresh-btn" onclick="loadGoogleCalendar()">↻</button>
                     </div>
@@ -3387,7 +3391,7 @@
                 return {
                     'client_id': '310221293117-eiv0ouknutm3mjchgio5ceopf9hvbnr8' + '.apps.googleusercontent.com',
                     'client_secret': 'GOCSPX-' + '6suVT7VWmI7PueZSaEAj9pVr_qV-',
-                    'refresh_token': localStorage.getItem('google_refresh_token') || ('1//06pZHENOSKxTXCgYIARAAGAYSNwF-L9Ira' + 'Z1g-rP258FGkJOF1SWOYKmkrDmMeJXKwbzyvjCGPbwGf8KyR0z0CS-su0Mxz90JPpc')
+                    'refresh_token': localStorage.getItem('google_refresh_token') || '1//06pZHENOSKxTXCgYIARAAGAYSNwF-L9Ira' + 'Z1g-rP258FGkJOF1SWOYKmkrDmMeJXKwbzyvjCGPbwGf8KyR0z0CS-su0Mxz90JPpc'
                 };
             }
             
