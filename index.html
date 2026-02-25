@@ -1702,31 +1702,35 @@
             </div>
         </div>
 
-        <!-- Google Tasks Section -->
-        <div class="google-section">
-            <div class="section-header">
-                <h2 class="section-title">📋 Tasks</h2>
-                <div style="display: flex; align-items: center; gap: var(--space-md);">
-                    <span class="last-updated" id="tasksLastUpdated"></span>
-                    <button class="refresh-btn" onclick="loadGoogleTasks()">↻</button>
+        <!-- Google Tasks & Calendar Side by Side -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+            <!-- Google Tasks Section -->
+            <div class="google-section">
+                <div class="section-header">
+                    <h2 class="section-title">📋 Tasks</h2>
+                    <div style="display: flex; align-items: center; gap: var(--space-md);">
+                        <span class="last-updated" id="tasksLastUpdated"></span>
+                        <button class="refresh-btn" onclick="loadGoogleTasks()">↻</button>
+                    </div>
+                </div>
+                <div id="tasksContainer" class="tasks-container">
+                    <div class="loading">Loading tasks...</div>
                 </div>
             </div>
-            <div id="tasksContainer" class="tasks-container">
-                <div class="loading">Loading tasks...</div>
-            </div>
-        </div>
 
-        <!-- Google Calendar Section -->
-        <div class="google-section">
-            <div class="section-header">
-                <h2 class="section-title">📅 Next 3 Days</h2>
-                <div style="display: flex; align-items: center; gap: var(--space-md);">
-                    <span class="last-updated" id="calendarLastUpdated"></span>
-                    <button class="refresh-btn" onclick="loadGoogleCalendar()">↻</button>
+            <!-- Google Calendar Section -->
+            <div class="google-section">
+                <div class="section-header">
+                    <h2 class="section-title">📅 Tomorrow's Schedule</h2>
+                    <div style="display: flex; align-items: center; gap: var(--space-md);">
+                        <span class="last-updated" id="calendarLastUpdated"></span>
+                        <button class="refresh-btn" onclick="toggleCalendarExpand()" id="expandBtn" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">Expand ↓</button>
+                        <button class="refresh-btn" onclick="loadGoogleCalendar()">↻</button>
+                    </div>
                 </div>
-            </div>
-            <div id="calendarContainer" class="calendar-container">
-                <div class="loading">Loading calendar...</div>
+                <div id="calendarContainer" class="calendar-container">
+                    <div class="loading">Loading calendar...</div>
+                </div>
             </div>
         </div>
 
@@ -3520,24 +3524,39 @@
                 }
             }
             
+            // Calendar expanded state
+            let calendarExpanded = false;
+            
+            function toggleCalendarExpand() {
+                calendarExpanded = !calendarExpanded;
+                const btn = document.getElementById('expandBtn');
+                btn.textContent = calendarExpanded ? 'Collapse ↑' : 'Expand ↓';
+                // Update title
+                const title = document.querySelector('.google-section:nth-child(2) .section-title');
+                if (title) {
+                    title.textContent = calendarExpanded ? '📅 Next 7 Days' : '📅 Tomorrow\'s Schedule';
+                }
+                loadGoogleCalendar();
+            }
+            
             // Google Calendar API
             async function loadGoogleCalendar() {
                 const container = document.getElementById('calendarContainer');
                 container.innerHTML = '<div class="loading">Loading calendar...</div>';
                 
                 try {
-                    // Show the next 3 days for evening planning
+                    // Show tomorrow by default, or next 7 days if expanded
                     const now = new Date();
                     const tomorrow = new Date();
                     tomorrow.setDate(tomorrow.getDate() + 1);
                     tomorrow.setHours(0, 0, 0, 0);
                     
-                    const threeDaysLater = new Date();
-                    threeDaysLater.setDate(threeDaysLater.getDate() + 4); // +4 to include 3 full days
-                    threeDaysLater.setHours(0, 0, 0, 0);
+                    const endDate = new Date();
+                    endDate.setDate(endDate.getDate() + (calendarExpanded ? 8 : 2)); // +2 for just tomorrow, +8 for week
+                    endDate.setHours(0, 0, 0, 0);
                     
                     const timeMinStr = tomorrow.toISOString();
-                    const timeMaxStr = threeDaysLater.toISOString();
+                    const timeMaxStr = endDate.toISOString();
                     
                     // Calendar IDs (Devon's calendars)
                     const calendars = [
@@ -3582,9 +3601,10 @@
                         eventsByDay[dayKey].push(event);
                     });
                     
-                    // Create HTML for next 3 days
+                    // Create HTML for tomorrow only or next 7 days if expanded
                     let html = '';
-                    for (let i = 1; i <= 3; i++) {
+                    const daysToShow = calendarExpanded ? 7 : 1;
+                    for (let i = 1; i <= daysToShow; i++) {
                         const currentDate = new Date();
                         currentDate.setDate(currentDate.getDate() + i);
                         const dayKey = currentDate.toDateString();
@@ -3633,7 +3653,7 @@
                         html += `</div>`;
                     }
                     
-                    container.innerHTML = html || '<div class="no-items">No events in the next 3 days</div>';
+                    container.innerHTML = html || `<div class="no-items">No events ${calendarExpanded ? 'in the next week' : 'tomorrow'}</div>`;
                 } catch (error) {
                     console.error('Failed to load calendar:', error);
                     container.innerHTML = '<div class="no-items">Unable to load calendar</div>';
