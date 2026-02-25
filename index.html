@@ -1668,6 +1668,12 @@
             letter-spacing: -0.02em;
             line-height: 1.3;
             flex: 1;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .habit-name:hover {
+            color: #10b981;
         }
 
         .habit-name-col {
@@ -1793,7 +1799,7 @@
         </div>
     </div>
 
-    <div class="version">v4.6 - Goal Details Editor</div>
+    <div class="version">v4.7 - All Features Restored</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
@@ -1983,6 +1989,18 @@
 
         // Load state from localStorage
         function loadState() {
+            // Version checking to reset old data
+            const CURRENT_VERSION = '4.6';
+            const savedVersion = localStorage.getItem('questTrackerVersion');
+            
+            if (!savedVersion || savedVersion < CURRENT_VERSION) {
+                // Clear old data and set new version
+                localStorage.removeItem('questTracker');
+                localStorage.setItem('questTrackerVersion', CURRENT_VERSION);
+                // State will use defaults
+                return;
+            }
+            
             const saved = localStorage.getItem('questTracker');
             if (saved) {
                 try {
@@ -2268,7 +2286,28 @@
             const container = document.getElementById('goalsContainer');
             
             if (state.goals.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>No goals yet! Click "New Goal" to begin your quest.</p></div>';
+                // Add a sample goal to show functionality
+                const sampleGoal = {
+                    id: Date.now(),
+                    name: 'Build AI Trading System',
+                    category: 'financial',
+                    yearly: '40% revenue growth + profitable crypto trading',
+                    quarterly: 'Launch AI crypto screener',
+                    monthly: 'Test 3 trading strategies',
+                    weekly: 'Review 20 charts',
+                    color: getCategoryColor('financial'),
+                    habits: [{
+                        id: Date.now() + 1,
+                        name: 'Review Trading Charts',
+                        frequency: 'daily',
+                        history: []
+                    }],
+                    links: [],
+                    periodData: {}
+                };
+                state.goals.push(sampleGoal);
+                saveState();
+                renderGoals();
                 return;
             }
             
