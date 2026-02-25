@@ -674,21 +674,28 @@
         }
 
         .calendar-day.completed {
-            background: #00ff00;
+            background: var(--primary-green);
             color: #000;
-            border-color: #00ff00;
+            border-color: var(--primary-green);
         }
 
         .calendar-day.missed {
-            background: #ff0000;
+            background: var(--accent-red);
             color: #fff;
-            border-color: #ff0000;
+            border-color: var(--accent-red);
         }
 
         .calendar-day.not-scheduled {
-            background: rgba(139, 92, 246, 0.2);
-            color: #666;
-            cursor: default;
+            background: rgba(139, 92, 246, 0.3);
+            color: #b794f4;
+            cursor: pointer;
+            border-color: rgba(139, 92, 246, 0.5);
+        }
+        
+        .calendar-day.not-scheduled.completed {
+            background: var(--primary-green);
+            color: #000;
+            border-color: var(--primary-green);
         }
 
         .calendar-day.future {
@@ -1488,7 +1495,7 @@
         </div>
     </div>
 
-    <div class="version">v2.6 - Google API Fixed</div>
+    <div class="version">v2.7 - Three-State Calendar</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
@@ -2387,14 +2394,17 @@
                     dayEl.classList.add('future');
                 } else if (!isScheduled) {
                     dayEl.classList.add('not-scheduled');
+                    if (entry?.completed) {
+                        dayEl.classList.add('completed');
+                    }
                 } else if (entry?.completed) {
                     dayEl.classList.add('completed');
                 } else {
                     dayEl.classList.add('missed');
                 }
                 
-                if (isScheduled && date <= today) {
-                    dayEl.onclick = () => toggleCalendarDay(dateStr);
+                if (date <= today) {
+                    dayEl.onclick = () => toggleCalendarDay(dateStr, isScheduled);
                 }
                 
                 calendar.appendChild(dayEl);
@@ -2424,18 +2434,30 @@
             }
         }
         
-        function toggleCalendarDay(dateStr) {
+        function toggleCalendarDay(dateStr, isScheduled) {
             const goal = state.goals.find(g => g.id === currentHabitGoalId);
             const habit = goal?.habits?.find(h => h.id === currentHabitId);
             
             if (!habit) return;
             
             let entry = habit.history.find(h => h.date === dateStr);
+            
             if (!entry) {
+                // No entry exists - create one marked as completed
                 entry = { date: dateStr, completed: true };
                 habit.history.push(entry);
+            } else if (entry.completed) {
+                // Currently green - decide what to do based on if it's scheduled
+                if (isScheduled) {
+                    // Scheduled day: green → red (mark incomplete)
+                    entry.completed = false;
+                } else {
+                    // Unscheduled day: green → purple (remove entry entirely)
+                    habit.history = habit.history.filter(h => h.date !== dateStr);
+                }
             } else {
-                entry.completed = !entry.completed;
+                // Currently red (only possible on scheduled days) → green
+                entry.completed = true;
             }
             
             saveState();
