@@ -1495,7 +1495,7 @@
         </div>
     </div>
 
-    <div class="version">v2.7 - Three-State Calendar</div>
+    <div class="version">v2.8 - Fixed Frequency Updates</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
@@ -2270,7 +2270,17 @@
             const habit = goal?.habits?.find(h => h.id === currentHabitId);
             
             if (habit) {
+                // Update the habit's frequency
+                habit.frequency = frequency;
+                
+                // Update UI
                 updateFrequencyUI(frequency, habit);
+                
+                // Save state
+                saveState();
+                
+                // Re-render calendar to update purple days
+                renderHabitCalendar(habit);
             }
         }
         
@@ -2292,7 +2302,14 @@
                     break;
                 case 'weekly':
                     document.getElementById('weeklyConfig').style.display = 'block';
+                    document.getElementById('weekdaySelector').style.display = 'flex';
                     document.getElementById('daysPerWeek').value = habit.daysPerWeek || 3;
+                    // Set active days for weekly
+                    const weeklyDays = habit.weeklyDays || [1,3,5]; // Default Mon, Wed, Fri
+                    document.querySelectorAll('.day-btn').forEach(btn => {
+                        const day = parseInt(btn.dataset.day);
+                        btn.classList.toggle('active', weeklyDays.includes(day));
+                    });
                     break;
                 case 'monthly':
                     document.getElementById('monthlyConfig').style.display = 'block';
@@ -2427,8 +2444,8 @@
                 case 'monthly':
                     return date.getDate() === (habit.dayOfMonth || 1);
                 case 'weekly':
-                    // This is more complex - would need to track which days were selected
-                    return true; // Simplified for now
+                    // Use the selected weekly days
+                    return (habit.weeklyDays || []).includes(dayOfWeek);
                 default:
                     return true;
             }
@@ -2488,6 +2505,8 @@
                     break;
                 case 'weekly':
                     habit.daysPerWeek = parseInt(document.getElementById('daysPerWeek').value);
+                    habit.weeklyDays = Array.from(document.querySelectorAll('.day-btn.active'))
+                        .map(btn => parseInt(btn.dataset.day));
                     break;
                 case 'monthly':
                     habit.dayOfMonth = parseInt(document.getElementById('dayOfMonth').value);
@@ -2506,6 +2525,31 @@
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('day-btn')) {
                 e.target.classList.toggle('active');
+                
+                // Update days per week count for weekly frequency
+                const frequency = document.getElementById('habitFrequency')?.value;
+                if (frequency === 'weekly') {
+                    const activeDays = document.querySelectorAll('.day-btn.active').length;
+                    const daysPerWeekInput = document.getElementById('daysPerWeek');
+                    if (daysPerWeekInput) {
+                        daysPerWeekInput.value = activeDays;
+                    }
+                }
+                
+                // Update calendar immediately to show purple/red changes
+                const goal = state.goals.find(g => g.id === currentHabitGoalId);
+                const habit = goal?.habits?.find(h => h.id === currentHabitId);
+                if (habit) {
+                    // Temporarily update the habit's days
+                    if (frequency === 'weekly') {
+                        habit.weeklyDays = Array.from(document.querySelectorAll('.day-btn.active'))
+                            .map(btn => parseInt(btn.dataset.day));
+                    } else if (frequency === 'custom') {
+                        habit.customDays = Array.from(document.querySelectorAll('.day-btn.active'))
+                            .map(btn => parseInt(btn.dataset.day));
+                    }
+                    renderHabitCalendar(habit);
+                }
             }
         });
 
