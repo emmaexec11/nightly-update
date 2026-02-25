@@ -779,6 +779,46 @@
             max-height: 100px;
         }
         
+        .habit-steps {
+            display: none;
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid var(--primary-green);
+            margin: 0.5rem 0 0.5rem 5.5rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        .habit-steps.expanded {
+            display: block;
+        }
+        
+        .steps-content {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+        
+        .step-item {
+            padding: 0.25rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .step-item:last-child {
+            border-bottom: none;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
         .note-controls {
             display: flex;
             gap: 0.5rem;
@@ -1514,7 +1554,7 @@
         </div>
     </div>
 
-    <div class="version">v3.4 - Beautiful Habit Design</div>
+    <div class="version">v3.5 - Expandable Habit Steps</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
@@ -2011,10 +2051,18 @@
                                     </div>
                                 </div>
                             </div>
+                            ${habit.notes ? `<button class="icon-btn" onclick="toggleHabitSteps('${goalId}', '${habit.id}')" title="Toggle Steps">${habit.stepsExpanded ? '▼' : '▶'}</button>` : ''}
                             <button class="icon-btn" onclick="toggleHabitNote('${goalId}', '${habit.id}')" title="Add/Edit Note">📝</button>
                             <button class="icon-btn" style="color: #ef4444;" 
                                 onclick="deleteHabit('${goalId}', '${habit.id}')">×</button>
                         </div>
+                        ${habit.notes ? `
+                            <div class="habit-steps ${habit.stepsExpanded ? 'expanded' : ''}" id="steps-${goalId}-${habit.id}">
+                                <div class="steps-content">
+                                    ${habit.notes.split('\n').map(line => `<div class="step-item">${line}</div>`).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
                         <div class="habit-note ${habit.noteVisible ? 'visible' : ''}" id="note-${goalId}-${habit.id}">
                             <div class="note-controls">
                                 <input type="text" 
@@ -2701,6 +2749,18 @@
             }
         });
 
+        // Toggle habit steps visibility
+        function toggleHabitSteps(goalId, habitId) {
+            const goal = state.goals.find(g => g.id === goalId);
+            const habit = goal?.habits?.find(h => h.id === habitId);
+            
+            if (habit) {
+                habit.stepsExpanded = !habit.stepsExpanded;
+                saveState();
+                renderAll();
+            }
+        }
+        
         // Toggle habit note visibility
         function toggleHabitNote(goalId, habitId) {
             const goal = state.goals.find(g => g.id === goalId);
