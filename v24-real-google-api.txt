@@ -1,0 +1,38 @@
+Version 2.4 - Real Google API Integration
+=========================================
+Time: Monday Feb 24, 2026 at 5:30 PM PST
+
+REAL GOOGLE API INTEGRATION:
+
+1. GOOGLE TASKS
+   - Fetches from ALL your task lists
+   - Shows only incomplete tasks
+   - Real-time data from Google
+   - Auto-refresh on page load
+
+2. GOOGLE CALENDAR
+   - Shows tomorrow's events (or today after midnight)
+   - Pulls from both calendars (Devon's + Emma's)
+   - Filters out routine events
+   - Shows times and event titles
+
+3. SECURE CONFIGURATION
+   - No hardcoded secrets in code
+   - Prompts for credentials on first use
+   - Stores securely in browser localStorage
+   - One-time setup process
+
+4. AUTO TOKEN REFRESH
+   - Automatically refreshes expired tokens
+   - Retries failed requests
+   - Maintains persistent connection
+
+SETUP REQUIRED:
+1. Click "Configure Google API" button
+2. Enter Client Secret (from morning dashboard)
+3. Enter Refresh Token (from morning dashboard)
+4. Data loads automatically
+
+See google-setup.txt for detailed instructions.
+
+If you see this, v2.4 is deployed!
