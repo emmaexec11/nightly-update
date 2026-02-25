@@ -1134,6 +1134,8 @@
 
         .modal-content {
             background: #1a1a1a;
+            position: relative;
+            z-index: 1001;
             border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 1rem;
             padding: 2rem;
@@ -1495,7 +1497,7 @@
         </div>
     </div>
 
-    <div class="version">v2.8 - Fixed Frequency Updates</div>
+    <div class="version">v2.9 - Fixed Modal Exit & Calendar Clicks</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
@@ -2421,7 +2423,12 @@
                 }
                 
                 if (date <= today) {
-                    dayEl.onclick = () => toggleCalendarDay(dateStr, isScheduled);
+                    dayEl.style.cursor = 'pointer';
+                    dayEl.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleCalendarDay(dateStr, isScheduled);
+                    });
                 }
                 
                 calendar.appendChild(dayEl);
@@ -2452,10 +2459,15 @@
         }
         
         function toggleCalendarDay(dateStr, isScheduled) {
+            console.log('Calendar day clicked:', dateStr, isScheduled);
+            
             const goal = state.goals.find(g => g.id === currentHabitGoalId);
             const habit = goal?.habits?.find(h => h.id === currentHabitId);
             
-            if (!habit) return;
+            if (!habit) {
+                console.log('No habit found');
+                return;
+            }
             
             let entry = habit.history.find(h => h.date === dateStr);
             
@@ -2550,6 +2562,24 @@
                     }
                     renderHabitCalendar(habit);
                 }
+            }
+        });
+        
+        // Add escape key handler for modals
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const activeModals = document.querySelectorAll('.modal.active');
+                activeModals.forEach(modal => {
+                    if (modal.id === 'habitDetailsModal') {
+                        closeHabitModal();
+                    } else if (modal.id === 'goalModal') {
+                        closeGoalModal();
+                    } else if (modal.id === 'editModal') {
+                        closeEditModal();
+                    } else if (modal.id === 'linkModal') {
+                        closeLinkModal();
+                    }
+                });
             }
         });
 
