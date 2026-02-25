@@ -3649,23 +3649,27 @@
                     const timeMinStr = tomorrow.toISOString();
                     const timeMaxStr = endDate.toISOString();
                     
-                    // Calendar IDs (Devon's calendars)
+                    // Calendar IDs (Devon's and Emma's calendars)
                     const calendars = [
                         'devondoherty07@gmail.com',
-                        'emma.exec.11@gmail.com'
+                        'emma.exec.11@gmail.com',
+                        'primary' // Try primary as well in case emma's is primary
                     ];
                     
                     let allEvents = [];
+                    console.log('Loading calendars:', calendars);
                     
                     for (const calendarId of calendars) {
                         try {
                             const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?timeMin=${timeMinStr}&timeMax=${timeMaxStr}&singleEvents=true&orderBy=startTime`;
-                            const data = await makeGoogleApiCall(url);
+                            const data = await makeApiCall(url);
                             allEvents = allEvents.concat(data.items || []);
                         } catch (error) {
-                            console.log(`Skipping calendar ${calendarId}:`, error.message);
+                            console.error(`Failed to load calendar ${calendarId}:`, error.message);
                         }
                     }
+                    
+                    console.log(`Found ${allEvents.length} total events across all calendars`);
                     
                     // Filter out routine events
                     const routineEvents = ['morning routine', 'power hour', 'wrap up day', 'night routine', 'workout'];
