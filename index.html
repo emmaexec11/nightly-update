@@ -1717,23 +1717,8 @@
             </div>
         </div>
 
-        <!-- Google Tasks & Calendar Side by Side -->
+        <!-- Google Calendar & Tasks Side by Side -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-            <!-- Google Tasks Section -->
-            <div class="google-section">
-                <div class="section-header">
-                    <h2 class="section-title">📋 Tasks</h2>
-                    <div style="display: flex; align-items: center; gap: var(--space-md);">
-                        <span class="last-updated" id="tasksLastUpdated"></span>
-                        <button class="refresh-btn" onclick="loadGoogleTasks()">↻</button>
-                        <button class="refresh-btn" onclick="window.open('oauth-redirect.html', '_blank')" style="opacity: 0.5;" title="Re-authenticate">🔒</button>
-                    </div>
-                </div>
-                <div id="tasksContainer" class="tasks-container">
-                    <div class="loading">Loading tasks...</div>
-                </div>
-            </div>
-
             <!-- Google Calendar Section -->
             <div class="google-section">
                 <div class="section-header">
@@ -1746,6 +1731,21 @@
                 </div>
                 <div id="calendarContainer" class="calendar-container">
                     <div class="loading">Loading calendar...</div>
+                </div>
+            </div>
+
+            <!-- Google Tasks Section -->
+            <div class="google-section">
+                <div class="section-header">
+                    <h2 class="section-title">📋 Tasks</h2>
+                    <div style="display: flex; align-items: center; gap: var(--space-md);">
+                        <span class="last-updated" id="tasksLastUpdated"></span>
+                        <button class="refresh-btn" onclick="loadGoogleTasks()">↻</button>
+                        <button class="refresh-btn" onclick="window.open('oauth-redirect.html', '_blank')" style="opacity: 0.5;" title="Re-authenticate">🔒</button>
+                    </div>
+                </div>
+                <div id="tasksContainer" class="tasks-container">
+                    <div class="loading">Loading tasks...</div>
                 </div>
             </div>
         </div>
