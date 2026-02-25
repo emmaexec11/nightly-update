@@ -1,0 +1,25 @@
+Version 4.3 - Fixed Button Functions
+====================================
+Time: Monday Feb 24, 2026 at 9:40 PM PST
+
+BUTTONS FIXED:
+
+The issue was that all the category functions were defined inside the DOMContentLoaded event listener, making them inaccessible to the onclick handlers.
+
+WHAT WAS FIXED:
+1. Moved all category functions to global scope
+2. Color picker now changes colors instantly
+3. "+ Add" buttons now work to add quotes
+4. Delete buttons (×) now remove quotes/categories
+5. Click on title to edit category names
+
+ALL BUTTONS NOW WORKING:
+- ✅ Color picker changes category colors
+- ✅ + Add button adds quotes
+- ✅ × buttons delete quotes and categories
+- ✅ Category titles are clickable to edit
+- ✅ + Add Category creates new categories
+
+The functions are now properly accessible from the HTML onclick handlers.
+
+If you see this, v4.3 is deployed!
