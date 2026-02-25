@@ -178,14 +178,46 @@
                     ]
                 }
             ],
-            reminders: [
-                { text: "Be so busy improving yourself that you have no time to criticize others.", author: "Bruce Lee" },
-                { text: "Respond not react", author: "" },
-                { text: "Worry about nothing. Pray about everything. Be content in all circumstances. And make progress toward a noble goal.", author: "Rick Warren" },
-                { text: "How can I love God today? How can I love people today? How can I make a difference today?", author: "" },
-                { text: "To Level Up. -Beliefs -Skills -Character", author: "" },
-                { text: "Pray not for a lighter load, but instead for stronger shoulders", author: "" },
-                { text: "8 hours of work to survive, 4 hours to thrive = 12 hours a day of work", author: "" }
+            categories: [
+                {
+                    id: 'cat1',
+                    title: "Mindset & Reminders",
+                    icon: "💭",
+                    color: "#fbbf24",
+                    quotes: [
+                        { text: "Be so busy improving yourself that you have no time to criticize others.", author: "Bruce Lee" },
+                        { text: "Respond not react", author: "" },
+                        { text: "Worry about nothing. Pray about everything. Be content in all circumstances. And make progress toward a noble goal.", author: "Rick Warren" },
+                        { text: "How can I love God today? How can I love people today? How can I make a difference today?", author: "" },
+                        { text: "To Level Up. -Beliefs -Skills -Character", author: "" },
+                        { text: "Pray not for a lighter load, but instead for stronger shoulders", author: "" },
+                        { text: "8 hours of work to survive, 4 hours to thrive = 12 hours a day of work", author: "" }
+                    ]
+                },
+                {
+                    id: 'cat2',
+                    title: "Scriptures",
+                    icon: "📖",
+                    color: "#8b5cf6",
+                    quotes: [
+                        { text: "For I know the plans I have for you," declares the Lord, "plans to prosper you and not to harm you, plans to give you hope and a future.", author: "Jeremiah 29:11 (NIV)" },
+                        { text: "Commit your work to the Lord, and your plans will be established.", author: "Proverbs 16:3" },
+                        { text: "Whatever you do, work at it with all your heart, as working for the Lord.", author: "Colossians 3:23" },
+                        { text: "Pray for guidance that i will fulfill my calling that God has for me", author: "" },
+                        { text: "Pray for my future wife", author: "" }
+                    ]
+                },
+                {
+                    id: 'cat3',
+                    title: "Facts & Information",
+                    icon: "📊",
+                    color: "#10b981",
+                    quotes: [
+                        { text: "*** Next Goal - Speech, story telling and articulation", author: "" },
+                        { text: "2026 theme Consistency ( commitment) - If you can't do the full habit → do the first step only. -Treat Promises to Yourself as Sacred", author: "" },
+                        { text: "This is the year my life changes for good - Pray and work", author: "" }
+                    ]
+                }
             ]
         };
 
@@ -193,12 +225,12 @@
             // Get current state
             let state = JSON.parse(localStorage.getItem('questTracker')) || {
                 goals: [],
-                reminders: []
+                categories: []
             };
             
             // Clear existing data
             state.goals = [];
-            state.reminders = [];
+            state.categories = [];
             
             // Add each goal
             devonData.goals.forEach(goalData => {
@@ -247,8 +279,8 @@
                 state.goals.push(goal);
             });
             
-            // Add reminders
-            state.reminders = devonData.reminders;
+            // Add categories
+            state.categories = devonData.categories;
             
             // Save to localStorage
             localStorage.setItem('questTracker', JSON.stringify(state));
