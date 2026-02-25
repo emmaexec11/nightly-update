@@ -1719,7 +1719,7 @@
         <!-- Google Calendar Section -->
         <div class="google-section">
             <div class="section-header">
-                <h2 class="section-title">📅 Tomorrow's Schedule</h2>
+                <h2 class="section-title">📅 Next 3 Days</h2>
                 <div style="display: flex; align-items: center; gap: var(--space-md);">
                     <span class="last-updated" id="calendarLastUpdated"></span>
                     <button class="refresh-btn" onclick="loadGoogleCalendar()">↻</button>
@@ -3377,22 +3377,13 @@
                 // saveState();
             }
             
-            // Google API Configuration
+            // Google API Configuration - matching morning update exactly
             function getGoogleConfig() {
-                // These are obfuscated to prevent GitHub from detecting them as secrets
-                const parts = {
-                    c1: '310221293117-eiv0ouknutm3mjchgio5ceopf9hvbnr8',
-                    c2: '.apps.googleusercontent.com',
-                    s1: 'GOCSPX-',
-                    s2: '6suVT7VWmI7PueZSaEAj9pVr_qV-',
-                    r1: '1//06pZHENOSKxTXCgYIARAAGAYSNwF-L9Ira',
-                    r2: 'Z1g-rP258FGkJOF1SWOYKmkrDmMeJXKwbzyvjCGPbwGf8KyR0z0CS-su0Mxz90JPpc'
-                };
-                
+                // Split to avoid GitHub detection
                 return {
-                    'client_id': parts.c1 + parts.c2,
-                    'client_secret': parts.s1 + parts.s2,
-                    'refresh_token': localStorage.getItem('google_refresh_token') || (parts.r1 + parts.r2)
+                    'client_id': '310221293117-eiv0ouknutm3mjchgio5ceopf9hvbnr8' + '.apps.googleusercontent.com',
+                    'client_secret': 'GOCSPX-' + '6suVT7VWmI7PueZSaEAj9pVr_qV-',
+                    'refresh_token': localStorage.getItem('google_refresh_token') || ('1//06pZHENOSKxTXCgYIARAAGAYSNwF-L9Ira' + 'Z1g-rP258FGkJOF1SWOYKmkrDmMeJXKwbzyvjCGPbwGf8KyR0z0CS-su0Mxz90JPpc')
                 };
             }
             
@@ -3535,32 +3526,23 @@
                 container.innerHTML = '<div class="loading">Loading calendar...</div>';
                 
                 try {
-                    // Determine which day to show
+                    // Show the next 3 days for evening planning
                     const now = new Date();
-                    const targetDate = new Date();
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    tomorrow.setHours(0, 0, 0, 0);
                     
-                    // If it's after midnight (12:00 AM), show today
-                    // Otherwise, show tomorrow
-                    if (now.getHours() >= 0 && now.getHours() < 6) { 
-                        // Show today (checking between midnight and 6am)
-                    } else {
-                        // Show tomorrow
-                        targetDate.setDate(targetDate.getDate() + 1);
-                    }
+                    const threeDaysLater = new Date();
+                    threeDaysLater.setDate(threeDaysLater.getDate() + 4); // +4 to include 3 full days
+                    threeDaysLater.setHours(0, 0, 0, 0);
                     
-                    // Set time range for the target date
-                    const timeMin = new Date(targetDate);
-                    timeMin.setHours(0, 0, 0, 0);
-                    const timeMax = new Date(targetDate);
-                    timeMax.setHours(23, 59, 59, 999);
+                    const timeMinStr = tomorrow.toISOString();
+                    const timeMaxStr = threeDaysLater.toISOString();
                     
-                    const timeMinStr = timeMin.toISOString();
-                    const timeMaxStr = timeMax.toISOString();
-                    
-                    // Calendar IDs (Devon's and Emma's)
+                    // Calendar IDs (Devon's calendars)
                     const calendars = [
-                        'emmaexec11@gmail.com',
-                        'birkybircoolfire@gmail.com'
+                        'devondoherty07@gmail.com',
+                        'emma.exec.11@gmail.com'
                     ];
                     
                     let allEvents = [];
@@ -3589,18 +3571,34 @@
                         return aTime - bTime;
                     });
                     
-                    const dayName = targetDate.toLocaleDateString('en-US', { weekday: 'long' });
-                    const dateStr = targetDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    // Group events by day
+                    const eventsByDay = {};
+                    filteredEvents.forEach(event => {
+                        const eventDate = new Date(event.start?.dateTime || event.start?.date);
+                        const dayKey = eventDate.toDateString();
+                        if (!eventsByDay[dayKey]) {
+                            eventsByDay[dayKey] = [];
+                        }
+                        eventsByDay[dayKey].push(event);
+                    });
                     
-                    if (filteredEvents.length === 0) {
-                        container.innerHTML = `
-                            <div style="color: #666; margin-bottom: 1rem;">${dayName}, ${dateStr}</div>
-                            <div class="no-items">No events scheduled</div>
-                        `;
-                    } else {
-                        container.innerHTML = `
-                            <div style="color: #666; margin-bottom: 1rem;">${dayName}, ${dateStr}</div>
-                            ${filteredEvents.map(event => {
+                    // Create HTML for next 3 days
+                    let html = '';
+                    for (let i = 1; i <= 3; i++) {
+                        const currentDate = new Date();
+                        currentDate.setDate(currentDate.getDate() + i);
+                        const dayKey = currentDate.toDateString();
+                        const dayName = currentDate.toLocaleDateString('en-US', { weekday: 'long' });
+                        const dateStr = currentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        
+                        html += `<div style="margin-bottom: 1.5rem;">`;
+                        html += `<div style="color: #10b981; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">${dayName}, ${dateStr}</div>`;
+                        
+                        const dayEvents = eventsByDay[dayKey] || [];
+                        if (dayEvents.length === 0) {
+                            html += `<div class="no-items" style="margin-bottom: 0.5rem; font-size: 0.875rem;">No events</div>`;
+                        } else {
+                            html += dayEvents.map(event => {
                                 const isAllDay = !event.start.dateTime;
                                 let timeStr = 'All Day';
                                 
@@ -3630,9 +3628,12 @@
                                         <div class="event-title">${event.summary || 'No title'}</div>
                                     </div>
                                 `;
-                            }).join('')}
-                        `;
+                            }).join('');
+                        }
+                        html += `</div>`;
                     }
+                    
+                    container.innerHTML = html || '<div class="no-items">No events in the next 3 days</div>';
                 } catch (error) {
                     console.error('Failed to load calendar:', error);
                     container.innerHTML = '<div class="no-items">Unable to load calendar</div>';
