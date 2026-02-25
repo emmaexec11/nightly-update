@@ -754,6 +754,39 @@
             cursor: pointer;
             background: rgba(0, 0, 0, 0.3);
         }
+        
+        /* Habit Stats Styles */
+        .habit-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .habit-stats {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            font-size: 0.875rem;
+        }
+        
+        .habit-streak {
+            color: #fbbf24;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .habit-warning {
+            font-size: 1.25rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
 
         .habits-section {
             margin-top: 1.5rem;
@@ -1219,7 +1252,7 @@
         </div>
     </div>
 
-    <div class="version">v2.1 - Habit Notes</div>
+    <div class="version">v2.2 - Habit Streaks & Warnings</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
@@ -1597,6 +1630,9 @@
             
             return goal.habits.map(habit => {
                 const progress = calculateHabitProgress(habit);
+                const streak = calculateStreak(habit);
+                const hasTwoMissedDays = checkTwoMissedDays(habit);
+                
                 let colorClass = '';
                 if (progress >= 80) {
                     colorClass = '';
@@ -1612,7 +1648,13 @@
                             <div class="habit-checkbox ${habit.completed ? 'checked' : ''}" 
                                 onclick="toggleHabit('${goalId}', '${habit.id}')"></div>
                             <div style="flex: 1;">
-                                <div class="habit-name" onclick="openHabitModal('${goalId}', '${habit.id}')" style="cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#00ff00'" onmouseout="this.style.color=''">${habit.name}</div>
+                                <div class="habit-header-row">
+                                    <div class="habit-name" onclick="openHabitModal('${goalId}', '${habit.id}')" style="cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#00ff00'" onmouseout="this.style.color=''">${habit.name}</div>
+                                    <div class="habit-stats">
+                                        ${streak > 0 ? `<span class="habit-streak">${streak} 🔥</span>` : ''}
+                                        ${hasTwoMissedDays ? '<span class="habit-warning" title="2 days missed in a row!">⚠️</span>' : ''}
+                                    </div>
+                                </div>
                                 <div class="habit-progress">
                                     <div class="progress-container">
                                         <div class="progress-bar ${colorClass}" style="width: ${progress}%">
@@ -2030,6 +2072,26 @@
             }
             
             return streak;
+        }
+        
+        function checkTwoMissedDays(habit) {
+            if (!habit.history || habit.history.length < 2) return false;
+            
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            const todayStr = today.toISOString().split('T')[0];
+            const yesterdayStr = yesterday.toISOString().split('T')[0];
+            
+            const todayEntry = habit.history.find(h => h.date === todayStr);
+            const yesterdayEntry = habit.history.find(h => h.date === yesterdayStr);
+            
+            // Check if both today and yesterday were missed (or not completed)
+            const todayMissed = todayEntry ? !todayEntry.completed : !habit.completed;
+            const yesterdayMissed = yesterdayEntry ? !yesterdayEntry.completed : true;
+            
+            return todayMissed && yesterdayMissed;
         }
         
         function renderHabitCalendar(habit) {
