@@ -1,0 +1,12 @@
+Version 4.5 - Progress Bar Fixed
+=================================
+Time: Tuesday Feb 25, 2026 at 9:25 AM PST
+
+FIXED:
+- Running character 🏃 no longer cut off on left side
+- Added proper left margin to progress bars
+- Habit progress bars now have 2rem left padding
+- Main progress containers have 1.5rem left padding
+- Width adjusted to compensate for the added margins
+
+The running character should now be fully visible on all progress bars!
