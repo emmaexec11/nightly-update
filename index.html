@@ -1607,13 +1607,13 @@
                 </div>
                 
                 <div id="weeklyConfig" style="display: none;">
-                    <input type="number" id="daysPerWeek" min="1" max="7" value="3" class="retro-input">
+                    <input type="number" id="daysPerWeek" min="1" max="7" value="3" class="retro-input" onchange="updateMonthlyDay()">
                     <span class="config-label">days per week</span>
                 </div>
                 
                 <div id="monthlyConfig" style="display: none;">
                     <span class="config-label">Day of month:</span>
-                    <input type="number" id="dayOfMonth" min="1" max="31" value="1" class="retro-input">
+                    <input type="number" id="dayOfMonth" min="1" max="31" value="1" class="retro-input" onchange="updateMonthlyDay()">
                 </div>
             </div>
             
@@ -2287,6 +2287,22 @@
                 saveState();
                 
                 // Re-render calendar to update purple days
+                renderHabitCalendar(habit);
+            }
+        }
+        
+        function updateMonthlyDay() {
+            const goal = state.goals.find(g => g.id === currentHabitGoalId);
+            const habit = goal?.habits?.find(h => h.id === currentHabitId);
+            
+            if (habit && habit.frequency === 'monthly') {
+                // Update the day of month
+                habit.dayOfMonth = parseInt(document.getElementById('dayOfMonth').value);
+                
+                // Save state
+                saveState();
+                
+                // Re-render calendar to show updated purple days
                 renderHabitCalendar(habit);
             }
         }
