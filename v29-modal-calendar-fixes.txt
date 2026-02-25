@@ -1,0 +1,35 @@
+Version 2.9 - Fixed Modal Exit & Calendar Clicks
+================================================
+Time: Monday Feb 24, 2026 at 8:40 PM PST
+
+CRITICAL FIXES:
+
+1. MODAL EXIT ISSUES FIXED:
+   - Press ESCAPE key to close any modal
+   - Click the X button to close
+   - Click outside the modal (on dark background) to close
+   - Added proper cursor styling
+
+2. CALENDAR CLICK ISSUES FIXED:
+   - Fixed event propagation blocking clicks
+   - Added proper event listeners with stopPropagation
+   - Added console logging for debugging
+   - Improved z-index hierarchy
+
+3. USER EXPERIENCE IMPROVEMENTS:
+   - Modal background shows pointer cursor
+   - Modal content shows normal cursor
+   - Calendar days properly respond to clicks
+   - All three exit methods work reliably
+
+HOW TO TEST:
+1. Open a habit detail modal
+2. Try clicking on calendar days - they should change color
+3. Press ESC to close
+4. Open again and click outside to close
+5. Open again and click X button to close
+
+DEBUGGING:
+Open browser console (F12) to see click events being logged
+
+If you see this, v2.9 is deployed!
