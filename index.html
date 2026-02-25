@@ -1753,7 +1753,7 @@
         </div>
     </div>
 
-    <div class="version">v4.2 - Enhanced Mindset Categories</div>
+    <div class="version">v4.3 - Fixed Button Functions</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
@@ -3323,9 +3323,10 @@
                 loadGoogleTasks();
                 loadGoogleCalendar();
             }
-            
-            // Mindset & Reminders Functions
-            function renderCategories() {
+        }
+        
+        // Mindset & Reminders Functions (Global scope)
+        function renderCategories() {
                 const container = document.getElementById('categoriesContainer');
                 
                 // Initialize default categories if none exist
@@ -3395,7 +3396,7 @@
                 `).join('');
             }
             
-            function addCategory() {
+        function addCategory() {
                 const title = prompt('Enter category name:');
                 if (!title) return;
                 
@@ -3417,7 +3418,7 @@
                 renderCategories();
             }
             
-            function deleteCategory(categoryId) {
+        function deleteCategory(categoryId) {
                 if (confirm('Delete this entire category?')) {
                     state.categories = state.categories.filter(c => c.id !== categoryId);
                     saveState();
@@ -3425,7 +3426,7 @@
                 }
             }
             
-            function updateCategoryColor(categoryId, color) {
+        function updateCategoryColor(categoryId, color) {
                 const category = state.categories.find(c => c.id === categoryId);
                 if (category) {
                     category.color = color;
@@ -3434,7 +3435,7 @@
                 }
             }
             
-            function editCategoryTitle(categoryId) {
+        function editCategoryTitle(categoryId) {
                 const category = state.categories.find(c => c.id === categoryId);
                 if (category) {
                     const newTitle = prompt('Edit category title:', category.title);
@@ -3446,7 +3447,7 @@
                 }
             }
             
-            function addQuote(categoryId) {
+        function addQuote(categoryId) {
                 const text = prompt('Enter your quote:');
                 if (!text) return;
                 
@@ -3461,14 +3462,16 @@
             }
             
             function deleteQuote(categoryId, quoteIndex) {
-                const category = state.categories.find(c => c.id === categoryId);
-                if (category) {
-                    category.quotes.splice(quoteIndex, 1);
-                    saveState();
-                    renderCategories();
-                }
+            const category = state.categories.find(c => c.id === categoryId);
+            if (category) {
+                category.quotes.splice(quoteIndex, 1);
+                saveState();
+                renderCategories();
             }
-            
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
             init();
             loadGoogleData();
             renderCategories();
