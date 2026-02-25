@@ -1126,6 +1126,7 @@
             z-index: 1000;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
         }
 
         .modal.active {
@@ -1136,6 +1137,7 @@
             background: #1a1a1a;
             position: relative;
             z-index: 1001;
+            cursor: auto;
             border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 1rem;
             padding: 2rem;
@@ -2949,6 +2951,27 @@
             
             init();
             loadGoogleData();
+            
+            // Click outside modal to close
+            setTimeout(() => {
+                const habitModal = document.getElementById('habitDetailsModal');
+                if (habitModal) {
+                    habitModal.onclick = function(e) {
+                        if (e.target === this) {
+                            closeHabitModal();
+                        }
+                    };
+                }
+                
+                const goalModal = document.getElementById('goalModal');
+                if (goalModal) {
+                    goalModal.onclick = function(e) {
+                        if (e.target === this) {
+                            closeGoalModal();
+                        }
+                    };
+                }
+            }, 100);
         });
     </script>
 </body>
