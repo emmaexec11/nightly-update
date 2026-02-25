@@ -1501,7 +1501,7 @@
         </div>
     </div>
 
-    <div class="version">v3.1 - Fixed Calendar Clicking</div>
+    <div class="version">v3.2 - Bonus Points & Health System</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
@@ -1698,8 +1698,52 @@
             document.getElementById('questJournal').value = state.journal || '';
         }
 
+        // Calculate health based on missed habits
+        function calculateHealth() {
+            let totalMissedDays = 0;
+            let totalConsecutiveMisses = 0;
+            
+            // Check all habits for missed days
+            state.goals.forEach(goal => {
+                goal.habits?.forEach(habit => {
+                    // Check last 7 days for consecutive misses
+                    const today = new Date();
+                    let consecutiveMisses = 0;
+                    
+                    for (let i = 0; i < 7; i++) {
+                        const checkDate = new Date(today);
+                        checkDate.setDate(today.getDate() - i);
+                        const dateStr = checkDate.toISOString().split('T')[0];
+                        
+                        if (isHabitScheduledForDate(habit, checkDate)) {
+                            const entry = habit.history?.find(h => h.date === dateStr);
+                            if (!entry?.completed) {
+                                consecutiveMisses++;
+                                totalMissedDays++;
+                            } else {
+                                break; // Stop counting consecutive once we hit a completed day
+                            }
+                        }
+                    }
+                    
+                    totalConsecutiveMisses = Math.max(totalConsecutiveMisses, consecutiveMisses);
+                });
+            });
+            
+            // Calculate health: lose 5 HP per missed day, extra 10 HP for 3+ consecutive misses
+            let healthLoss = totalMissedDays * 5;
+            if (totalConsecutiveMisses >= 3) {
+                healthLoss += (totalConsecutiveMisses - 2) * 10;
+            }
+            
+            state.hp.current = Math.max(0, state.hp.max - healthLoss);
+        }
+        
         // Render character stats
         function renderStats() {
+            // Recalculate health based on habits
+            calculateHealth();
+            
             document.getElementById('levelDisplay').textContent = `LEVEL ${state.level}`;
             document.getElementById('hpLabel').textContent = `${state.hp.current}/${state.hp.max}`;
             document.getElementById('manaLabel').textContent = `${state.mana.current}/${state.mana.max}`;
@@ -1722,15 +1766,45 @@
             return colors[category] || '#a855f7';
         }
 
-        // Calculate habit progress
+        // Calculate habit progress with bonus points
         function calculateHabitProgress(habit) {
             if (!habit.history || habit.history.length === 0) {
                 return 0;
             }
             
-            const totalDays = habit.history.length;
-            const completedDays = habit.history.filter(h => h.completed).length;
-            return Math.round((completedDays / totalDays) * 100);
+            // Get last 30 days
+            const today = new Date();
+            const thirtyDaysAgo = new Date(today);
+            thirtyDaysAgo.setDate(today.getDate() - 30);
+            
+            let scheduledDays = 0;
+            let completedScheduled = 0;
+            let bonusDays = 0;
+            
+            // Calculate for each day in the last 30 days
+            for (let d = new Date(thirtyDaysAgo); d <= today; d.setDate(d.getDate() + 1)) {
+                const dateStr = d.toISOString().split('T')[0];
+                const isScheduled = isHabitScheduledForDate(habit, d);
+                const entry = habit.history.find(h => h.date === dateStr);
+                
+                if (isScheduled && d <= today) {
+                    scheduledDays++;
+                    if (entry?.completed) {
+                        completedScheduled++;
+                    }
+                } else if (entry?.completed) {
+                    // Completed on unscheduled day = bonus!
+                    bonusDays++;
+                }
+            }
+            
+            // Base score from scheduled days
+            const baseScore = scheduledDays > 0 ? (completedScheduled / scheduledDays) * 100 : 0;
+            
+            // Bonus points: 2% extra per bonus day (max 20% bonus)
+            const bonusScore = Math.min(bonusDays * 2, 20);
+            
+            return Math.round(Math.min(baseScore + bonusScore, 100));
         }
 
         // Calculate goal progress
