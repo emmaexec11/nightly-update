@@ -819,6 +819,73 @@
             }
         }
         
+        /* Mindset & Reminders Section */
+        .mindset-section {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-primary);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .reminders-container {
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .reminder-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            transition: all 0.2s;
+        }
+        
+        .reminder-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(5px);
+        }
+        
+        .reminder-text {
+            flex: 1;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            font-style: italic;
+        }
+        
+        .reminder-author {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+            font-style: normal;
+        }
+        
+        .add-btn {
+            background: var(--primary-green);
+            color: #000;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .add-btn:hover {
+            background: var(--primary-green-bright);
+            transform: scale(1.05);
+        }
+        
         .note-controls {
             display: flex;
             gap: 0.5rem;
@@ -1552,9 +1619,20 @@
             </div>
             <button class="btn-primary" onclick="saveGoal()">Create Goal</button>
         </div>
+        <!-- Mindset & Reminders Section -->
+        <div class="mindset-section">
+            <div class="section-header">
+                <h2 class="section-title">💭 Mindset & Reminders</h2>
+                <button class="add-btn" onclick="addReminder()">
+                    <img src="data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 4V16M4 10H16' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E" alt="Add">
+                    Add
+                </button>
+            </div>
+            <div id="remindersContainer" class="reminders-container"></div>
+        </div>
     </div>
 
-    <div class="version">v3.5 - Expandable Habit Steps</div>
+    <div class="version">v3.6 - Mindset & Reminders</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
@@ -3125,8 +3203,50 @@
                 loadGoogleCalendar();
             }
             
+            // Mindset & Reminders Functions
+            function renderReminders() {
+                const container = document.getElementById('remindersContainer');
+                if (!state.reminders || state.reminders.length === 0) {
+                    container.innerHTML = '<div style="color: #666; text-align: center;">No reminders yet. Add some motivational quotes!</div>';
+                    return;
+                }
+                
+                container.innerHTML = state.reminders.map((reminder, index) => `
+                    <div class="reminder-item">
+                        <div>
+                            <div class="reminder-text">${reminder.text}</div>
+                            ${reminder.author ? `<div class="reminder-author">— ${reminder.author}</div>` : ''}
+                        </div>
+                        <button class="icon-btn" style="color: #ef4444;" 
+                            onclick="deleteReminder(${index})">×</button>
+                    </div>
+                `).join('');
+            }
+            
+            function addReminder() {
+                const text = prompt('Enter your reminder or quote:');
+                if (!text) return;
+                
+                const author = prompt('Enter the author (optional):');
+                
+                if (!state.reminders) state.reminders = [];
+                state.reminders.push({ text, author });
+                
+                saveState();
+                renderReminders();
+            }
+            
+            function deleteReminder(index) {
+                if (confirm('Delete this reminder?')) {
+                    state.reminders.splice(index, 1);
+                    saveState();
+                    renderReminders();
+                }
+            }
+            
             init();
             loadGoogleData();
+            renderReminders();
             
             // Click outside modal to close
             setTimeout(() => {
