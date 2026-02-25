@@ -1,0 +1,35 @@
+Version 2.2 - Habit Streaks & Warnings
+======================================
+Time: Monday Feb 24, 2026 at 4:57 PM PST
+
+NEW FEATURES:
+
+1. HABIT STREAK DISPLAY 🔥
+   - Shows current streak next to each habit
+   - Displays as "X 🔥" when streak is active
+   - No display when streak is 0
+   - Updates automatically when you check habits
+
+2. TWO-DAY MISS WARNING ⚠️
+   - Warning icon appears if you miss 2 days in a row
+   - Animated pulse effect to catch attention
+   - Hover shows tooltip: "2 days missed in a row!"
+   - Helps you catch bad patterns early
+
+3. IMPROVED LAYOUT
+   - Habit name and stats on same line
+   - Clean spacing between elements
+   - Stats align to the right
+   - Maintains clean visual hierarchy
+
+VISUAL INDICATORS:
+- 🔥 = Active streak (yellow number)
+- ⚠️ = 2 days missed warning (pulsing)
+- Both can appear together
+
+EXAMPLE:
+✅ Morning Workout     7 🔥
+❌ Read 30 mins        ⚠️
+✅ Meditate           3 🔥
+
+If you see this, v2.2 is deployed!
