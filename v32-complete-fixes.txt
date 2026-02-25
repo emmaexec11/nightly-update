@@ -1,0 +1,39 @@
+Version 3.2 - Complete Fix Summary
+==================================
+Time: Monday Feb 24, 2026 at 9:00 PM PST
+
+STEP 1 - MODAL EXIT & SCROLLING ✅
+- Added max-height: 90vh and overflow scrolling
+- Added prominent EXIT button at bottom
+- Click outside to close works
+- Press ESC to close works
+- Can now scroll to see notes section
+
+STEP 2 - FREQUENCY UPDATES ✅
+- Monthly day selector updates calendar immediately
+- Custom days properly show scheduled vs unscheduled
+- Calendar recolors when changing frequency
+- All frequency options working correctly
+
+STEP 3 - CALENDAR CLICKING ✅ 
+- Red tiles → Green when clicked (mark complete)
+- Purple tiles → Green when clicked (bonus day!)
+- Green tiles → Red/Purple based on context
+- Added console logging for debugging
+- Fixed event handlers and initialization
+
+STEP 4 - BONUS & HEALTH SYSTEM ✅
+- BONUS POINTS: Purple days give +2% each (max 20% bonus)
+- Shows higher percentages for going above and beyond
+- HEALTH LOSS: Missing scheduled days loses 5 HP each
+- 3+ consecutive misses lose extra 10 HP per day
+- Health recalculates based on last 7 days of habits
+
+HOW TO TEST:
+1. Open habit modal - can scroll and exit 3 ways
+2. Change frequency - calendar updates colors
+3. Click any calendar day - should change state
+4. Complete purple days - see bonus % increase
+5. Miss several days - see HP decrease
+
+If you see this, v3.2 is deployed!
