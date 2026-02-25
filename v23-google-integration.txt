@@ -1,0 +1,37 @@
+Version 2.3 - Google Tasks & Calendar Integration
+================================================
+Time: Monday Feb 24, 2026 at 5:23 PM PST
+
+NEW FEATURES:
+
+1. GOOGLE TASKS SECTION 📋
+   - Shows your tasks at the top of dashboard
+   - Lists from all your task lists
+   - Refresh button to reload
+   - Clean task cards with list names
+
+2. GOOGLE CALENDAR SECTION 📅
+   - Shows TOMORROW'S schedule by default
+   - After midnight (12:00 AM - 6:00 AM): Shows TODAY
+   - Displays event times and titles
+   - All-day events marked in purple
+   - Refresh button to reload
+
+3. SMART TIME LOGIC
+   - Evening check (6 PM - 11:59 PM): Shows tomorrow
+   - Late night check (12 AM - 6 AM): Shows today
+   - Helps you prepare for the next day
+
+LAYOUT:
+- Tasks and Calendar appear at the TOP
+- Above your Epic Goals section
+- Quick glance at what's coming up
+- Matches morning routine style
+
+HOW TO USE:
+1. Tasks load automatically on page load
+2. Calendar shows appropriate day based on time
+3. Click ↻ to refresh either section
+4. Review tasks and tomorrow's schedule before bed
+
+If you see this, v2.3 is deployed!
