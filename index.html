@@ -1445,6 +1445,23 @@
         .btn-primary:hover {
             background: #9333ea;
         }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.02);
+        }
 
         .empty-state {
             text-align: center;
@@ -1756,7 +1773,7 @@
         </div>
     </div>
 
-    <div class="version">v4.5 - Progress Bar Fixed</div>
+    <div class="version">v4.6 - Goal Details Editor</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
@@ -1887,6 +1904,46 @@
         </div>
     </div>
 
+    <!-- Goal Period Edit Modal -->
+    <div id="periodEditModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="periodEditTitle">Edit Goal Details</h3>
+                <button class="close-btn" onclick="closePeriodEditModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label id="periodLabel">Goal</label>
+                    <input type="text" id="periodGoalText" placeholder="Enter your goal">
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="periodNotes" rows="4" placeholder="Add any notes or context here..." 
+                        style="width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); 
+                        color: white; padding: 0.75rem; border-radius: 0.5rem; resize: vertical;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Links</label>
+                    <div id="periodLinksContainer" style="margin-bottom: 0.5rem;"></div>
+                    <button class="btn-secondary" onclick="addPeriodLink()" style="font-size: 0.875rem;">+ Add Link</button>
+                </div>
+                <div class="form-group">
+                    <label>Lead Indicators (What you'll do)</label>
+                    <textarea id="periodLeadIndicators" rows="2" placeholder="e.g., Review 20 charts daily, Test 3 strategies..."
+                        style="width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); 
+                        color: white; padding: 0.75rem; border-radius: 0.5rem; resize: vertical;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Lag Indicators (What you'll measure)</label>
+                    <textarea id="periodLagIndicators" rows="2" placeholder="e.g., % profitable trades, ROI, Win rate..."
+                        style="width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); 
+                        color: white; padding: 0.75rem; border-radius: 0.5rem; resize: vertical;"></textarea>
+                </div>
+            </div>
+            <button class="btn-primary" onclick="savePeriodEdit()" style="width: 100%;">Save</button>
+        </div>
+    </div>
+
     <script>
         // State management
         let state = {
@@ -1941,6 +1998,85 @@
             }
         }
 
+        // Period Edit Modal Functions
+        function renderPeriodLinks(links) {
+            const container = document.getElementById('periodLinksContainer');
+            if (links.length === 0) {
+                container.innerHTML = '<div style="color: #666; font-size: 0.875rem; margin-bottom: 0.5rem;">No links added yet</div>';
+                return;
+            }
+            
+            container.innerHTML = links.map((link, index) => `
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <input type="text" value="${link.name}" placeholder="Link name" 
+                        onchange="updatePeriodLinkName(${index}, this.value)"
+                        style="flex: 0 0 150px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); 
+                        color: white; padding: 0.5rem; border-radius: 0.25rem;">
+                    <input type="text" value="${link.url}" placeholder="https://..."
+                        onchange="updatePeriodLinkUrl(${index}, this.value)"
+                        style="flex: 1; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); 
+                        color: white; padding: 0.5rem; border-radius: 0.25rem;">
+                    <button onclick="removePeriodLink(${index})" style="background: transparent; border: none; color: #ef4444; 
+                        font-size: 1.5rem; cursor: pointer; padding: 0.25rem;">×</button>
+                </div>
+            `).join('');
+        }
+        
+        function addPeriodLink() {
+            if (!window.periodEditLinks) window.periodEditLinks = [];
+            window.periodEditLinks.push({ name: '', url: '' });
+            renderPeriodLinks(window.periodEditLinks);
+        }
+        
+        function updatePeriodLinkName(index, value) {
+            if (!window.periodEditLinks) window.periodEditLinks = [];
+            window.periodEditLinks[index].name = value;
+        }
+        
+        function updatePeriodLinkUrl(index, value) {
+            if (!window.periodEditLinks) window.periodEditLinks = [];
+            window.periodEditLinks[index].url = value;
+        }
+        
+        function removePeriodLink(index) {
+            if (!window.periodEditLinks) window.periodEditLinks = [];
+            window.periodEditLinks.splice(index, 1);
+            renderPeriodLinks(window.periodEditLinks);
+        }
+        
+        function closePeriodEditModal() {
+            document.getElementById('periodEditModal').classList.remove('active');
+            window.currentEditContext = null;
+            window.periodEditLinks = [];
+        }
+        
+        function savePeriodEdit() {
+            if (!window.currentEditContext) return;
+            
+            const { goalId, period } = window.currentEditContext;
+            const goal = state.goals.find(g => g.id === goalId);
+            if (!goal) return;
+            
+            // Initialize period data if not exists
+            if (!goal.periodData) goal.periodData = {};
+            if (!goal.periodData[period]) goal.periodData[period] = {};
+            
+            // Save all data
+            const periodData = goal.periodData[period];
+            periodData.text = document.getElementById('periodGoalText').value;
+            periodData.notes = document.getElementById('periodNotes').value;
+            periodData.leadIndicators = document.getElementById('periodLeadIndicators').value;
+            periodData.lagIndicators = document.getElementById('periodLagIndicators').value;
+            periodData.links = window.periodEditLinks || [];
+            
+            // Also update the main goal field for backward compatibility
+            goal[period] = periodData.text;
+            
+            saveState();
+            renderGoals();
+            closePeriodEditModal();
+        }
+        
         // Save state to localStorage
         function saveState() {
             localStorage.setItem('questTracker', JSON.stringify(state));
@@ -2134,11 +2270,12 @@
                         <div class="indicators-section">
                             <div style="margin-bottom: 1.5rem;">
                                 <label style="font-size: 0.875rem; color: #999; text-transform: uppercase; letter-spacing: 0.05em;">Yearly Goal</label>
-                                <div style="margin-top: 0.5rem; padding: 1rem; background: rgba(255, 255, 255, 0.03); border-radius: 0.5rem; cursor: pointer; transition: all 0.2s;"
-                                    onclick="editGoalField('${goal.id}', 'yearly', 'Yearly Goal')"
+                                <div style="margin-top: 0.5rem; padding: 1rem; background: rgba(255, 255, 255, 0.03); border-radius: 0.5rem; cursor: pointer; transition: all 0.2s; position: relative;"
+                                    onclick="editPeriod('${goal.id}', 'yearly')"
                                     onmouseover="this.style.background='rgba(255, 255, 255, 0.06)'"
                                     onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'">
                                     <div style="font-size: 1.375rem; font-weight: 700; line-height: 1.4;">${goal.yearly || 'Click to define yearly goal'}</div>
+                                    ${goal.periodData && goal.periodData.yearly && (goal.periodData.yearly.notes || goal.periodData.yearly.links?.length || goal.periodData.yearly.leadIndicators || goal.periodData.yearly.lagIndicators) ? '<div style="position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.875rem; color: #10b981;">📝</div>' : ''}
                                 </div>
                             </div>
                         </div>
@@ -2147,14 +2284,17 @@
                             <div class="hierarchy-item" onclick="editPeriod('${goal.id}', 'quarterly')">
                                 <div class="hierarchy-label">QUARTERLY</div>
                                 <div>${goal.quarterly || 'Click to set'}</div>
+                                ${goal.periodData && goal.periodData.quarterly && (goal.periodData.quarterly.notes || goal.periodData.quarterly.links?.length || goal.periodData.quarterly.leadIndicators || goal.periodData.quarterly.lagIndicators) ? '<div style="font-size: 0.75rem; color: #10b981; margin-top: 0.25rem;">📝 Has details</div>' : ''}
                             </div>
                             <div class="hierarchy-item" onclick="editPeriod('${goal.id}', 'monthly')">
                                 <div class="hierarchy-label">MONTHLY</div>
                                 <div>${goal.monthly || 'Click to set'}</div>
+                                ${goal.periodData && goal.periodData.monthly && (goal.periodData.monthly.notes || goal.periodData.monthly.links?.length || goal.periodData.monthly.leadIndicators || goal.periodData.monthly.lagIndicators) ? '<div style="font-size: 0.75rem; color: #10b981; margin-top: 0.25rem;">📝 Has details</div>' : ''}
                             </div>
                             <div class="hierarchy-item" onclick="editPeriod('${goal.id}', 'weekly')">
                                 <div class="hierarchy-label">WEEKLY</div>
                                 <div>${goal.weekly || 'Click to set'}</div>
+                                ${goal.periodData && goal.periodData.weekly && (goal.periodData.weekly.notes || goal.periodData.weekly.links?.length || goal.periodData.weekly.leadIndicators || goal.periodData.weekly.lagIndicators) ? '<div style="font-size: 0.75rem; color: #10b981; margin-top: 0.25rem;">📝 Has details</div>' : ''}
                             </div>
                         </div>
                         
@@ -2340,12 +2480,45 @@
 
         // Edit period
         function editPeriod(goalId, period) {
+            const goal = state.goals.find(g => g.id === goalId);
+            if (!goal) return;
+            
+            // Store current editing context
+            window.currentEditContext = { goalId, period };
+            
+            // Update modal title
             const periodTitles = {
-                quarterly: 'Quarterly Goal',
-                monthly: 'Monthly Goal',
-                weekly: 'Weekly Goal'
+                yearly: 'Yearly',
+                quarterly: 'Quarterly',
+                monthly: 'Monthly',
+                weekly: 'Weekly'
             };
-            editGoalField(goalId, period, periodTitles[period]);
+            document.getElementById('periodEditTitle').textContent = `Edit ${periodTitles[period]} Goal`;
+            document.getElementById('periodLabel').textContent = `${periodTitles[period]} Goal`;
+            
+            // Initialize period data if not exists
+            if (!goal.periodData) goal.periodData = {};
+            if (!goal.periodData[period]) goal.periodData[period] = {
+                text: goal[period] || '',
+                notes: '',
+                links: [],
+                leadIndicators: '',
+                lagIndicators: ''
+            };
+            
+            // Load existing data
+            const periodData = goal.periodData[period];
+            document.getElementById('periodGoalText').value = periodData.text || goal[period] || '';
+            document.getElementById('periodNotes').value = periodData.notes || '';
+            document.getElementById('periodLeadIndicators').value = periodData.leadIndicators || '';
+            document.getElementById('periodLagIndicators').value = periodData.lagIndicators || '';
+            
+            // Render existing links
+            window.periodEditLinks = [...(periodData.links || [])];
+            renderPeriodLinks(window.periodEditLinks);
+            
+            // Open modal
+            document.getElementById('periodEditModal').classList.add('active');
         }
 
         // Delete goal
