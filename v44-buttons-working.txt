@@ -1,0 +1,17 @@
+Version 4.4 - Functions Fixed
+============================
+Time: Monday Feb 24, 2026 at 9:45 PM PST
+
+FIXED: 
+- Removed duplicate function definitions
+- Functions are now properly in global scope
+- All buttons should be working
+
+WHAT YOU CAN DO:
+1. Click color picker to change category colors
+2. Click "+ Add" to add quotes
+3. Click category titles to rename them
+4. Click "×" to delete quotes or categories
+5. Click "+ Add Category" to create new categories
+
+Everything is back to normal with the buttons working properly!
