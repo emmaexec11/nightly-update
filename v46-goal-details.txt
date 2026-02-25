@@ -1,0 +1,33 @@
+Version 4.6 - Goal Details Editor
+=================================
+Time: Tuesday Feb 25, 2026 at 9:35 AM PST
+
+NEW FEATURE: Comprehensive Goal Editor
+
+WHAT'S NEW:
+1. Click any goal period (Yearly, Quarterly, Monthly, Weekly) to open the detailed editor
+2. Each period can now have:
+   - Notes: Add context, thoughts, or strategy
+   - Links: Add multiple related URLs with names
+   - Lead Indicators: What you'll DO (actions)
+   - Lag Indicators: What you'll MEASURE (results)
+
+HOW TO USE:
+- Click on any goal period box (yearly/quarterly/monthly/weekly)
+- Fill in the details in the modal that opens
+- Add as many links as needed with the "+ Add Link" button
+- Save to store all information
+
+VISUAL INDICATORS:
+- When a period has notes, links, or indicators, you'll see:
+  - 📝 icon in the top-right corner of yearly goals
+  - "📝 Has details" text below quarterly/monthly/weekly goals
+
+EXAMPLE:
+- Yearly Goal: "40% revenue growth"
+  - Notes: "Focus on digital products and Alberta expansion"
+  - Links: Analytics dashboard, Revenue tracker
+  - Lead Indicators: "Launch 2 products, 50 cold calls/week"
+  - Lag Indicators: "Monthly revenue, Customer acquisition cost"
+
+All data is saved in localStorage and persists between sessions!
