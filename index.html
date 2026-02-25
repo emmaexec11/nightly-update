@@ -892,6 +892,18 @@
             transform: rotate(180deg);
         }
         
+        .last-updated {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            font-style: normal;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .last-updated.visible {
+            opacity: 1;
+        }
+        
         @keyframes fadeIn {
             from { 
                 opacity: 0;
@@ -968,9 +980,20 @@
         
         .no-items {
             text-align: center;
-            color: #666;
-            padding: 2rem;
-            font-style: italic;
+            color: var(--text-secondary);
+            padding: var(--space-2xl) var(--space-xl);
+            font-style: normal;
+            opacity: 0.7;
+            font-size: 0.95rem;
+            position: relative;
+        }
+        
+        .no-items::before {
+            content: '📭';
+            display: block;
+            font-size: 2rem;
+            margin-bottom: var(--space-md);
+            opacity: 0.5;
         }
 
         .habits-section {
@@ -1412,7 +1435,10 @@
         <div class="google-section">
             <div class="section-header">
                 <h2 class="section-title">📋 Tasks</h2>
-                <button class="refresh-btn" onclick="loadGoogleTasks()">↻</button>
+                <div style="display: flex; align-items: center; gap: var(--space-md);">
+                    <span class="last-updated" id="tasksLastUpdated"></span>
+                    <button class="refresh-btn" onclick="loadGoogleTasks()">↻</button>
+                </div>
             </div>
             <div id="tasksContainer" class="tasks-container">
                 <div class="loading">Loading tasks...</div>
@@ -1423,7 +1449,10 @@
         <div class="google-section">
             <div class="section-header">
                 <h2 class="section-title">📅 Tomorrow's Schedule</h2>
-                <button class="refresh-btn" onclick="loadGoogleCalendar()">↻</button>
+                <div style="display: flex; align-items: center; gap: var(--space-md);">
+                    <span class="last-updated" id="calendarLastUpdated"></span>
+                    <button class="refresh-btn" onclick="loadGoogleCalendar()">↻</button>
+                </div>
             </div>
             <div id="calendarContainer" class="calendar-container">
                 <div class="loading">Loading calendar...</div>
@@ -1465,7 +1494,7 @@
         </div>
     </div>
 
-    <div class="version">v2.4 - Real Google API Integration</div>
+    <div class="version">v2.5 - Professional Design & Smart Habits</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
@@ -1841,7 +1870,18 @@
                 return '<div style="color: #666; font-size: 0.875rem;">No habits yet</div>';
             }
             
-            return goal.habits.map(habit => {
+            const today = new Date();
+            
+            // Filter habits to only show those scheduled for today
+            const todaysHabits = goal.habits.filter(habit => {
+                return isHabitScheduledForDate(habit, today);
+            });
+            
+            if (todaysHabits.length === 0) {
+                return '<div style="color: #666; font-size: 0.875rem;">No habits scheduled for today</div>';
+            }
+            
+            return todaysHabits.map(habit => {
                 const progress = calculateHabitProgress(habit);
                 const streak = calculateStreak(habit);
                 const hasTwoMissedDays = checkTwoMissedDays(habit);
@@ -2708,6 +2748,17 @@
                 } catch (error) {
                     console.error('Failed to load tasks:', error);
                     container.innerHTML = '<div class="no-items">Unable to load tasks</div>';
+                }
+                
+                // Update last updated time
+                const tasksUpdated = document.getElementById('tasksLastUpdated');
+                if (tasksUpdated) {
+                    tasksUpdated.textContent = 'Updated just now';
+                    tasksUpdated.classList.add('visible');
+                    
+                    setTimeout(() => {
+                        tasksUpdated.textContent = 'Updated 1m ago';
+                    }, 60000);
                 }
             }
             
