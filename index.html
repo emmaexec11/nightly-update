@@ -706,6 +706,54 @@
             border-color: rgba(139, 92, 246, 0.8);
             transform: translateY(-2px);
         }
+        
+        /* Habit Notes Styles */
+        .habit-wrapper {
+            margin-bottom: 0.75rem;
+        }
+        
+        .habit-note {
+            margin-top: 0.5rem;
+            margin-left: 3.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .habit-note.visible {
+            max-height: 100px;
+        }
+        
+        .note-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .note-text {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+        
+        .note-text:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .note-color-picker {
+            width: 36px;
+            height: 36px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.375rem;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.3);
+        }
 
         .habits-section {
             margin-top: 1.5rem;
@@ -1171,7 +1219,7 @@
         </div>
     </div>
 
-    <div class="version">v2.0 - Enhanced Progress Bars</div>
+    <div class="version">v2.1 - Habit Notes</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
@@ -1559,21 +1607,39 @@
                 }
                 
                 return `
-                    <div class="habit-item">
-                        <div class="habit-checkbox ${habit.completed ? 'checked' : ''}" 
-                            onclick="toggleHabit('${goalId}', '${habit.id}')"></div>
-                        <div style="flex: 1;">
-                            <div class="habit-name" onclick="openHabitModal('${goalId}', '${habit.id}')" style="cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#00ff00'" onmouseout="this.style.color=''">${habit.name}</div>
-                            <div class="habit-progress">
-                                <div class="progress-container">
-                                    <div class="progress-bar ${colorClass}" style="width: ${progress}%">
-                                        <span class="progress-text">${progress}%</span>
+                    <div class="habit-wrapper">
+                        <div class="habit-item">
+                            <div class="habit-checkbox ${habit.completed ? 'checked' : ''}" 
+                                onclick="toggleHabit('${goalId}', '${habit.id}')"></div>
+                            <div style="flex: 1;">
+                                <div class="habit-name" onclick="openHabitModal('${goalId}', '${habit.id}')" style="cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#00ff00'" onmouseout="this.style.color=''">${habit.name}</div>
+                                <div class="habit-progress">
+                                    <div class="progress-container">
+                                        <div class="progress-bar ${colorClass}" style="width: ${progress}%">
+                                            <span class="progress-text">${progress}%</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            <button class="icon-btn" onclick="toggleHabitNote('${goalId}', '${habit.id}')" title="Add/Edit Note">📝</button>
+                            <button class="icon-btn" style="color: #ef4444;" 
+                                onclick="deleteHabit('${goalId}', '${habit.id}')">×</button>
                         </div>
-                        <button class="icon-btn" style="color: #ef4444;" 
-                            onclick="deleteHabit('${goalId}', '${habit.id}')">×</button>
+                        <div class="habit-note ${habit.noteVisible ? 'visible' : ''}" id="note-${goalId}-${habit.id}">
+                            <div class="note-controls">
+                                <input type="text" 
+                                    class="note-text" 
+                                    value="${habit.note || ''}" 
+                                    placeholder="Add a note..."
+                                    onchange="updateHabitNote('${goalId}', '${habit.id}', this.value)"
+                                    style="color: ${habit.noteColor || '#999'};">
+                                <input type="color" 
+                                    class="note-color-picker" 
+                                    value="${habit.noteColor || '#999999'}"
+                                    onchange="updateNoteColor('${goalId}', '${habit.id}', this.value)"
+                                    title="Change note color">
+                            </div>
+                        </div>
                     </div>
                 `;
             }).join('');
@@ -2112,6 +2178,44 @@
             }
         });
 
+        // Toggle habit note visibility
+        function toggleHabitNote(goalId, habitId) {
+            const goal = state.goals.find(g => g.id === goalId);
+            const habit = goal?.habits?.find(h => h.id === habitId);
+            
+            if (habit) {
+                habit.noteVisible = !habit.noteVisible;
+                saveState();
+                const noteEl = document.getElementById(`note-${goalId}-${habitId}`);
+                if (noteEl) {
+                    noteEl.classList.toggle('visible', habit.noteVisible);
+                }
+            }
+        }
+        
+        // Update habit note text
+        function updateHabitNote(goalId, habitId, note) {
+            const goal = state.goals.find(g => g.id === goalId);
+            const habit = goal?.habits?.find(h => h.id === habitId);
+            
+            if (habit) {
+                habit.note = note;
+                saveState();
+            }
+        }
+        
+        // Update note color
+        function updateNoteColor(goalId, habitId, color) {
+            const goal = state.goals.find(g => g.id === goalId);
+            const habit = goal?.habits?.find(h => h.id === habitId);
+            
+            if (habit) {
+                habit.noteColor = color;
+                saveState();
+                renderAll();
+            }
+        }
+        
         // Complete quest
         function completeQuest() {
             state.journal = document.getElementById('questJournal').value;
