@@ -1,0 +1,36 @@
+Version 2.1 - Habit Notes
+=========================
+Time: Monday Feb 24, 2026 at 4:53 PM PST
+
+NEW FEATURES:
+
+1. HABIT NOTES
+   - Click the 📝 icon next to any habit
+   - Opens a note field under the habit
+   - Notes are saved automatically
+
+2. CUSTOMIZABLE TEXT COLOR
+   - Color picker next to each note
+   - Change note text to any color
+   - Color persists across sessions
+
+3. SMOOTH ANIMATIONS
+   - Notes slide open/closed
+   - Smooth transition effects
+   - Clean UI integration
+
+HOW TO USE:
+1. Click 📝 icon on any habit
+2. Type your note in the text field
+3. Click the color picker to change text color
+4. Notes save automatically
+5. Click 📝 again to hide notes
+
+BENEFITS:
+- Add context to habits
+- Track specific details
+- Visual customization
+- Quick access to notes
+- No need to open modal
+
+If you see this, v2.1 is deployed!
