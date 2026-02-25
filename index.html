@@ -1143,6 +1143,8 @@
             padding: 2rem;
             width: 90%;
             max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .modal-header {
@@ -1499,7 +1501,7 @@
         </div>
     </div>
 
-    <div class="version">v2.9 - Fixed Modal Exit & Calendar Clicks</div>
+    <div class="version">v3.0 - Modal Scrolling & Exit Button</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
@@ -1626,6 +1628,7 @@
             </div>
             
             <button class="btn-primary retro-save-btn" onclick="saveHabitDetails()">💾 SAVE</button>
+            <button class="btn-secondary retro-cancel-btn" onclick="closeHabitModal()" style="margin-left: 10px; background: #666; border-color: #666;">❌ EXIT</button>
         </div>
     </div>
 
