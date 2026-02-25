@@ -390,7 +390,8 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             overflow: hidden;
             position: relative;
-            margin: 0.5rem 0;
+            margin: 0.5rem 0 0.5rem 1.5rem;
+            width: calc(100% - 1.5rem);
         }
         
         .goal-progress .progress-container {
@@ -491,10 +492,12 @@
 
         .habit-progress .progress-container {
             height: 16px;
-            margin: 0.25rem 0;
+            margin: 0.25rem 0 0.25rem 2rem;
+            width: calc(100% - 2rem);
             border-radius: 6px;
             background: rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: visible;
         }
         
         .habit-progress .progress-bar {
@@ -1753,7 +1756,7 @@
         </div>
     </div>
 
-    <div class="version">v4.4 - Functions Fixed</div>
+    <div class="version">v4.5 - Progress Bar Fixed</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
