@@ -1753,7 +1753,7 @@
         </div>
     </div>
 
-    <div class="version">v4.2 - Enhanced Mindset Categories</div>
+    <div class="version">v4.4 - Functions Fixed</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
@@ -3021,6 +3021,151 @@
             alert('Quest complete! You rest at the inn and restore 20 mana. Tomorrow brings new challenges!');
         }
 
+        // Global category functions (accessible to onclick handlers)
+        function renderCategories() {
+            const container = document.getElementById('categoriesContainer');
+            
+            // Initialize default categories if none exist
+            if (!state.categories || state.categories.length === 0) {
+                state.categories = [
+                    {
+                        id: Date.now().toString(),
+                        title: "Mindset & Reminders",
+                        icon: "💭",
+                        color: "#fbbf24",
+                        quotes: []
+                    },
+                    {
+                        id: Date.now().toString() + '1',
+                        title: "Scriptures",
+                        icon: "📖",
+                        color: "#8b5cf6",
+                        quotes: []
+                    },
+                    {
+                        id: Date.now().toString() + '2',
+                        title: "Facts & Information",
+                        icon: "📊",
+                        color: "#10b981",
+                        quotes: []
+                    }
+                ];
+                saveState();
+            }
+            
+            container.innerHTML = state.categories.map(category => `
+                <div class="category-container">
+                    <div class="category-header" style="border-color: ${category.color};">
+                        <div class="category-title-wrapper">
+                            <span class="category-icon">${category.icon}</span>
+                            <h3 class="category-title" style="color: ${category.color};" 
+                                onclick="editCategoryTitle('${category.id}')">${category.title}</h3>
+                        </div>
+                        <div class="category-actions">
+                            <input type="color" class="category-color-picker" 
+                                value="${category.color}" 
+                                onchange="updateCategoryColor('${category.id}', this.value)">
+                            <button class="add-quote-btn" style="color: ${category.color};" 
+                                onclick="addQuote('${category.id}')">
+                                + Add
+                            </button>
+                            <button class="delete-category-btn" onclick="deleteCategory('${category.id}')">×</button>
+                        </div>
+                    </div>
+                    <div class="quotes-container">
+                        ${category.quotes.map((quote, index) => `
+                            <div class="quote-item" style="border-left-color: ${category.color};">
+                                <div class="quote-content">
+                                    <div class="quote-text">"${quote.text}"</div>
+                                    ${quote.author ? `<div class="quote-author">— ${quote.author}</div>` : ''}
+                                </div>
+                                <button class="delete-quote-btn" onclick="deleteQuote('${category.id}', ${index})">×</button>
+                            </div>
+                        `).join('')}
+                        ${category.quotes.length === 0 ? `
+                            <div style="color: #666; text-align: center; padding: 1rem;">
+                                No quotes yet. Click "Add" to add one!
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function addCategory() {
+            const title = prompt('Enter category name:');
+            if (!title) return;
+            
+            const icon = prompt('Enter an emoji for this category:', '📝');
+            const color = prompt('Enter a hex color (e.g., #10b981):', '#10b981');
+            
+            const category = {
+                id: Date.now().toString(),
+                title,
+                icon: icon || '📝',
+                color: color || '#10b981',
+                quotes: []
+            };
+            
+            if (!state.categories) state.categories = [];
+            state.categories.push(category);
+            
+            saveState();
+            renderCategories();
+        }
+        
+        function deleteCategory(categoryId) {
+            if (confirm('Delete this entire category?')) {
+                state.categories = state.categories.filter(c => c.id !== categoryId);
+                saveState();
+                renderCategories();
+            }
+        }
+        
+        function updateCategoryColor(categoryId, color) {
+            const category = state.categories.find(c => c.id === categoryId);
+            if (category) {
+                category.color = color;
+                saveState();
+                renderCategories();
+            }
+        }
+        
+        function editCategoryTitle(categoryId) {
+            const category = state.categories.find(c => c.id === categoryId);
+            if (category) {
+                const newTitle = prompt('Edit category title:', category.title);
+                if (newTitle) {
+                    category.title = newTitle;
+                    saveState();
+                    renderCategories();
+                }
+            }
+        }
+        
+        function addQuote(categoryId) {
+            const text = prompt('Enter your quote:');
+            if (!text) return;
+            
+            const author = prompt('Enter the author (optional):');
+            
+            const category = state.categories.find(c => c.id === categoryId);
+            if (category) {
+                category.quotes.push({ text, author });
+                saveState();
+                renderCategories();
+            }
+        }
+        
+        function deleteQuote(categoryId, quoteIndex) {
+            const category = state.categories.find(c => c.id === categoryId);
+            if (category) {
+                category.quotes.splice(quoteIndex, 1);
+                saveState();
+                renderCategories();
+            }
+        }
+
         // Save journal on change
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('questJournal').addEventListener('input', (e) => {
@@ -3324,150 +3469,7 @@
                 loadGoogleCalendar();
             }
             
-            // Mindset & Reminders Functions
-            function renderCategories() {
-                const container = document.getElementById('categoriesContainer');
-                
-                // Initialize default categories if none exist
-                if (!state.categories || state.categories.length === 0) {
-                    state.categories = [
-                        {
-                            id: Date.now().toString(),
-                            title: "Mindset & Reminders",
-                            icon: "💭",
-                            color: "#fbbf24",
-                            quotes: []
-                        },
-                        {
-                            id: Date.now().toString() + '1',
-                            title: "Scriptures",
-                            icon: "📖",
-                            color: "#8b5cf6",
-                            quotes: []
-                        },
-                        {
-                            id: Date.now().toString() + '2',
-                            title: "Facts & Information",
-                            icon: "📊",
-                            color: "#10b981",
-                            quotes: []
-                        }
-                    ];
-                    saveState();
-                }
-                
-                container.innerHTML = state.categories.map(category => `
-                    <div class="category-container">
-                        <div class="category-header" style="border-color: ${category.color};">
-                            <div class="category-title-wrapper">
-                                <span class="category-icon">${category.icon}</span>
-                                <h3 class="category-title" style="color: ${category.color};" 
-                                    onclick="editCategoryTitle('${category.id}')">${category.title}</h3>
-                            </div>
-                            <div class="category-actions">
-                                <input type="color" class="category-color-picker" 
-                                    value="${category.color}" 
-                                    onchange="updateCategoryColor('${category.id}', this.value)">
-                                <button class="add-quote-btn" style="color: ${category.color};" 
-                                    onclick="addQuote('${category.id}')">
-                                    + Add
-                                </button>
-                                <button class="delete-category-btn" onclick="deleteCategory('${category.id}')">×</button>
-                            </div>
-                        </div>
-                        <div class="quotes-container">
-                            ${category.quotes.map((quote, index) => `
-                                <div class="quote-item" style="border-left-color: ${category.color};">
-                                    <div class="quote-content">
-                                        <div class="quote-text">"${quote.text}"</div>
-                                        ${quote.author ? `<div class="quote-author">— ${quote.author}</div>` : ''}
-                                    </div>
-                                    <button class="delete-quote-btn" onclick="deleteQuote('${category.id}', ${index})">×</button>
-                                </div>
-                            `).join('')}
-                            ${category.quotes.length === 0 ? `
-                                <div style="color: #666; text-align: center; padding: 1rem;">
-                                    No quotes yet. Click "Add" to add one!
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                `).join('');
-            }
-            
-            function addCategory() {
-                const title = prompt('Enter category name:');
-                if (!title) return;
-                
-                const icon = prompt('Enter an emoji for this category:', '📝');
-                const color = prompt('Enter a hex color (e.g., #10b981):', '#10b981');
-                
-                const category = {
-                    id: Date.now().toString(),
-                    title,
-                    icon: icon || '📝',
-                    color: color || '#10b981',
-                    quotes: []
-                };
-                
-                if (!state.categories) state.categories = [];
-                state.categories.push(category);
-                
-                saveState();
-                renderCategories();
-            }
-            
-            function deleteCategory(categoryId) {
-                if (confirm('Delete this entire category?')) {
-                    state.categories = state.categories.filter(c => c.id !== categoryId);
-                    saveState();
-                    renderCategories();
-                }
-            }
-            
-            function updateCategoryColor(categoryId, color) {
-                const category = state.categories.find(c => c.id === categoryId);
-                if (category) {
-                    category.color = color;
-                    saveState();
-                    renderCategories();
-                }
-            }
-            
-            function editCategoryTitle(categoryId) {
-                const category = state.categories.find(c => c.id === categoryId);
-                if (category) {
-                    const newTitle = prompt('Edit category title:', category.title);
-                    if (newTitle) {
-                        category.title = newTitle;
-                        saveState();
-                        renderCategories();
-                    }
-                }
-            }
-            
-            function addQuote(categoryId) {
-                const text = prompt('Enter your quote:');
-                if (!text) return;
-                
-                const author = prompt('Enter the author (optional):');
-                
-                const category = state.categories.find(c => c.id === categoryId);
-                if (category) {
-                    category.quotes.push({ text, author });
-                    saveState();
-                    renderCategories();
-                }
-            }
-            
-            function deleteQuote(categoryId, quoteIndex) {
-                const category = state.categories.find(c => c.id === categoryId);
-                if (category) {
-                    category.quotes.splice(quoteIndex, 1);
-                    saveState();
-                    renderCategories();
-                }
-            }
+            // Initialize categories on load
             
             init();
             loadGoogleData();
