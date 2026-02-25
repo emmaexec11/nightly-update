@@ -1,0 +1,38 @@
+Version 2.7 - Three-State Calendar System
+=========================================
+Time: Monday Feb 24, 2026 at 8:25 PM PST
+
+THREE-STATE CALENDAR COLORS:
+
+1. PURPLE (rgba(139, 92, 246, 0.3))
+   - Days you're NOT supposed to do the habit
+   - Example: Weekends for "Weekdays Only" habits
+   - Still clickable to mark as bonus completion
+
+2. RED (#ef4444)
+   - Days you SHOULD do it but missed
+   - Only appears on scheduled days
+
+3. GREEN (#10b981)
+   - Days you completed the habit
+   - Works for both scheduled and bonus days
+
+CLICKING LOGIC:
+
+- Purple → Green: Did it on an off day (bonus!)
+- Red → Green: Completed a missed day
+- Green → Red: Mark incomplete (only on scheduled days)
+- Green → Purple: Remove bonus completion (on unscheduled days)
+
+SMART BEHAVIOR:
+- Respects your habit frequency settings
+- Weekdays Only: Mon-Fri are normal, Sat-Sun are purple
+- Weekends Only: Sat-Sun are normal, Mon-Fri are purple
+- Custom Days: Only selected days are normal, others are purple
+
+VISUAL IMPROVEMENTS:
+- Muted professional green instead of neon
+- Better contrast and readability
+- Clear visual distinction between states
+
+If you see this, v2.7 is deployed!
