@@ -1501,7 +1501,7 @@
         </div>
     </div>
 
-    <div class="version">v3.0 - Modal Scrolling & Exit Button</div>
+    <div class="version">v3.1 - Fixed Calendar Clicking</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
@@ -2480,7 +2480,7 @@
         }
         
         function toggleCalendarDay(dateStr, isScheduled) {
-            console.log('Calendar day clicked:', dateStr, isScheduled);
+            console.log('Calendar day clicked:', dateStr, 'isScheduled:', isScheduled);
             
             const goal = state.goals.find(g => g.id === currentHabitGoalId);
             const habit = goal?.habits?.find(h => h.id === currentHabitId);
@@ -2490,24 +2490,34 @@
                 return;
             }
             
+            // Initialize history if not exists
+            if (!habit.history) {
+                habit.history = [];
+            }
+            
             let entry = habit.history.find(h => h.date === dateStr);
+            console.log('Current entry:', entry);
             
             if (!entry) {
-                // No entry exists - create one marked as completed
+                // No entry exists - create one marked as completed (any click on empty = complete)
                 entry = { date: dateStr, completed: true };
                 habit.history.push(entry);
+                console.log('Created new entry as completed');
             } else if (entry.completed) {
                 // Currently green - decide what to do based on if it's scheduled
                 if (isScheduled) {
                     // Scheduled day: green → red (mark incomplete)
                     entry.completed = false;
+                    console.log('Marked as incomplete (red)');
                 } else {
                     // Unscheduled day: green → purple (remove entry entirely)
                     habit.history = habit.history.filter(h => h.date !== dateStr);
+                    console.log('Removed entry (back to purple)');
                 }
             } else {
                 // Currently red (only possible on scheduled days) → green
                 entry.completed = true;
+                console.log('Marked as completed (green)');
             }
             
             saveState();
