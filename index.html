@@ -787,6 +787,92 @@
             0%, 100% { opacity: 0.7; transform: scale(1); }
             50% { opacity: 1; transform: scale(1.2); }
         }
+        
+        /* Google Sections Styles */
+        .google-section {
+            background: rgba(30, 30, 30, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .section-header h2 {
+            margin: 0;
+        }
+        
+        .refresh-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.25rem;
+        }
+        
+        .refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(180deg);
+        }
+        
+        .loading {
+            color: #666;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .task-item, .event-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s;
+        }
+        
+        .task-item:hover, .event-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .task-title, .event-title {
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 0.25rem;
+        }
+        
+        .task-list-name {
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .event-time {
+            color: #fbbf24;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .all-day-event {
+            color: #a855f7;
+        }
+        
+        .no-items {
+            text-align: center;
+            color: #666;
+            padding: 2rem;
+            font-style: italic;
+        }
 
         .habits-section {
             margin-top: 1.5rem;
@@ -1217,6 +1303,28 @@
             </div>
         </div>
 
+        <!-- Google Tasks Section -->
+        <div class="google-section">
+            <div class="section-header">
+                <h2 class="section-title">📋 Tasks</h2>
+                <button class="refresh-btn" onclick="loadGoogleTasks()">↻</button>
+            </div>
+            <div id="tasksContainer" class="tasks-container">
+                <div class="loading">Loading tasks...</div>
+            </div>
+        </div>
+
+        <!-- Google Calendar Section -->
+        <div class="google-section">
+            <div class="section-header">
+                <h2 class="section-title">📅 Tomorrow's Schedule</h2>
+                <button class="refresh-btn" onclick="loadGoogleCalendar()">↻</button>
+            </div>
+            <div id="calendarContainer" class="calendar-container">
+                <div class="loading">Loading calendar...</div>
+            </div>
+        </div>
+
         <!-- Goals Section -->
         <div class="goals-header">
             <h1 class="section-title">Epic Goals</h1>
@@ -1252,7 +1360,7 @@
         </div>
     </div>
 
-    <div class="version">v2.2 - Habit Streaks & Warnings</div>
+    <div class="version">v2.3 - Google Tasks & Calendar</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
@@ -2336,7 +2444,89 @@
                 // saveState();
             }
             
+            // Google Tasks API
+            async function loadGoogleTasks() {
+                const container = document.getElementById('tasksContainer');
+                container.innerHTML = '<div class="loading">Loading tasks...</div>';
+                
+                try {
+                    // In a real implementation, you would call Google Tasks API
+                    // For now, showing placeholder
+                    setTimeout(() => {
+                        container.innerHTML = `
+                            <div class="task-item">
+                                <div class="task-title">Review quarterly financials</div>
+                                <div class="task-list-name">This Week</div>
+                            </div>
+                            <div class="task-item">
+                                <div class="task-title">Update product inventory</div>
+                                <div class="task-list-name">My Tasks</div>
+                            </div>
+                            <div class="task-item">
+                                <div class="task-title">Plan Alberta expansion</div>
+                                <div class="task-list-name">This Month</div>
+                            </div>
+                        `;
+                    }, 500);
+                } catch (error) {
+                    container.innerHTML = '<div class="no-items">Unable to load tasks</div>';
+                }
+            }
+            
+            // Google Calendar API
+            async function loadGoogleCalendar() {
+                const container = document.getElementById('calendarContainer');
+                container.innerHTML = '<div class="loading">Loading calendar...</div>';
+                
+                try {
+                    // Determine which day to show
+                    const now = new Date();
+                    const targetDate = new Date();
+                    
+                    // If it's after midnight (12:00 AM), show today
+                    // Otherwise, show tomorrow
+                    if (now.getHours() >= 0 && now.getHours() < 6) { 
+                        // Show today (checking between midnight and 6am)
+                    } else {
+                        // Show tomorrow
+                        targetDate.setDate(targetDate.getDate() + 1);
+                    }
+                    
+                    const dayName = targetDate.toLocaleDateString('en-US', { weekday: 'long' });
+                    const dateStr = targetDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    
+                    // In a real implementation, you would call Google Calendar API
+                    // For now, showing placeholder
+                    setTimeout(() => {
+                        container.innerHTML = `
+                            <div style="color: #666; margin-bottom: 1rem;">${dayName}, ${dateStr}</div>
+                            <div class="event-item">
+                                <div class="event-time">9:00 AM</div>
+                                <div class="event-title">Team standup</div>
+                            </div>
+                            <div class="event-item">
+                                <div class="event-time">2:00 PM - 3:00 PM</div>
+                                <div class="event-title">Client call - Alberta expansion</div>
+                            </div>
+                            <div class="event-item">
+                                <div class="event-time all-day-event">All Day</div>
+                                <div class="event-title">Product launch deadline</div>
+                            </div>
+                        `;
+                    }, 500);
+                } catch (error) {
+                    container.innerHTML = '<div class="no-items">Unable to load calendar</div>';
+                }
+            }
+            
+            // Load Google data on init
+            function loadGoogleData() {
+                loadGoogleTasks();
+                loadGoogleCalendar();
+            }
+            
             init();
+            loadGoogleData();
         });
     </script>
 </body>
