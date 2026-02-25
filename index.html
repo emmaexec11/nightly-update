@@ -486,11 +486,11 @@
         }
 
         .habit-progress {
-            margin-top: 0.5rem;
+            margin-top: 0.75rem;
         }
 
         .habit-progress .progress-container {
-            height: 12px;
+            height: 16px;
             margin: 0.25rem 0;
             border-radius: 6px;
             background: rgba(0, 0, 0, 0.5);
@@ -820,14 +820,16 @@
         
         .habit-stats {
             display: flex;
-            gap: 0.75rem;
+            gap: 1rem;
             align-items: center;
-            font-size: 0.875rem;
+            font-size: 1rem;
         }
         
         .habit-streak {
             color: #fbbf24;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
             display: flex;
             align-items: center;
             gap: 0.25rem;
@@ -1017,25 +1019,26 @@
         .habit-item {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 0.75rem;
+            gap: 1.5rem;
+            padding: 1.25rem 1.5rem;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 0.5rem;
             margin-bottom: 0.5rem;
         }
 
         .habit-checkbox {
-            width: 2.5rem;
-            height: 2.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 0.5rem;
+            width: 4rem;
+            height: 4rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 3px solid rgba(255, 255, 255, 0.4);
+            border-radius: 0.75rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 2rem;
             transition: all 0.2s;
+            flex-shrink: 0;
         }
         
         .habit-checkbox:hover {
@@ -1372,7 +1375,8 @@
         }
 
         .goal-progress-wrapper {
-            padding: 0.75rem 1.5rem 0 1.5rem;
+            padding: 0.75rem 2rem;
+            margin: 0 1rem;
         }
 
         .habit-progress-wrapper {
@@ -1384,11 +1388,20 @@
         .habit-item-with-bar {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 0.5rem;
-            margin-bottom: 0.5rem;
+            gap: 1.25rem;
+            padding: 1.25rem 1.5rem;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 0.75rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .habit-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.3;
+            flex: 1;
         }
 
         .habit-name-col {
@@ -1501,7 +1514,7 @@
         </div>
     </div>
 
-    <div class="version">v3.2 - Bonus Points & Health System</div>
+    <div class="version">v3.4 - Beautiful Habit Design</div>
 
     <!-- Color Picker Modal -->
     <div id="colorPickerModal" class="modal">
