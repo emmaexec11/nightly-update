@@ -3710,9 +3710,8 @@
                     
                     // Calendar IDs (Devon's and Emma's calendars)
                     const calendars = [
-                        'devondoherty07@gmail.com',
-                        'emma.exec.11@gmail.com',
-                        'primary' // Try primary as well in case emma's is primary
+                        'primary', // User's primary calendar
+                        'emma.exec.11@gmail.com'
                     ];
                     
                     let allEvents = [];
@@ -3757,7 +3756,7 @@
                     
                     // Create HTML for tomorrow only or next 7 days if expanded
                     let html = '';
-                    const daysToShow = calendarExpanded ? 7 : 1;
+                    const daysToShow = 3; // Always show 3 days
                     for (let i = 1; i <= daysToShow; i++) {
                         const currentDate = new Date();
                         currentDate.setDate(currentDate.getDate() + i);
@@ -3765,13 +3764,11 @@
                         const dayName = currentDate.toLocaleDateString('en-US', { weekday: 'long' });
                         const dateStr = currentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                         
-                        html += `<div style="margin-bottom: 1.5rem;">`;
-                        html += `<div style="color: #10b981; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">${dayName}, ${dateStr}</div>`;
-                        
                         const dayEvents = eventsByDay[dayKey] || [];
-                        if (dayEvents.length === 0) {
-                            html += `<div class="no-items" style="margin-bottom: 0.5rem; font-size: 0.875rem;">No events</div>`;
-                        } else {
+                        if (dayEvents.length > 0) {
+                            // Only show day if there are events
+                            html += `<div style="margin-bottom: 1.5rem;">`;
+                            html += `<div style="color: #10b981; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">${dayName}, ${dateStr}</div>`;
                             html += dayEvents.map(event => {
                                 const isAllDay = !event.start.dateTime;
                                 let timeStr = 'All Day';
@@ -3803,8 +3800,8 @@
                                     </div>
                                 `;
                             }).join('');
+                            html += `</div>`; // Close the day div only if we opened it
                         }
-                        html += `</div>`;
                     }
                     
                     container.innerHTML = html || `<div class="no-items">No events in the next 3 days</div>`;
