@@ -1,0 +1,39 @@
+Version 2.8 - Fixed Frequency Updates
+=====================================
+Time: Monday Feb 24, 2026 at 8:35 PM PST
+
+FREQUENCY DROPDOWN FIXES:
+
+1. CALENDAR NOW UPDATES INSTANTLY
+   - When you change frequency, calendar colors update immediately
+   - Purple days appear/disappear based on your selection
+   - No need to close and reopen the modal
+
+2. X DAYS PER WEEK NOW WORKS
+   - Shows day selector (S M T W T F S)
+   - Click to select which days you want
+   - Days per week count auto-updates
+   - Unselected days show as purple
+
+3. ALL FREQUENCY OPTIONS WORKING:
+   - Every Day: All days are scheduled
+   - Weekdays Only: Mon-Fri normal, Sat-Sun purple
+   - Weekends Only: Sat-Sun normal, Mon-Fri purple
+   - X Days per Week: Choose specific days
+   - Monthly: Only selected day of month
+   - Custom Days: Full control
+
+4. CLICKING BEHAVIOR FIXED:
+   - Purple tiles are clickable (bonus completion)
+   - Red tiles turn green when clicked
+   - Green tiles have smart behavior based on context
+
+5. LIVE CALENDAR UPDATES:
+   - Click day buttons → calendar updates instantly
+   - Change frequency → calendar recolors immediately
+   - No lag, no refresh needed
+
+RESULT:
+The frequency selector now properly controls which days show as purple (not scheduled) vs red/green (scheduled), and all changes update the calendar in real-time!
+
+If you see this, v2.8 is deployed!
