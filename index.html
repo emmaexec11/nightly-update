@@ -3166,15 +3166,19 @@
             }
             
             saveState();
-            renderHabitCalendar(habit);
             
-            // Update success rate
+            // Update success rate and streak FIRST
             const successRate = calculateHabitProgress(habit);
             document.getElementById('habitSuccessRate').textContent = successRate + '%';
             
-            // Update streak
             const streak = calculateStreak(habit);
             document.getElementById('habitStreak').textContent = streak;
+            
+            // Then re-render calendar with updated state
+            renderHabitCalendar(habit);
+            
+            // Also update main progress bars
+            renderAll();
         }
         
         function saveHabitDetails() {
