@@ -1247,7 +1247,7 @@
         }
         
         .no-items::before {
-            content: 'üì≠';
+            content: '✓';
             display: block;
             font-size: 2rem;
             margin-bottom: var(--space-md);
@@ -1308,7 +1308,7 @@
         }
 
         .habit-checkbox.checked::after {
-            content: '‚úì';
+            content: '&#9989;';
             color: white;
             font-weight: bold;
         }
@@ -1728,11 +1728,11 @@
             <!-- Google Calendar Section -->
             <div class="google-section">
                 <div class="section-header">
-                    <h2 class="section-title" onclick="window.open('https://calendar.google.com', '_blank')" style="cursor: pointer; transition: all 0.2s; border-radius: 0.5rem; padding: 0.25rem 0.5rem;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'; this.style.transform='scale(1.02)'" onmouseout="this.style.backgroundColor='transparent'; this.style.transform='scale(1)'" title="üñ±Ô∏è Click to open Google Calendar">üìÖ Next 3 Days</h2>
+                    <h2 class="section-title" onclick="window.open('https://calendar.google.com', '_blank')" style="cursor: pointer; transition: all 0.2s; border-radius: 0.5rem; padding: 0.25rem 0.5rem;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'; this.style.transform='scale(1.02)'" onmouseout="this.style.backgroundColor='transparent'; this.style.transform='scale(1)'" title="🖱️ Click to open Google Calendar">&#128197; Next 3 Days</h2>
                     <div style="display: flex; align-items: center; gap: var(--space-md);">
                         <span class="last-updated" id="calendarLastUpdated"></span>
-                        <button class="refresh-btn" onclick="loadGoogleCalendar()">‚Üª</button>
-                        <button class="refresh-btn" onclick="window.open('oauth-redirect.html', '_blank')" style="opacity: 0.5;" title="Re-authenticate">üîí</button>
+                        <button class="refresh-btn" onclick="loadGoogleCalendar()">&#128260;</button>
+                        <button class="refresh-btn" onclick="window.open('oauth-redirect.html', '_blank')" style="opacity: 0.5;" title="Re-authenticate">&#128274;</button>
                     </div>
                 </div>
                 <div id="calendarContainer" class="calendar-container">
@@ -1743,12 +1743,12 @@
             <!-- Google Tasks Section -->
             <div class="google-section">
                 <div class="section-header">
-                    <h2 class="section-title" onclick="window.open('https://tasks.google.com', '_blank')" style="cursor: pointer; transition: all 0.2s; border-radius: 0.5rem; padding: 0.25rem 0.5rem;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'; this.style.transform='scale(1.02)'" onmouseout="this.style.backgroundColor='transparent'; this.style.transform='scale(1)'" title="üñ±Ô∏è Click to open Google Tasks">üìã Tasks</h2>
+                    <h2 class="section-title" onclick="window.open('https://tasks.google.com', '_blank')" style="cursor: pointer; transition: all 0.2s; border-radius: 0.5rem; padding: 0.25rem 0.5rem;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'; this.style.transform='scale(1.02)'" onmouseout="this.style.backgroundColor='transparent'; this.style.transform='scale(1)'" title="🖱️ Click to open Google Tasks">&#128203; Tasks</h2>
                     <div style="display: flex; align-items: center; gap: var(--space-md);">
                         <span class="last-updated" id="tasksLastUpdated"></span>
                         <button class="refresh-btn" onclick="showAddTaskModal()" style="background: #10b981; opacity: 1; font-weight: bold; font-size: 1.2rem;" title="Add new task">+</button>
-                        <button class="refresh-btn" onclick="loadGoogleTasks()">‚Üª</button>
-                        <button class="refresh-btn" onclick="window.open('oauth-redirect.html', '_blank')" style="opacity: 0.5;" title="Re-authenticate">üîí</button>
+                        <button class="refresh-btn" onclick="loadGoogleTasks()">&#128260;</button>
+                        <button class="refresh-btn" onclick="window.open('oauth-redirect.html', '_blank')" style="opacity: 0.5;" title="Re-authenticate">&#128274;</button>
                     </div>
                 </div>
                 <div id="tasksContainer" class="tasks-container">
@@ -1761,7 +1761,7 @@
         <div class="goals-header">
             <h1 class="section-title">Epic Goals</h1>
             <button class="add-goal-btn" onclick="openGoalModal()">
-                <span>‚ú®</span> New Goal
+                <span>&#127775;</span> New Goal
             </button>
         </div>
 
@@ -1790,7 +1790,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">Create New Goal</h3>
-                <button class="close-btn" onclick="closeGoalModal()">√ó</button>
+                <button class="close-btn" onclick="closeGoalModal()">&times;</button>
             </div>
             <div class="form-group">
                 <label>Goal Name</label>
@@ -1805,7 +1805,7 @@
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
                 <h3 class="modal-title" id="inputModalTitle">Enter Value</h3>
-                <button class="close-btn" onclick="closeInputModal(false)">√ó</button>
+                <button class="close-btn" onclick="closeInputModal(false)">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -1827,7 +1827,7 @@
         <div class="modal-content" style="max-width: 400px;">
             <div class="modal-header">
                 <h3 class="modal-title">Choose Goal Color</h3>
-                <button class="close-btn" onclick="closeColorPicker()">√ó</button>
+                <button class="close-btn" onclick="closeColorPicker()">&times;</button>
             </div>
             <div style="padding: 1rem;">
                 <input type="color" id="colorWheel" style="width: 100%; height: 150px; border: none; border-radius: 0.5rem; cursor: pointer;" onchange="selectColor(this.value)">
@@ -1851,7 +1851,7 @@
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
                 <h3 class="modal-title" id="editModalTitle">Edit Text</h3>
-                <button class="close-btn" onclick="closeTextEdit()">√ó</button>
+                <button class="close-btn" onclick="closeTextEdit()">&times;</button>
             </div>
             <div class="form-group">
                 <textarea id="editTextArea" style="width: 100%; min-height: 100px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); color: white; padding: 1rem; border-radius: 0.5rem; font-size: 1rem; font-family: inherit;"></textarea>
@@ -1865,7 +1865,7 @@
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
                 <h3 class="modal-title">Add Analytics Link</h3>
-                <button class="close-btn" onclick="closeLinkModal()">√ó</button>
+                <button class="close-btn" onclick="closeLinkModal()">&times;</button>
             </div>
             <div class="form-group">
                 <label>Link Name</label>
@@ -1884,10 +1884,10 @@
         <div class="modal-content gamified-modal" style="max-width: 600px;">
             <div class="modal-header retro-header">
                 <h3 class="modal-title">
-                    <span class="pixel-icon">üéÆ</span> 
+                    <span class="pixel-icon">&#9889;</span> 
                     <span id="habitDetailTitle">Habit Details</span>
                 </h3>
-                <button class="close-btn retro-btn" onclick="closeHabitModal()">√ó</button>
+                <button class="close-btn retro-btn" onclick="closeHabitModal()">&times;</button>
             </div>
             
             <div class="habit-stats">
@@ -1899,7 +1899,7 @@
                     <div class="stat-label">CURRENT STREAK</div>
                     <div class="stat-value">
                         <span id="habitStreak">0</span>
-                        <span class="streak-fire">üî•</span>
+                        <span class="streak-fire">&#128081;</span>
                     </div>
                 </div>
             </div>
@@ -1946,8 +1946,8 @@
                 <textarea id="habitNotes" class="retro-textarea" placeholder="Add steps or notes for this habit..." rows="3"></textarea>
             </div>
             
-            <button class="btn-primary retro-save-btn" onclick="saveHabitDetails()">üíæ SAVE</button>
-            <button class="btn-secondary retro-cancel-btn" onclick="closeHabitModal()" style="margin-left: 10px; background: #666; border-color: #666;">‚ùå EXIT</button>
+            <button class="btn-primary retro-save-btn" onclick="saveHabitDetails()">💾 SAVE</button>
+            <button class="btn-secondary retro-cancel-btn" onclick="closeHabitModal()" style="margin-left: 10px; background: #666; border-color: #666;">&#10060; EXIT</button>
         </div>
     </div>
 
@@ -1956,7 +1956,7 @@
         <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
                 <h3 class="modal-title" id="periodEditTitle">Edit Goal Details</h3>
-                <button class="close-btn" onclick="closePeriodEditModal()">√ó</button>
+                <button class="close-btn" onclick="closePeriodEditModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -2081,7 +2081,7 @@
                         style="flex: 1; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); 
                         color: white; padding: 0.5rem; border-radius: 0.25rem;">
                     <button onclick="removePeriodLink(${index})" style="background: transparent; border: none; color: #ef4444; 
-                        font-size: 1.5rem; cursor: pointer; padding: 0.25rem;">√ó</button>
+                        font-size: 1.5rem; cursor: pointer; padding: 0.25rem;">&times;</button>
                 </div>
             `).join('');
         }
@@ -2290,7 +2290,7 @@
                     <div class="progress-bar ${colorClass}" style="width: ${progress}%">
                         <span class="progress-text">${progress}%</span>
                     </div>
-                    <span class="progress-character" style="left: ${Math.max(2, progress - 2)}%">üèÉ</span>
+                    <span class="progress-character" style="left: ${Math.max(2, progress - 2)}%">&#10084;</span>
                 </div>
             `;
         }
@@ -2349,8 +2349,8 @@
                             style="color: ${goal.color || getCategoryColor(goal.category)}" 
                             onclick="editGoalTitle('${goal.id}')">${goal.name}</h3>
                         <div class="goal-actions">
-                            <button class="icon-btn" onclick="changeGoalColor('${goal.id}')" title="Change color">üé®</button>
-                            <button class="icon-btn" onclick="deleteGoal('${goal.id}')">üóëÔ∏è</button>
+                            <button class="icon-btn" onclick="changeGoalColor('${goal.id}')" title="Change color">&#128190;</button>
+                            <button class="icon-btn" onclick="deleteGoal('${goal.id}')">🗑️</button>
                         </div>
                     </div>
                     <div class="goal-progress">
@@ -2365,7 +2365,7 @@
                                     onmouseover="this.style.background='rgba(255, 255, 255, 0.06)'"
                                     onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'">
                                     <div style="font-size: 1.375rem; font-weight: 700; line-height: 1.4;">${goal.yearly || 'Click to define yearly goal'}</div>
-                                    ${goal.periodData && goal.periodData.yearly && (goal.periodData.yearly.notes || goal.periodData.yearly.links?.length || goal.periodData.yearly.leadIndicators || goal.periodData.yearly.lagIndicators) ? '<div style="position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.875rem; color: #10b981;">üìù</div>' : ''}
+                                    ${goal.periodData && goal.periodData.yearly && (goal.periodData.yearly.notes || goal.periodData.yearly.links?.length || goal.periodData.yearly.leadIndicators || goal.periodData.yearly.lagIndicators) ? '<div style="position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.875rem; color: #10b981;">&#128221;</div>' : ''}
                                 </div>
                             </div>
                         </div>
@@ -2374,17 +2374,17 @@
                             <div class="hierarchy-item" onclick="editPeriod('${goal.id}', 'quarterly')">
                                 <div class="hierarchy-label">QUARTERLY</div>
                                 <div>${goal.quarterly || 'Click to set'}</div>
-                                ${goal.periodData && goal.periodData.quarterly && (goal.periodData.quarterly.notes || goal.periodData.quarterly.links?.length || goal.periodData.quarterly.leadIndicators || goal.periodData.quarterly.lagIndicators) ? '<div style="font-size: 0.75rem; color: #10b981; margin-top: 0.25rem;">üìù Has details</div>' : ''}
+                                ${goal.periodData && goal.periodData.quarterly && (goal.periodData.quarterly.notes || goal.periodData.quarterly.links?.length || goal.periodData.quarterly.leadIndicators || goal.periodData.quarterly.lagIndicators) ? '<div style="font-size: 0.75rem; color: #10b981; margin-top: 0.25rem;">&#128221; Has details</div>' : ''}
                             </div>
                             <div class="hierarchy-item" onclick="editPeriod('${goal.id}', 'monthly')">
                                 <div class="hierarchy-label">MONTHLY</div>
                                 <div>${goal.monthly || 'Click to set'}</div>
-                                ${goal.periodData && goal.periodData.monthly && (goal.periodData.monthly.notes || goal.periodData.monthly.links?.length || goal.periodData.monthly.leadIndicators || goal.periodData.monthly.lagIndicators) ? '<div style="font-size: 0.75rem; color: #10b981; margin-top: 0.25rem;">üìù Has details</div>' : ''}
+                                ${goal.periodData && goal.periodData.monthly && (goal.periodData.monthly.notes || goal.periodData.monthly.links?.length || goal.periodData.monthly.leadIndicators || goal.periodData.monthly.lagIndicators) ? '<div style="font-size: 0.75rem; color: #10b981; margin-top: 0.25rem;">&#128221; Has details</div>' : ''}
                             </div>
                             <div class="hierarchy-item" onclick="editPeriod('${goal.id}', 'weekly')">
                                 <div class="hierarchy-label">WEEKLY</div>
                                 <div>${goal.weekly || 'Click to set'}</div>
-                                ${goal.periodData && goal.periodData.weekly && (goal.periodData.weekly.notes || goal.periodData.weekly.links?.length || goal.periodData.weekly.leadIndicators || goal.periodData.weekly.lagIndicators) ? '<div style="font-size: 0.75rem; color: #10b981; margin-top: 0.25rem;">üìù Has details</div>' : ''}
+                                ${goal.periodData && goal.periodData.weekly && (goal.periodData.weekly.notes || goal.periodData.weekly.links?.length || goal.periodData.weekly.leadIndicators || goal.periodData.weekly.lagIndicators) ? '<div style="font-size: 0.75rem; color: #10b981; margin-top: 0.25rem;">&#128221; Has details</div>' : ''}
                             </div>
                         </div>
                         
@@ -2421,11 +2421,11 @@
             return goal.links.map(link => `
                 <div class="link-item">
                     <a href="${link.url}" target="_blank" rel="noopener noreferrer">
-                        <span style="opacity: 0.6; font-size: 0.75rem; margin-right: 0.25rem;">üîó</span>
+                        <span style="opacity: 0.6; font-size: 0.75rem; margin-right: 0.25rem;">&#128293;</span>
                         ${link.name}
                     </a>
                     <button class="icon-btn" style="color: #999;" 
-                        onclick="event.stopPropagation(); deleteLink('${goalId}', '${link.id}')" title="Remove">√ó</button>
+                        onclick="event.stopPropagation(); deleteLink('${goalId}', '${link.id}')" title="Remove">&times;</button>
                 </div>
             `).join('');
         }
@@ -2471,8 +2471,8 @@
                                 <div class="habit-header-row">
                                     <div class="habit-name" onclick="openHabitModal('${goalId}', '${habit.id}')" style="cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#00ff00'" onmouseout="this.style.color=''">${habit.name}</div>
                                     <div class="habit-stats">
-                                        ${streak > 0 ? `<span class="habit-streak">${streak} üî•</span>` : ''}
-                                        ${hasTwoMissedDays ? '<span class="habit-warning" title="2 days missed in a row!">‚ö†Ô∏è</span>' : ''}
+                                        ${streak > 0 ? `<span class="habit-streak">${streak} &#128081;</span>` : ''}
+                                        ${hasTwoMissedDays ? '<span class="habit-warning" title="2 days missed in a row!">&#9888;</span>' : ''}
                                     </div>
                                 </div>
                                 <div class="habit-progress">
@@ -2483,10 +2483,10 @@
                                     </div>
                                 </div>
                             </div>
-                            ${habit.notes ? `<button class="icon-btn" onclick="toggleHabitSteps('${goalId}', '${habit.id}')" title="Toggle Steps">${habit.stepsExpanded ? '‚ñº' : '‚ñ∂'}</button>` : ''}
-                            <button class="icon-btn" onclick="toggleHabitNote('${goalId}', '${habit.id}')" title="Add/Edit Note">üìù</button>
+                            ${habit.notes ? `<button class="icon-btn" onclick="toggleHabitSteps('${goalId}', '${habit.id}')" title="Toggle Steps">${habit.stepsExpanded ? '&#8593;' : '&#8595;'}</button>` : ''}
+                            <button class="icon-btn" onclick="toggleHabitNote('${goalId}', '${habit.id}')" title="Add/Edit Note">&#128221;</button>
                             <button class="icon-btn" style="color: #ef4444;" 
-                                onclick="deleteHabit('${goalId}', '${habit.id}')">√ó</button>
+                                onclick="deleteHabit('${goalId}', '${habit.id}')">&times;</button>
                         </div>
                         ${habit.notes ? `
                             <div class="habit-steps ${habit.stepsExpanded ? 'expanded' : ''}" id="steps-${goalId}-${habit.id}">
@@ -2689,7 +2689,7 @@
                             state.mana.max = 50 + (state.level * 5);
                             state.mana.current = state.mana.max;
                             state.exp.max = 100 + (state.level * 50);
-                            alert(`üéâ LEVEL UP! You're now Level ${state.level}!`);
+                            alert(`&#127881; LEVEL UP! You're now Level ${state.level}!`);
                         }
                     }
                     
@@ -3145,16 +3145,16 @@
             } else if (entry.completed) {
                 // Currently green - decide what to do based on if it's scheduled
                 if (isScheduled) {
-                    // Scheduled day: green ‚Üí red (mark incomplete)
+                    // Scheduled day: green → red (mark incomplete)
                     entry.completed = false;
                     console.log('Marked as incomplete (red)');
                 } else {
-                    // Unscheduled day: green ‚Üí purple (remove entry entirely)
+                    // Unscheduled day: green → purple (remove entry entirely)
                     habit.history = habit.history.filter(h => h.date !== dateStr);
                     console.log('Removed entry (back to purple)');
                 }
             } else {
-                // Currently red (only possible on scheduled days) ‚Üí green
+                // Currently red (only possible on scheduled days) → green
                 entry.completed = true;
                 console.log('Marked as completed (green)');
             }
@@ -3336,21 +3336,21 @@
                     {
                         id: Date.now().toString(),
                         title: "Mindset & Reminders",
-                        icon: "üí≠",
+                        icon: "💭",
                         color: "#fbbf24",
                         quotes: []
                     },
                     {
                         id: Date.now().toString() + '1',
                         title: "Scriptures",
-                        icon: "üìñ",
+                        icon: "🏠",
                         color: "#8b5cf6",
                         quotes: []
                     },
                     {
                         id: Date.now().toString() + '2',
                         title: "Facts & Information",
-                        icon: "üìä",
+                        icon: "🎮",
                         color: "#10b981",
                         quotes: []
                     }
@@ -3374,7 +3374,7 @@
                                 onclick="addQuote('${category.id}')">
                                 + Add
                             </button>
-                            <button class="delete-category-btn" onclick="deleteCategory('${category.id}')">√ó</button>
+                            <button class="delete-category-btn" onclick="deleteCategory('${category.id}')">&times;</button>
                         </div>
                     </div>
                     <div class="quotes-container">
@@ -3382,9 +3382,9 @@
                             <div class="quote-item" style="border-left-color: ${category.color};">
                                 <div class="quote-content">
                                     <div class="quote-text">"${quote.text}"</div>
-                                    ${quote.author ? `<div class="quote-author">‚Äî ${quote.author}</div>` : ''}
+                                    ${quote.author ? `<div class="quote-author">— ${quote.author}</div>` : ''}
                                 </div>
-                                <button class="delete-quote-btn" onclick="deleteQuote('${category.id}', ${index})">√ó</button>
+                                <button class="delete-quote-btn" onclick="deleteQuote('${category.id}', ${index})">&times;</button>
                             </div>
                         `).join('')}
                         ${category.quotes.length === 0 ? `
@@ -3401,13 +3401,13 @@
             const title = await showInputModal('Add New Category', 'Enter category name:', 'e.g., Daily Affirmations');
             if (!title) return;
             
-            const icon = await showInputModal('Category Icon', 'Enter an emoji for this category:', 'üìù', 'üìù');
+            const icon = await showInputModal('Category Icon', 'Enter an emoji for this category:', '&#128221;', '&#128221;');
             const color = await showInputModal('Category Color', 'Enter a hex color:', '#10b981', '#10b981');
             
             const category = {
                 id: Date.now().toString(),
                 title,
-                icon: icon || 'üìù',
+                icon: icon || '&#128221;',
                 color: color || '#10b981',
                 quotes: []
             };
@@ -3733,11 +3733,11 @@
             function toggleCalendarExpand() {
                 calendarExpanded = !calendarExpanded;
                 const btn = document.getElementById('expandBtn');
-                btn.textContent = calendarExpanded ? 'Collapse ‚Üë' : 'Expand ‚Üì';
+                btn.textContent = calendarExpanded ? 'Collapse ↑' : 'Expand ↓';
                 // Update title
                 const title = document.querySelector('.google-section:nth-child(2) .section-title');
                 if (title) {
-                    title.textContent = calendarExpanded ? 'üìÖ Next 7 Days' : 'üìÖ Tomorrow\'s Schedule';
+                    title.textContent = calendarExpanded ? '&#128197; Next 7 Days' : '&#128197; Tomorrow\'s Schedule';
                 }
                 loadGoogleCalendar();
             }
