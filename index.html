@@ -1746,7 +1746,7 @@
                     <h2 class="section-title" onclick="window.open('https://tasks.google.com', '_blank')" style="cursor: pointer; transition: all 0.2s; border-radius: 0.5rem; padding: 0.25rem 0.5rem;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'; this.style.transform='scale(1.02)'" onmouseout="this.style.backgroundColor='transparent'; this.style.transform='scale(1)'" title="🖱️ Click to open Google Tasks">📋 Tasks</h2>
                     <div style="display: flex; align-items: center; gap: var(--space-md);">
                         <span class="last-updated" id="tasksLastUpdated"></span>
-                        <button class="refresh-btn" onclick="addGoogleTask()" style="background: #10b981; opacity: 1; font-weight: bold; font-size: 1.2rem;" title="Add new task">+</button>
+                        <button class="refresh-btn" onclick="showAddTaskModal()" style="background: #10b981; opacity: 1; font-weight: bold; font-size: 1.2rem;" title="Add new task">+</button>
                         <button class="refresh-btn" onclick="loadGoogleTasks()">↻</button>
                         <button class="refresh-btn" onclick="window.open('oauth-redirect.html', '_blank')" style="opacity: 0.5;" title="Re-authenticate">🔒</button>
                     </div>
@@ -3462,14 +3462,19 @@
         }
 
         // Global Google Tasks functions (must be global for onclick handlers)
-        async function addGoogleTask() {
+        function showAddTaskModal() {
+            const taskTitle = prompt('Enter new task title:');
+            if (taskTitle && taskTitle.trim()) {
+                addNewTask(taskTitle.trim());
+            }
+        }
+
+        async function addNewTask(title) {
             try {
-                const taskTitle = await showInputModal('Add New Task', 'Enter task title:', 'e.g., Review trading strategy');
-                if (!taskTitle) return;
+                console.log('Adding new task:', title);
                 
-                console.log('Adding new task:', taskTitle);
                 
-                // Use exact same approach as morning update
+                // Get first task list
                 const listsData = await makeGoogleApiCall('https://www.googleapis.com/tasks/v1/users/@me/lists');
                 const taskList = listsData.items?.[0];
                 
@@ -3486,7 +3491,7 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        title: taskTitle
+                        title: title
                     })
                 });
                 
