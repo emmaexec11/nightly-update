@@ -3729,10 +3729,14 @@
                     console.log(`Found ${allEvents.length} total events across all calendars`);
                     
                     // Filter out routine events
-                    const routineEvents = ['morning routine', 'power hour', 'lunch', 'wrap up day', 'night routine', 'workout'];
+                    const routineEvents = ['morning routine', 'power hour', 'lunch', 'lunch break', 'wrap up day', 'night routine', 'workout', 'free time'];
                     const filteredEvents = allEvents.filter(event => {
                         const title = (event.summary || '').toLowerCase();
-                        return !routineEvents.some(routine => title.includes(routine));
+                        const isRoutine = routineEvents.some(routine => title.includes(routine));
+                        if (isRoutine) {
+                            console.log(`Filtering out routine event: ${event.summary}`);
+                        }
+                        return !isRoutine;
                     });
                     
                     // Sort by start time
