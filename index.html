@@ -2048,10 +2048,13 @@
                                 if (!habit.frequency) habit.frequency = 'daily';
                                 if (habit.notes === undefined) habit.notes = '';
                                 
-                                // Daily reset: ensure checkbox matches today's actual completion
+                                // Initialize today's entry if it doesn't exist
                                 const today = new Date().toISOString().split('T')[0];
                                 const todayEntry = habit.history.find(h => h.date === today);
-                                habit.completed = todayEntry ? todayEntry.completed : false;
+                                if (!todayEntry) {
+                                    // Only set completed to false for new days, don't override existing state
+                                    habit.completed = habit.completed || false;
+                                }
                             });
                             // Remove old lead/lag indicators if they exist
                             delete goal.leadIndicator;
@@ -2304,11 +2307,6 @@
                     completed: habit.completed || false
                 });
             }
-            
-            // Daily reset: Set completed to today's history entry, not yesterday's
-            const today = new Date().toISOString().split('T')[0];
-            const todayEntry = habit.history.find(h => h.date === today);
-            habit.completed = todayEntry ? todayEntry.completed : false;
         }
 
         // Render goals
