@@ -1802,6 +1802,28 @@
         </div>
     </div>
 
+    <!-- Add Task Modal -->
+    <div id="addTaskModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 class="modal-title">&#128203; Add New Task</h3>
+                <button class="close-btn" onclick="closeAddTaskModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Task Title:</label>
+                    <input type="text" id="newTaskTitle" placeholder="e.g., Review trading strategies" 
+                           style="width: 100%; padding: 0.75rem; background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.1); color: white; border-radius: 0.5rem; font-size: 1rem;"
+                           onkeypress="if(event.key === 'Enter') confirmAddTask()">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeAddTaskModal()">Cancel</button>
+                <button class="btn-primary" onclick="confirmAddTask()" style="background: #10b981;">Add Task</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Generic Input Modal -->
     <div id="inputModal" class="modal">
         <div class="modal-content" style="max-width: 500px;">
@@ -3297,6 +3319,8 @@
                         closeEditModal();
                     } else if (modal.id === 'linkModal') {
                         closeLinkModal();
+                    } else if (modal.id === 'addTaskModal') {
+                        closeAddTaskModal();
                     }
                 });
             }
@@ -3524,22 +3548,29 @@
         function showAddTaskModal() {
             try {
                 console.log('Add task button clicked');
-                const taskTitle = prompt('Enter new task title:');
-                console.log('Task title entered:', taskTitle);
-                
-                if (taskTitle && taskTitle.trim()) {
-                    console.log('Calling addNewTask with:', taskTitle.trim());
-                    addNewTask(taskTitle.trim());
-                } else {
-                    console.log('No task title provided or empty');
-                }
+                document.getElementById('addTaskModal').classList.add('active');
+                document.getElementById('newTaskTitle').value = '';
+                document.getElementById('newTaskTitle').focus();
             } catch (error) {
                 console.error('Error in showAddTaskModal:', error);
                 alert('Error showing add task dialog: ' + error.message);
             }
         }
+        
+        function closeAddTaskModal() {
+            document.getElementById('addTaskModal').classList.remove('active');
+        }
+        
+        function confirmAddTask() {
+            const taskTitle = document.getElementById('newTaskTitle').value.trim();
+            if (taskTitle) {
+                closeAddTaskModal();
+                addNewTask(taskTitle);
+            }
+        }
 
         async function addNewTask(title) {
+            let timeoutId;
             try {
                 console.log('Starting addNewTask with title:', title);
                 
@@ -3548,9 +3579,17 @@
                 const originalContent = tasksContainer.innerHTML;
                 tasksContainer.innerHTML = '<div class="loading">Adding task...</div>';
                 
-                // Get first task list
+                // Set timeout to prevent infinite loading (10 seconds max)
+                timeoutId = setTimeout(() => {
+                    throw new Error('Task creation timeout - taking too long');
+                }, 10000);
+                
+                // Get first task list with timeout
                 console.log('Fetching task lists...');
-                const listsData = await makeGoogleApiCall('https://www.googleapis.com/tasks/v1/users/@me/lists');
+                const listsData = await Promise.race([
+                    makeGoogleApiCall('https://www.googleapis.com/tasks/v1/users/@me/lists'),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('API timeout')), 5000))
+                ]);
                 console.log('Lists data received:', listsData);
                 
                 const taskList = listsData.items?.[0];
@@ -3561,32 +3600,42 @@
                 
                 console.log('Using task list:', taskList.title, taskList.id);
                 
-                // Add new task
+                // Add new task with timeout
                 console.log('Getting access token...');
                 const token = await getAccessToken();
                 console.log('Token obtained, making API call...');
                 
-                const response = await fetch(`https://www.googleapis.com/tasks/v1/lists/${taskList.id}/tasks`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        title: title
-                    })
-                });
+                const response = await Promise.race([
+                    fetch(`https://www.googleapis.com/tasks/v1/lists/${taskList.id}/tasks`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            title: title
+                        })
+                    }),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Task creation timeout')), 5000))
+                ]);
                 
                 console.log('API response status:', response.status);
+                
+                // Clear timeout on success
+                clearTimeout(timeoutId);
                 
                 if (response.ok) {
                     const newTask = await response.json();
                     console.log('Task added successfully:', newTask);
-                    alert(`Task "${title}" added successfully!`);
                     
-                    // Refresh task list
-                    console.log('Refreshing task list...');
-                    loadGoogleTasks(); 
+                    // Show brief success message in task area
+                    tasksContainer.innerHTML = '<div style="color: #10b981; padding: 1rem; text-align: center;">✅ Task added successfully!</div>';
+                    
+                    // Refresh task list after brief delay
+                    setTimeout(() => {
+                        console.log('Refreshing task list...');
+                        loadGoogleTasks(); 
+                    }, 1000);
                 } else {
                     const errorText = await response.text();
                     console.error('API error response:', errorText);
@@ -3595,23 +3644,34 @@
             } catch (error) {
                 console.error('Failed to add task:', error);
                 
-                // Restore original content
+                // Clear timeout
+                if (timeoutId) clearTimeout(timeoutId);
+                
+                // Restore original content immediately
                 const tasksContainer = document.getElementById('tasksContainer');
                 if (tasksContainer) {
                     tasksContainer.innerHTML = originalContent || '<div class="loading">Loading tasks...</div>';
                 }
                 
-                // Show detailed error message
-                if (error.message.includes('401') || error.message.includes('unauthorized')) {
-                    alert('Authentication expired. Please re-authenticate by clicking the lock icon.');
+                // Show user-friendly error message
+                let errorMessage = 'Failed to add task';
+                if (error.message.includes('timeout') || error.message.includes('taking too long')) {
+                    errorMessage = 'Request timed out. Please try again or check your connection.';
+                } else if (error.message.includes('401') || error.message.includes('unauthorized')) {
+                    errorMessage = 'Authentication expired. Please re-authenticate by clicking the lock icon.';
                 } else if (error.message.includes('403') || error.message.includes('forbidden')) {
-                    alert('Permission denied. Please ensure Google Tasks access is enabled.');
-                } else {
-                    alert(`Failed to add task: ${error.message}`);
+                    errorMessage = 'Permission denied. Please ensure Google Tasks access is enabled.';
+                } else if (error.message.includes('network') || error.message.includes('fetch')) {
+                    errorMessage = 'Network error. Please check your internet connection and try again.';
                 }
                 
-                // Re-load tasks to restore state
-                loadGoogleTasks();
+                // Show error in task area temporarily
+                tasksContainer.innerHTML = `<div style="color: #ef4444; padding: 1rem; text-align: center;">❌ ${errorMessage}</div>`;
+                
+                // Restore normal view after delay
+                setTimeout(() => {
+                    loadGoogleTasks();
+                }, 3000);
             }
         }
 
