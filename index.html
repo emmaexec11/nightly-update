@@ -3811,7 +3811,8 @@
                 // saveState();
             }
             
-        // GLOBAL SCOPE: Google API Configuration - split to avoid GitHub detection  
+        // Google API Functions
+        // Auto-refreshing OAuth token system with localStorage persistence
         const GOOGLE_CREDENTIALS = {
             'client_id': '310221293117-eiv0ouknutm3mjchgio5ceopf9hvbnr8' + '.apps.googleusercontent.com',
             'client_secret': 'GOCSPX-' + '6suVT7VWmI7PueZSaEAj9pVr_qV-',
@@ -3869,35 +3870,36 @@
         }
 
         async function makeGoogleApiCall(url) {
-                try {
-                    let token = await getAccessToken();
-                    
-                    let response = await fetch(url, {
+            try {
+                let token = await getAccessToken();
+                
+                let response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                // If unauthorized, refresh token and retry once
+                if (response.status === 401) {
+                    console.log('Token expired, refreshing and retrying...');
+                    token = await refreshAccessToken();
+                    response = await fetch(url, {
                         headers: {
                             'Authorization': `Bearer ${token}`
                         }
                     });
-                    
-                    if (response.status === 401) {
-                        console.log('Token expired, refreshing and retrying...');
-                        token = await refreshAccessToken();
-                        response = await fetch(url, {
-                            headers: {
-                                'Authorization': `Bearer ${token}`
-                            }
-                        });
-                    }
-                    
-                    if (!response.ok) {
-                        throw new Error(`API call failed: ${response.status}`);
-                    }
-                    
-                    return await response.json();
-                } catch (error) {
-                    console.error('Google API call failed:', error);
-                    throw error;
                 }
+                
+                if (!response.ok) {
+                    throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('Google API call failed:', error);
+                throw error;
             }
+        }
 
             // Google Tasks API
             async function loadGoogleTasks() {
