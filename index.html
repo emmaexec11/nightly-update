@@ -1298,6 +1298,7 @@
         .habit-checkbox.checked {
             background: #10b981;
             border-color: #10b981;
+            box-shadow: 0 0 12px 3px rgba(16, 185, 129, 0.5);
             animation: glowGreen 0.5s ease;
         }
         
@@ -1308,8 +1309,9 @@
         }
 
         .habit-checkbox.checked::after {
-            content: '&#9989;';
+            content: '✓';
             color: white;
+            font-size: 2.2rem;
             font-weight: bold;
         }
 
@@ -2224,7 +2226,7 @@
         // Calculate habit progress with bonus points
         function calculateHabitProgress(habit) {
             if (!habit.history || habit.history.length === 0) {
-                return 0;
+                return 100; // New habits start at 100%
             }
             
             // Get last 30 days
