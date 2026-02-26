@@ -1746,6 +1746,7 @@
                     <h2 class="section-title" onclick="window.open('https://tasks.google.com', '_blank')" style="cursor: pointer; transition: all 0.2s; border-radius: 0.5rem; padding: 0.25rem 0.5rem;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'; this.style.transform='scale(1.02)'" onmouseout="this.style.backgroundColor='transparent'; this.style.transform='scale(1)'" title="🖱️ Click to open Google Tasks">📋 Tasks</h2>
                     <div style="display: flex; align-items: center; gap: var(--space-md);">
                         <span class="last-updated" id="tasksLastUpdated"></span>
+                        <button class="refresh-btn" onclick="addGoogleTask()" style="background: #10b981; opacity: 1;" title="Add new task">+</button>
                         <button class="refresh-btn" onclick="loadGoogleTasks()">↻</button>
                         <button class="refresh-btn" onclick="window.open('oauth-redirect.html', '_blank')" style="opacity: 0.5;" title="Re-authenticate">🔒</button>
                     </div>
@@ -3671,6 +3672,57 @@
                     // Uncheck the box
                     const checkbox = document.querySelector(`[data-task-id="${taskId}"] .task-checkbox`);
                     if (checkbox) checkbox.checked = false;
+                }
+            }
+            
+            // Add new Google Task
+            async function addGoogleTask() {
+                try {
+                    const taskTitle = await showInputModal('Add New Task', 'Enter task title:', 'e.g., Review trading strategy');
+                    if (!taskTitle) return;
+                    
+                    const token = await getAccessToken();
+                    
+                    // Get the first task list (usually "My Tasks")
+                    const listsResponse = await fetch(`https://www.googleapis.com/tasks/v1/users/@me/lists`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (!listsResponse.ok) {
+                        throw new Error(`Failed to get task lists: ${listsResponse.status}`);
+                    }
+                    
+                    const listsData = await listsResponse.json();
+                    const defaultList = listsData.items && listsData.items[0];
+                    
+                    if (!defaultList) {
+                        throw new Error('No task lists found');
+                    }
+                    
+                    // Create the task
+                    const createResponse = await fetch(`https://www.googleapis.com/tasks/v1/lists/${defaultList.id}/tasks`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            title: taskTitle
+                        })
+                    });
+                    
+                    if (createResponse.ok) {
+                        // Task created successfully, refresh the list
+                        await loadGoogleTasks();
+                        console.log('Task created successfully');
+                    } else {
+                        throw new Error(`Failed to create task: ${createResponse.status}`);
+                    }
+                } catch (error) {
+                    console.error('Add task error:', error);
+                    alert('Failed to add task. Please check your authentication and try again.');
                 }
             }
             
