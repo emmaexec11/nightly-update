@@ -1247,7 +1247,7 @@
         }
         
         .no-items::before {
-            content: '✓';
+            content: '✓';
             display: block;
             font-size: 2rem;
             margin-bottom: var(--space-md);
@@ -1728,11 +1728,11 @@
             <!-- Google Calendar Section -->
             <div class="google-section">
                 <div class="section-header">
-                    <h2 class="section-title" onclick="window.open('https://calendar.google.com', '_blank')" style="cursor: pointer; transition: all 0.2s; border-radius: 0.5rem; padding: 0.25rem 0.5rem;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'; this.style.transform='scale(1.02)'" onmouseout="this.style.backgroundColor='transparent'; this.style.transform='scale(1)'" title="🖱️ Click to open Google Calendar">&#128197; Next 3 Days</h2>
+                    <h2 class="section-title" onclick="window.open('https://calendar.google.com', '_blank')" style="cursor: pointer; transition: all 0.2s; border-radius: 0.5rem; padding: 0.25rem 0.5rem;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'; this.style.transform='scale(1.02)'" onmouseout="this.style.backgroundColor='transparent'; this.style.transform='scale(1)'" title="&#128433; Click to open Google Calendar">&#128197; Next 3 Days</h2>
                     <div style="display: flex; align-items: center; gap: var(--space-md);">
                         <span class="last-updated" id="calendarLastUpdated"></span>
                         <button class="refresh-btn" onclick="loadGoogleCalendar()">&#128260;</button>
-                        <button class="refresh-btn" onclick="window.open('oauth-redirect.html', '_blank')" style="opacity: 0.5;" title="Re-authenticate">&#128274;</button>
+                        <button class="refresh-btn" onclick="window.open('oauth-redirect.html', '_blank')" style="opacity: 0.5;" title="Re-authenticate">&#128274;</button>
                     </div>
                 </div>
                 <div id="calendarContainer" class="calendar-container">
@@ -1743,12 +1743,12 @@
             <!-- Google Tasks Section -->
             <div class="google-section">
                 <div class="section-header">
-                    <h2 class="section-title" onclick="window.open('https://tasks.google.com', '_blank')" style="cursor: pointer; transition: all 0.2s; border-radius: 0.5rem; padding: 0.25rem 0.5rem;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'; this.style.transform='scale(1.02)'" onmouseout="this.style.backgroundColor='transparent'; this.style.transform='scale(1)'" title="🖱️ Click to open Google Tasks">&#128203; Tasks</h2>
+                    <h2 class="section-title" onclick="window.open('https://tasks.google.com', '_blank')" style="cursor: pointer; transition: all 0.2s; border-radius: 0.5rem; padding: 0.25rem 0.5rem;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'; this.style.transform='scale(1.02)'" onmouseout="this.style.backgroundColor='transparent'; this.style.transform='scale(1)'" title="&#128433; Click to open Google Tasks">&#128203; Tasks</h2>
                     <div style="display: flex; align-items: center; gap: var(--space-md);">
                         <span class="last-updated" id="tasksLastUpdated"></span>
                         <button class="refresh-btn" onclick="showAddTaskModal()" style="background: #10b981; opacity: 1; font-weight: bold; font-size: 1.2rem;" title="Add new task">+</button>
                         <button class="refresh-btn" onclick="loadGoogleTasks()">&#128260;</button>
-                        <button class="refresh-btn" onclick="window.open('oauth-redirect.html', '_blank')" style="opacity: 0.5;" title="Re-authenticate">&#128274;</button>
+                        <button class="refresh-btn" onclick="window.open('oauth-redirect.html', '_blank')" style="opacity: 0.5;" title="Re-authenticate">&#128274;</button>
                     </div>
                 </div>
                 <div id="tasksContainer" class="tasks-container">
@@ -1884,7 +1884,7 @@
         <div class="modal-content gamified-modal" style="max-width: 600px;">
             <div class="modal-header retro-header">
                 <h3 class="modal-title">
-                    <span class="pixel-icon">&#9889;</span> 
+                    <span class="pixel-icon">&#9889;</span> 
                     <span id="habitDetailTitle">Habit Details</span>
                 </h3>
                 <button class="close-btn retro-btn" onclick="closeHabitModal()">&times;</button>
@@ -1899,7 +1899,7 @@
                     <div class="stat-label">CURRENT STREAK</div>
                     <div class="stat-value">
                         <span id="habitStreak">0</span>
-                        <span class="streak-fire">&#128081;</span>
+                        <span class="streak-fire">&#128081;</span>
                     </div>
                 </div>
             </div>
@@ -1946,7 +1946,7 @@
                 <textarea id="habitNotes" class="retro-textarea" placeholder="Add steps or notes for this habit..." rows="3"></textarea>
             </div>
             
-            <button class="btn-primary retro-save-btn" onclick="saveHabitDetails()">💾 SAVE</button>
+            <button class="btn-primary retro-save-btn" onclick="saveHabitDetails()">&#128190; SAVE</button>
             <button class="btn-secondary retro-cancel-btn" onclick="closeHabitModal()" style="margin-left: 10px; background: #666; border-color: #666;">&#10060; EXIT</button>
         </div>
     </div>
@@ -2290,7 +2290,7 @@
                     <div class="progress-bar ${colorClass}" style="width: ${progress}%">
                         <span class="progress-text">${progress}%</span>
                     </div>
-                    <span class="progress-character" style="left: ${Math.max(2, progress - 2)}%">&#10084;</span>
+                    <span class="progress-character" style="left: ${Math.max(2, progress - 2)}%">&#10084;</span>
                 </div>
             `;
         }
@@ -2349,8 +2349,8 @@
                             style="color: ${goal.color || getCategoryColor(goal.category)}" 
                             onclick="editGoalTitle('${goal.id}')">${goal.name}</h3>
                         <div class="goal-actions">
-                            <button class="icon-btn" onclick="changeGoalColor('${goal.id}')" title="Change color">&#128190;</button>
-                            <button class="icon-btn" onclick="deleteGoal('${goal.id}')">🗑️</button>
+                            <button class="icon-btn" onclick="changeGoalColor('${goal.id}')" title="Change color">&#128190;</button>
+                            <button class="icon-btn" onclick="deleteGoal('${goal.id}')">&#128465;</button>
                         </div>
                     </div>
                     <div class="goal-progress">
@@ -2365,7 +2365,7 @@
                                     onmouseover="this.style.background='rgba(255, 255, 255, 0.06)'"
                                     onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'">
                                     <div style="font-size: 1.375rem; font-weight: 700; line-height: 1.4;">${goal.yearly || 'Click to define yearly goal'}</div>
-                                    ${goal.periodData && goal.periodData.yearly && (goal.periodData.yearly.notes || goal.periodData.yearly.links?.length || goal.periodData.yearly.leadIndicators || goal.periodData.yearly.lagIndicators) ? '<div style="position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.875rem; color: #10b981;">&#128221;</div>' : ''}
+                                    ${goal.periodData && goal.periodData.yearly && (goal.periodData.yearly.notes || goal.periodData.yearly.links?.length || goal.periodData.yearly.leadIndicators || goal.periodData.yearly.lagIndicators) ? '<div style="position: absolute; top: 0.5rem; right: 0.5rem; font-size: 0.875rem; color: #10b981;">&#128221;</div>' : ''}
                                 </div>
                             </div>
                         </div>
@@ -2374,17 +2374,17 @@
                             <div class="hierarchy-item" onclick="editPeriod('${goal.id}', 'quarterly')">
                                 <div class="hierarchy-label">QUARTERLY</div>
                                 <div>${goal.quarterly || 'Click to set'}</div>
-                                ${goal.periodData && goal.periodData.quarterly && (goal.periodData.quarterly.notes || goal.periodData.quarterly.links?.length || goal.periodData.quarterly.leadIndicators || goal.periodData.quarterly.lagIndicators) ? '<div style="font-size: 0.75rem; color: #10b981; margin-top: 0.25rem;">&#128221; Has details</div>' : ''}
+                                ${goal.periodData && goal.periodData.quarterly && (goal.periodData.quarterly.notes || goal.periodData.quarterly.links?.length || goal.periodData.quarterly.leadIndicators || goal.periodData.quarterly.lagIndicators) ? '<div style="font-size: 0.75rem; color: #10b981; margin-top: 0.25rem;">&#128221; Has details</div>' : ''}
                             </div>
                             <div class="hierarchy-item" onclick="editPeriod('${goal.id}', 'monthly')">
                                 <div class="hierarchy-label">MONTHLY</div>
                                 <div>${goal.monthly || 'Click to set'}</div>
-                                ${goal.periodData && goal.periodData.monthly && (goal.periodData.monthly.notes || goal.periodData.monthly.links?.length || goal.periodData.monthly.leadIndicators || goal.periodData.monthly.lagIndicators) ? '<div style="font-size: 0.75rem; color: #10b981; margin-top: 0.25rem;">&#128221; Has details</div>' : ''}
+                                ${goal.periodData && goal.periodData.monthly && (goal.periodData.monthly.notes || goal.periodData.monthly.links?.length || goal.periodData.monthly.leadIndicators || goal.periodData.monthly.lagIndicators) ? '<div style="font-size: 0.75rem; color: #10b981; margin-top: 0.25rem;">&#128221; Has details</div>' : ''}
                             </div>
                             <div class="hierarchy-item" onclick="editPeriod('${goal.id}', 'weekly')">
                                 <div class="hierarchy-label">WEEKLY</div>
                                 <div>${goal.weekly || 'Click to set'}</div>
-                                ${goal.periodData && goal.periodData.weekly && (goal.periodData.weekly.notes || goal.periodData.weekly.links?.length || goal.periodData.weekly.leadIndicators || goal.periodData.weekly.lagIndicators) ? '<div style="font-size: 0.75rem; color: #10b981; margin-top: 0.25rem;">&#128221; Has details</div>' : ''}
+                                ${goal.periodData && goal.periodData.weekly && (goal.periodData.weekly.notes || goal.periodData.weekly.links?.length || goal.periodData.weekly.leadIndicators || goal.periodData.weekly.lagIndicators) ? '<div style="font-size: 0.75rem; color: #10b981; margin-top: 0.25rem;">&#128221; Has details</div>' : ''}
                             </div>
                         </div>
                         
@@ -2421,7 +2421,7 @@
             return goal.links.map(link => `
                 <div class="link-item">
                     <a href="${link.url}" target="_blank" rel="noopener noreferrer">
-                        <span style="opacity: 0.6; font-size: 0.75rem; margin-right: 0.25rem;">&#128293;</span>
+                        <span style="opacity: 0.6; font-size: 0.75rem; margin-right: 0.25rem;">&#128293;</span>
                         ${link.name}
                     </a>
                     <button class="icon-btn" style="color: #999;" 
@@ -2471,7 +2471,7 @@
                                 <div class="habit-header-row">
                                     <div class="habit-name" onclick="openHabitModal('${goalId}', '${habit.id}')" style="cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#00ff00'" onmouseout="this.style.color=''">${habit.name}</div>
                                     <div class="habit-stats">
-                                        ${streak > 0 ? `<span class="habit-streak">${streak} &#128081;</span>` : ''}
+                                        ${streak > 0 ? `<span class="habit-streak">${streak} &#128081;</span>` : ''}
                                         ${hasTwoMissedDays ? '<span class="habit-warning" title="2 days missed in a row!">&#9888;</span>' : ''}
                                     </div>
                                 </div>
@@ -2484,7 +2484,7 @@
                                 </div>
                             </div>
                             ${habit.notes ? `<button class="icon-btn" onclick="toggleHabitSteps('${goalId}', '${habit.id}')" title="Toggle Steps">${habit.stepsExpanded ? '&#8593;' : '&#8595;'}</button>` : ''}
-                            <button class="icon-btn" onclick="toggleHabitNote('${goalId}', '${habit.id}')" title="Add/Edit Note">&#128221;</button>
+                            <button class="icon-btn" onclick="toggleHabitNote('${goalId}', '${habit.id}')" title="Add/Edit Note">&#128221;</button>
                             <button class="icon-btn" style="color: #ef4444;" 
                                 onclick="deleteHabit('${goalId}', '${habit.id}')">&times;</button>
                         </div>
@@ -2689,7 +2689,7 @@
                             state.mana.max = 50 + (state.level * 5);
                             state.mana.current = state.mana.max;
                             state.exp.max = 100 + (state.level * 50);
-                            alert(`&#127881; LEVEL UP! You're now Level ${state.level}!`);
+                            alert(`&#127881; LEVEL UP! You're now Level ${state.level}!`);
                         }
                     }
                     
@@ -3145,16 +3145,16 @@
             } else if (entry.completed) {
                 // Currently green - decide what to do based on if it's scheduled
                 if (isScheduled) {
-                    // Scheduled day: green → red (mark incomplete)
+                    // Scheduled day: green &#8594; red (mark incomplete)
                     entry.completed = false;
                     console.log('Marked as incomplete (red)');
                 } else {
-                    // Unscheduled day: green → purple (remove entry entirely)
+                    // Unscheduled day: green &#8594; purple (remove entry entirely)
                     habit.history = habit.history.filter(h => h.date !== dateStr);
                     console.log('Removed entry (back to purple)');
                 }
             } else {
-                // Currently red (only possible on scheduled days) → green
+                // Currently red (only possible on scheduled days) &#8594; green
                 entry.completed = true;
                 console.log('Marked as completed (green)');
             }
@@ -3336,21 +3336,21 @@
                     {
                         id: Date.now().toString(),
                         title: "Mindset & Reminders",
-                        icon: "💭",
+                        icon: "&#128173;",
                         color: "#fbbf24",
                         quotes: []
                     },
                     {
                         id: Date.now().toString() + '1',
                         title: "Scriptures",
-                        icon: "🏠",
+                        icon: "&#127968;",
                         color: "#8b5cf6",
                         quotes: []
                     },
                     {
                         id: Date.now().toString() + '2',
                         title: "Facts & Information",
-                        icon: "🎮",
+                        icon: "&#127918;",
                         color: "#10b981",
                         quotes: []
                     }
@@ -3401,13 +3401,13 @@
             const title = await showInputModal('Add New Category', 'Enter category name:', 'e.g., Daily Affirmations');
             if (!title) return;
             
-            const icon = await showInputModal('Category Icon', 'Enter an emoji for this category:', '&#128221;', '&#128221;');
+            const icon = await showInputModal('Category Icon', 'Enter an emoji for this category:', '&#128221;', '&#128221;');
             const color = await showInputModal('Category Color', 'Enter a hex color:', '#10b981', '#10b981');
             
             const category = {
                 id: Date.now().toString(),
                 title,
-                icon: icon || '&#128221;',
+                icon: icon || '&#128221;',
                 color: color || '#10b981',
                 quotes: []
             };
@@ -3733,11 +3733,11 @@
             function toggleCalendarExpand() {
                 calendarExpanded = !calendarExpanded;
                 const btn = document.getElementById('expandBtn');
-                btn.textContent = calendarExpanded ? 'Collapse ↑' : 'Expand ↓';
+                btn.textContent = calendarExpanded ? 'Collapse &#8593;' : 'Expand &#8595;';
                 // Update title
                 const title = document.querySelector('.google-section:nth-child(2) .section-title');
                 if (title) {
-                    title.textContent = calendarExpanded ? '&#128197; Next 7 Days' : '&#128197; Tomorrow\'s Schedule';
+                    title.textContent = calendarExpanded ? '&#128197; Next 7 Days' : '&#128197; Tomorrow\'s Schedule';
                 }
                 loadGoogleCalendar();
             }
