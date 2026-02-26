@@ -3751,6 +3751,7 @@
                     filteredEvents.forEach(event => {
                         const eventDate = new Date(event.start?.dateTime || event.start?.date);
                         const dayKey = eventDate.toDateString();
+                        console.log(`Event "${event.summary}" - Raw: ${event.start?.dateTime || event.start?.date} - Parsed: ${dayKey}`);
                         if (!eventsByDay[dayKey]) {
                             eventsByDay[dayKey] = [];
                         }
@@ -3766,6 +3767,7 @@
                         const dayKey = currentDate.toDateString();
                         const dayName = currentDate.toLocaleDateString('en-US', { weekday: 'long' });
                         const dateStr = currentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        console.log(`Looking for events on: ${dayKey} (displaying as: ${dayName}, ${dateStr})`);
                         
                         // Always show day header with date
                         html += `<div style="margin-bottom: 1rem;">`;
