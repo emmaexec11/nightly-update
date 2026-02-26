@@ -3729,7 +3729,7 @@
                     console.log(`Found ${allEvents.length} total events across all calendars`);
                     
                     // Filter out routine events
-                    const routineEvents = ['morning routine', 'power hour', 'wrap up day', 'night routine', 'workout'];
+                    const routineEvents = ['morning routine', 'power hour', 'lunch', 'wrap up day', 'night routine', 'workout'];
                     const filteredEvents = allEvents.filter(event => {
                         const title = (event.summary || '').toLowerCase();
                         return !routineEvents.some(routine => title.includes(routine));
@@ -3763,11 +3763,12 @@
                         const dayName = currentDate.toLocaleDateString('en-US', { weekday: 'long' });
                         const dateStr = currentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                         
+                        // Always show day header with date
+                        html += `<div style="margin-bottom: 1rem;">`;
+                        html += `<div style="color: #10b981; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">${dayName}, ${dateStr}</div>`;
+                        
                         const dayEvents = eventsByDay[dayKey] || [];
                         if (dayEvents.length > 0) {
-                            // Only show day if there are events
-                            html += `<div style="margin-bottom: 1.5rem;">`;
-                            html += `<div style="color: #10b981; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">${dayName}, ${dateStr}</div>`;
                             html += dayEvents.map(event => {
                                 const isAllDay = !event.start.dateTime;
                                 let timeStr = 'All Day';
@@ -3799,8 +3800,10 @@
                                     </div>
                                 `;
                             }).join('');
-                            html += `</div>`; // Close the day div only if we opened it
+                        } else {
+                            html += `<div style="color: #666; font-size: 0.875rem; margin-bottom: 0.25rem;">No events</div>`;
                         }
+                        html += `</div>`; // Always close the day div
                     }
                     
                     container.innerHTML = html || `<div class="no-items">No events in the next 3 days</div>`;
