@@ -3654,181 +3654,40 @@
         }
 
         async function addNewTask(title) {
-            const debugLog = [];
-            const log = (step, data) => {
-                const entry = { step, data, time: new Date().toISOString() };
-                debugLog.push(entry);
-                console.log(`[addNewTask] ${step}:`, data);
-            };
-
             try {
-                log('START', { title });
-
-                // Show loading state
-                const tasksContainer = document.getElementById('tasksContainer');
-                const originalContent = tasksContainer.innerHTML;
-                tasksContainer.innerHTML = '<div class="loading">Adding task...</div>';
-
-                // Step 1: Get access token
-                log('STEP 1', 'Getting access token...');
-                let token;
-                try {
-                    token = await getAccessToken();
-                    log('STEP 1 OK', { tokenLength: token?.length, tokenPrefix: token?.substring(0, 10) + '...' });
-                } catch (tokenErr) {
-                    log('STEP 1 FAIL', { error: tokenErr.message, stack: tokenErr.stack });
-                    throw new Error('Failed to get access token: ' + tokenErr.message);
-                }
-
-                // Step 2: Fetch task lists
-                log('STEP 2', 'Fetching task lists...');
-                const listsUrl = 'https://www.googleapis.com/tasks/v1/users/@me/lists';
-                log('STEP 2 URL', listsUrl);
-
-                let listsResponse;
-                try {
-                    listsResponse = await fetch(listsUrl, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    log('STEP 2 RESPONSE', {
-                        status: listsResponse.status,
-                        statusText: listsResponse.statusText,
-                        headers: Object.fromEntries(listsResponse.headers.entries()),
-                        ok: listsResponse.ok
-                    });
-                } catch (fetchErr) {
-                    log('STEP 2 FETCH FAIL', { error: fetchErr.message, stack: fetchErr.stack });
-                    throw new Error('Network error fetching task lists: ' + fetchErr.message);
-                }
-
-                let listsData;
-                const listsResponseText = await listsResponse.text();
-                log('STEP 2 RAW RESPONSE', listsResponseText);
-
-                try {
-                    listsData = JSON.parse(listsResponseText);
-                    log('STEP 2 PARSED', listsData);
-                } catch (parseErr) {
-                    log('STEP 2 PARSE FAIL', { error: parseErr.message, rawText: listsResponseText });
-                    throw new Error('Failed to parse task lists response: ' + listsResponseText.substring(0, 200));
-                }
-
-                if (!listsResponse.ok) {
-                    log('STEP 2 API ERROR', { status: listsResponse.status, error: listsData });
-                    throw new Error(`Task lists API returned ${listsResponse.status}: ${JSON.stringify(listsData)}`);
-                }
-
+                console.log('Adding new task:', title);
+                
+                // Get first task list
+                const listsData = await makeGoogleApiCall('https://www.googleapis.com/tasks/v1/users/@me/lists');
                 const taskList = listsData.items?.[0];
+                
                 if (!taskList) {
-                    log('STEP 2 NO LISTS', { listsData });
-                    throw new Error('No task lists found. Create a list in Google Tasks first.');
+                    throw new Error('No task lists found');
                 }
-                log('STEP 2 SELECTED LIST', { title: taskList.title, id: taskList.id });
-
-                // Step 3: Create the task
-                const createUrl = `https://www.googleapis.com/tasks/v1/lists/${taskList.id}/tasks`;
-                const createBody = JSON.stringify({ title: title });
-                const createHeaders = {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                };
-
-                log('STEP 3 REQUEST', {
+                
+                // Add new task
+                const token = await getAccessToken();
+                const response = await fetch(`https://www.googleapis.com/tasks/v1/lists/${taskList.id}/tasks`, {
                     method: 'POST',
-                    url: createUrl,
-                    headers: { ...createHeaders, 'Authorization': 'Bearer [REDACTED]' },
-                    body: createBody
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: title
+                    })
                 });
-
-                let createResponse;
-                try {
-                    createResponse = await fetch(createUrl, {
-                        method: 'POST',
-                        headers: createHeaders,
-                        body: createBody
-                    });
-                    log('STEP 3 RESPONSE STATUS', {
-                        status: createResponse.status,
-                        statusText: createResponse.statusText,
-                        ok: createResponse.ok,
-                        headers: Object.fromEntries(createResponse.headers.entries())
-                    });
-                } catch (fetchErr) {
-                    log('STEP 3 FETCH FAIL', { error: fetchErr.message, stack: fetchErr.stack });
-                    throw new Error('Network error creating task: ' + fetchErr.message);
-                }
-
-                const createResponseText = await createResponse.text();
-                log('STEP 3 RAW RESPONSE', createResponseText);
-
-                let createData;
-                try {
-                    createData = JSON.parse(createResponseText);
-                    log('STEP 3 PARSED', createData);
-                } catch (parseErr) {
-                    log('STEP 3 PARSE FAIL', { rawText: createResponseText });
-                }
-
-                if (createResponse.ok) {
-                    log('SUCCESS', { taskId: createData?.id, taskTitle: createData?.title });
-                    await loadGoogleTasks();
+                
+                if (response.ok) {
+                    console.log('Task added successfully');
+                    loadGoogleTasks(); // Refresh task list
                 } else {
-                    log('STEP 3 API ERROR', {
-                        status: createResponse.status,
-                        statusText: createResponse.statusText,
-                        responseBody: createData || createResponseText,
-                        requestUrl: createUrl,
-                        requestBody: createBody
-                    });
-
-                    // If 401, try refreshing token and retrying once
-                    if (createResponse.status === 401) {
-                        log('STEP 3 RETRY', 'Token may be expired, refreshing and retrying...');
-                        try {
-                            token = await refreshAccessToken();
-                            log('STEP 3 RETRY TOKEN', { tokenLength: token?.length });
-
-                            const retryResponse = await fetch(createUrl, {
-                                method: 'POST',
-                                headers: {
-                                    'Authorization': `Bearer ${token}`,
-                                    'Content-Type': 'application/json'
-                                },
-                                body: createBody
-                            });
-
-                            const retryText = await retryResponse.text();
-                            log('STEP 3 RETRY RESPONSE', {
-                                status: retryResponse.status,
-                                body: retryText
-                            });
-
-                            if (retryResponse.ok) {
-                                log('RETRY SUCCESS', retryText);
-                                await loadGoogleTasks();
-                                return;
-                            }
-                        } catch (retryErr) {
-                            log('STEP 3 RETRY FAIL', { error: retryErr.message });
-                        }
-                    }
-
-                    throw new Error(`Task creation failed (${createResponse.status}): ${createResponseText.substring(0, 300)}`);
+                    throw new Error(`Task addition failed: ${response.status}`);
                 }
+                
             } catch (error) {
-                log('FINAL ERROR', { message: error.message, stack: error.stack });
-                console.error('[addNewTask] Full debug log:', JSON.stringify(debugLog, null, 2));
-
-                // Show detailed error in alert for debugging
-                const lastErrors = debugLog.filter(e => e.step.includes('FAIL') || e.step.includes('ERROR'));
-                const errorDetail = lastErrors.length > 0
-                    ? lastErrors.map(e => `${e.step}: ${JSON.stringify(e.data)}`).join('\n')
-                    : error.message;
-
-                alert(`Task creation failed:\n${errorDetail}\n\nCheck browser console for full debug log.`);
-
-                // Restore tasks view
-                try { await loadGoogleTasks(); } catch(e) { /* ignore */ }
+                console.error('Task addition failed:', error);
+                alert('Failed to add task. Please try again.');
             }
         }
 
