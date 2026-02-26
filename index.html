@@ -1746,7 +1746,7 @@
                     <h2 class="section-title" onclick="window.open('https://tasks.google.com', '_blank')" style="cursor: pointer; transition: all 0.2s; border-radius: 0.5rem; padding: 0.25rem 0.5rem;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'; this.style.transform='scale(1.02)'" onmouseout="this.style.backgroundColor='transparent'; this.style.transform='scale(1)'" title="🖱️ Click to open Google Tasks">📋 Tasks</h2>
                     <div style="display: flex; align-items: center; gap: var(--space-md);">
                         <span class="last-updated" id="tasksLastUpdated"></span>
-                        <button class="refresh-btn" onclick="addGoogleTask()" style="background: #10b981; opacity: 1;" title="Add new task">+</button>
+                        <button class="refresh-btn" onclick="addGoogleTask()" style="background: #10b981; opacity: 1; font-weight: bold; font-size: 1.2rem;" title="Add new task">+</button>
                         <button class="refresh-btn" onclick="loadGoogleTasks()">↻</button>
                         <button class="refresh-btn" onclick="window.open('oauth-redirect.html', '_blank')" style="opacity: 0.5;" title="Re-authenticate">🔒</button>
                     </div>
@@ -3645,6 +3645,7 @@
             
             // Delete task function
             async function deleteTask(listId, taskId) {
+                console.log('Deleting task:', taskId, 'from list:', listId);
                 // Don't need confirmation for checkbox interaction
                 
                 try {
@@ -3657,6 +3658,7 @@
                     });
                     
                     if (response.ok || response.status === 204) {
+                        console.log('Task deleted successfully, refreshing list');
                         // Task deleted successfully, refresh the list
                         await loadGoogleTasks();
                     } else {
@@ -3677,9 +3679,11 @@
             
             // Add new Google Task
             async function addGoogleTask() {
+                console.log('Add task button clicked');
                 try {
                     const taskTitle = await showInputModal('Add New Task', 'Enter task title:', 'e.g., Review trading strategy');
                     if (!taskTitle) return;
+                    console.log('Task title entered:', taskTitle);
                     
                     const token = await getAccessToken();
                     
