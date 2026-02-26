@@ -2465,7 +2465,7 @@
                     <div class="habit-wrapper">
                         <div class="habit-item">
                             <div class="habit-checkbox ${habit.completed ? 'checked' : ''}" 
-                                onclick="toggleHabit('${goalId}', '${habit.id}')"></div>
+                                onclick="toggleHabit('${goalId}', '${habit.id}', this)"></div>
                             <div style="flex: 1;">
                                 <div class="habit-header-row">
                                     <div class="habit-name" onclick="openHabitModal('${goalId}', '${habit.id}')" style="cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#00ff00'" onmouseout="this.style.color=''">${habit.name}</div>
@@ -2664,7 +2664,7 @@
         }
 
         // Toggle habit
-        function toggleHabit(goalId, habitId) {
+        function toggleHabit(goalId, habitId, clickedElement) {
             const goal = state.goals.find(g => g.id === goalId);
             if (goal) {
                 const habit = goal.habits.find(h => h.id === habitId);
@@ -2699,18 +2699,14 @@
                         }
                     }
                     
-                    // Immediate visual feedback - find and update the specific checkbox instantly
-                    const checkboxes = document.querySelectorAll('.habit-checkbox');
-                    checkboxes.forEach(checkbox => {
-                        const onclickStr = checkbox.getAttribute('onclick');
-                        if (onclickStr && onclickStr.includes(goalId) && onclickStr.includes(habitId)) {
-                            if (habit.completed) {
-                                checkbox.classList.add('checked');
-                            } else {
-                                checkbox.classList.remove('checked');
-                            }
+                    // Immediate visual feedback - update the clicked element instantly
+                    if (clickedElement) {
+                        if (habit.completed) {
+                            clickedElement.classList.add('checked');
+                        } else {
+                            clickedElement.classList.remove('checked');
                         }
-                    });
+                    }
                     
                     saveState();
                     renderAll();
