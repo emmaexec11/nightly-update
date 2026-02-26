@@ -3695,17 +3695,16 @@
                 container.innerHTML = '<div class="loading">Loading calendar...</div>';
                 
                 try {
-                    // Show tomorrow by default, or next 7 days if expanded
+                    // Show today + next 2 days = 3 days total
                     const now = new Date();
-                    const tomorrow = new Date();
-                    tomorrow.setDate(tomorrow.getDate() + 1);
-                    tomorrow.setHours(0, 0, 0, 0);
+                    const startDate = new Date();
+                    startDate.setHours(0, 0, 0, 0);
                     
                     const endDate = new Date();
-                    endDate.setDate(endDate.getDate() + 4); // Show next 3 days
-                    endDate.setHours(0, 0, 0, 0);
+                    endDate.setDate(endDate.getDate() + 3); // Today + 2 more days
+                    endDate.setHours(23, 59, 59, 999);
                     
-                    const timeMinStr = tomorrow.toISOString();
+                    const timeMinStr = startDate.toISOString();
                     const timeMaxStr = endDate.toISOString();
                     
                     // Calendar IDs (Devon's and Emma's calendars)
@@ -3720,7 +3719,7 @@
                     for (const calendarId of calendars) {
                         try {
                             const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?timeMin=${timeMinStr}&timeMax=${timeMaxStr}&singleEvents=true&orderBy=startTime`;
-                            const data = await makeApiCall(url);
+                            const data = await makeGoogleApiCall(url);
                             allEvents = allEvents.concat(data.items || []);
                         } catch (error) {
                             console.error(`Failed to load calendar ${calendarId}:`, error.message);
@@ -3757,7 +3756,7 @@
                     // Create HTML for tomorrow only or next 7 days if expanded
                     let html = '';
                     const daysToShow = 3; // Always show 3 days
-                    for (let i = 1; i <= daysToShow; i++) {
+                    for (let i = 0; i < daysToShow; i++) {
                         const currentDate = new Date();
                         currentDate.setDate(currentDate.getDate() + i);
                         const dayKey = currentDate.toDateString();
