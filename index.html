@@ -2438,6 +2438,8 @@
             
             // Filter habits to only show those scheduled for today
             const todaysHabits = goal.habits.filter(habit => {
+                // Ensure habit has proper initialization before filtering
+                initializeHabitHistory(habit);
                 return isHabitScheduledForDate(habit, today);
             });
             
