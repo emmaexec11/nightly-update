@@ -3461,6 +3461,87 @@
             }
         }
 
+        // Global Google Tasks functions (must be global for onclick handlers)
+        async function addGoogleTask() {
+            console.log('Add task button clicked');
+            try {
+                const taskTitle = await showInputModal('Add New Task', 'Enter task title:', 'e.g., Review trading strategy');
+                if (!taskTitle) return;
+                console.log('Task title entered:', taskTitle);
+                
+                const token = await getAccessToken();
+                
+                // Get the first task list (usually "My Tasks")
+                const listsResponse = await fetch(`https://www.googleapis.com/tasks/v1/users/@me/lists`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (!listsResponse.ok) {
+                    throw new Error(`Failed to get task lists: ${listsResponse.status}`);
+                }
+                
+                const listsData = await listsResponse.json();
+                const defaultList = listsData.items && listsData.items[0];
+                
+                if (!defaultList) {
+                    throw new Error('No task lists found');
+                }
+                
+                // Create the task
+                const createResponse = await fetch(`https://www.googleapis.com/tasks/v1/lists/${defaultList.id}/tasks`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: taskTitle
+                    })
+                });
+                
+                if (createResponse.ok) {
+                    // Task created successfully, refresh the list
+                    await loadGoogleTasks();
+                    console.log('Task created successfully');
+                } else {
+                    throw new Error(`Failed to create task: ${createResponse.status}`);
+                }
+            } catch (error) {
+                console.error('Add task error:', error);
+                alert('Failed to add task. Please check your authentication and try again.');
+            }
+        }
+
+        async function deleteTask(listId, taskId) {
+            console.log('Deleting task:', taskId, 'from list:', listId);
+            try {
+                const token = await getAccessToken();
+                const response = await fetch(`https://www.googleapis.com/tasks/v1/lists/${listId}/tasks/${taskId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok || response.status === 204) {
+                    console.log('Task deleted successfully, refreshing list');
+                    await loadGoogleTasks();
+                } else {
+                    console.error('Failed to delete task:', response.status);
+                    alert('Failed to delete task. Try re-authenticating.');
+                    const checkbox = document.querySelector(`[data-task-id="${taskId}"] .task-checkbox`);
+                    if (checkbox) checkbox.checked = false;
+                }
+            } catch (error) {
+                console.error('Delete task error:', error);
+                alert('Error deleting task. Please try again.');
+                const checkbox = document.querySelector(`[data-task-id="${taskId}"] .task-checkbox`);
+                if (checkbox) checkbox.checked = false;
+            }
+        }
+
         // Save journal on change
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('questJournal').addEventListener('input', (e) => {
@@ -3640,93 +3721,6 @@
                     setTimeout(() => {
                         tasksUpdated.textContent = 'Updated 1m ago';
                     }, 60000);
-                }
-            }
-            
-            // Delete task function
-            async function deleteTask(listId, taskId) {
-                console.log('Deleting task:', taskId, 'from list:', listId);
-                // Don't need confirmation for checkbox interaction
-                
-                try {
-                    const token = await getAccessToken();
-                    const response = await fetch(`https://www.googleapis.com/tasks/v1/lists/${listId}/tasks/${taskId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-                    
-                    if (response.ok || response.status === 204) {
-                        console.log('Task deleted successfully, refreshing list');
-                        // Task deleted successfully, refresh the list
-                        await loadGoogleTasks();
-                    } else {
-                        console.error('Failed to delete task:', response.status);
-                        alert('Failed to delete task. Try re-authenticating.');
-                        // Uncheck the box
-                        const checkbox = document.querySelector(`[data-task-id="${taskId}"] .task-checkbox`);
-                        if (checkbox) checkbox.checked = false;
-                    }
-                } catch (error) {
-                    console.error('Delete task error:', error);
-                    alert('Error deleting task. Please try again.');
-                    // Uncheck the box
-                    const checkbox = document.querySelector(`[data-task-id="${taskId}"] .task-checkbox`);
-                    if (checkbox) checkbox.checked = false;
-                }
-            }
-            
-            // Add new Google Task
-            async function addGoogleTask() {
-                console.log('Add task button clicked');
-                try {
-                    const taskTitle = await showInputModal('Add New Task', 'Enter task title:', 'e.g., Review trading strategy');
-                    if (!taskTitle) return;
-                    console.log('Task title entered:', taskTitle);
-                    
-                    const token = await getAccessToken();
-                    
-                    // Get the first task list (usually "My Tasks")
-                    const listsResponse = await fetch(`https://www.googleapis.com/tasks/v1/users/@me/lists`, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-                    
-                    if (!listsResponse.ok) {
-                        throw new Error(`Failed to get task lists: ${listsResponse.status}`);
-                    }
-                    
-                    const listsData = await listsResponse.json();
-                    const defaultList = listsData.items && listsData.items[0];
-                    
-                    if (!defaultList) {
-                        throw new Error('No task lists found');
-                    }
-                    
-                    // Create the task
-                    const createResponse = await fetch(`https://www.googleapis.com/tasks/v1/lists/${defaultList.id}/tasks`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            title: taskTitle
-                        })
-                    });
-                    
-                    if (createResponse.ok) {
-                        // Task created successfully, refresh the list
-                        await loadGoogleTasks();
-                        console.log('Task created successfully');
-                    } else {
-                        throw new Error(`Failed to create task: ${createResponse.status}`);
-                    }
-                } catch (error) {
-                    console.error('Add task error:', error);
-                    alert('Failed to add task. Please check your authentication and try again.');
                 }
             }
             
