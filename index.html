@@ -1748,7 +1748,7 @@
                     <h2 class="section-title" onclick="window.open('https://tasks.google.com', '_blank')" style="cursor: pointer; transition: all 0.2s; border-radius: 0.5rem; padding: 0.25rem 0.5rem;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'; this.style.transform='scale(1.02)'" onmouseout="this.style.backgroundColor='transparent'; this.style.transform='scale(1)'" title="&#128433; Click to open Google Tasks">&#128203; Tasks</h2>
                     <div style="display: flex; align-items: center; gap: var(--space-md);">
                         <span class="last-updated" id="tasksLastUpdated"></span>
-                        <button class="refresh-btn" onclick="showAddTaskModal()" style="background: #10b981; opacity: 1; font-weight: bold; font-size: 1.2rem;" title="Add new task">+</button>
+                        <button class="refresh-btn" onclick="showAddTaskModal(); return false;" style="background: #10b981; opacity: 1; font-weight: bold; font-size: 1.2rem; cursor: pointer; user-select: none;" title="Add new task">+</button>
                         <button class="refresh-btn" onclick="loadGoogleTasks()">&#128260;</button>
                         <button class="refresh-btn" onclick="window.open('oauth-redirect.html', '_blank')" style="opacity: 0.5;" title="Re-authenticate">&#128274;</button>
                     </div>
@@ -3522,27 +3522,50 @@
 
         // Global Google Tasks functions (must be global for onclick handlers)
         function showAddTaskModal() {
-            const taskTitle = prompt('Enter new task title:');
-            if (taskTitle && taskTitle.trim()) {
-                addNewTask(taskTitle.trim());
+            try {
+                console.log('Add task button clicked');
+                const taskTitle = prompt('Enter new task title:');
+                console.log('Task title entered:', taskTitle);
+                
+                if (taskTitle && taskTitle.trim()) {
+                    console.log('Calling addNewTask with:', taskTitle.trim());
+                    addNewTask(taskTitle.trim());
+                } else {
+                    console.log('No task title provided or empty');
+                }
+            } catch (error) {
+                console.error('Error in showAddTaskModal:', error);
+                alert('Error showing add task dialog: ' + error.message);
             }
         }
 
         async function addNewTask(title) {
             try {
-                console.log('Adding new task:', title);
+                console.log('Starting addNewTask with title:', title);
                 
+                // Show loading state
+                const tasksContainer = document.getElementById('tasksContainer');
+                const originalContent = tasksContainer.innerHTML;
+                tasksContainer.innerHTML = '<div class="loading">Adding task...</div>';
                 
                 // Get first task list
+                console.log('Fetching task lists...');
                 const listsData = await makeGoogleApiCall('https://www.googleapis.com/tasks/v1/users/@me/lists');
+                console.log('Lists data received:', listsData);
+                
                 const taskList = listsData.items?.[0];
                 
                 if (!taskList) {
-                    throw new Error('No task lists found');
+                    throw new Error('No task lists found. Please create a task list in Google Tasks first.');
                 }
                 
+                console.log('Using task list:', taskList.title, taskList.id);
+                
                 // Add new task
+                console.log('Getting access token...');
                 const token = await getAccessToken();
+                console.log('Token obtained, making API call...');
+                
                 const response = await fetch(`https://www.googleapis.com/tasks/v1/lists/${taskList.id}/tasks`, {
                     method: 'POST',
                     headers: {
@@ -3554,15 +3577,41 @@
                     })
                 });
                 
+                console.log('API response status:', response.status);
+                
                 if (response.ok) {
-                    console.log('Task added successfully');
-                    loadGoogleTasks(); // Refresh task list
+                    const newTask = await response.json();
+                    console.log('Task added successfully:', newTask);
+                    alert(`Task "${title}" added successfully!`);
+                    
+                    // Refresh task list
+                    console.log('Refreshing task list...');
+                    loadGoogleTasks(); 
                 } else {
-                    throw new Error(`Task addition failed: ${response.status}`);
+                    const errorText = await response.text();
+                    console.error('API error response:', errorText);
+                    throw new Error(`Task addition failed: ${response.status} - ${errorText}`);
                 }
             } catch (error) {
                 console.error('Failed to add task:', error);
-                alert('Failed to add task. Please re-authenticate if needed.');
+                
+                // Restore original content
+                const tasksContainer = document.getElementById('tasksContainer');
+                if (tasksContainer) {
+                    tasksContainer.innerHTML = originalContent || '<div class="loading">Loading tasks...</div>';
+                }
+                
+                // Show detailed error message
+                if (error.message.includes('401') || error.message.includes('unauthorized')) {
+                    alert('Authentication expired. Please re-authenticate by clicking the lock icon.');
+                } else if (error.message.includes('403') || error.message.includes('forbidden')) {
+                    alert('Permission denied. Please ensure Google Tasks access is enabled.');
+                } else {
+                    alert(`Failed to add task: ${error.message}`);
+                }
+                
+                // Re-load tasks to restore state
+                loadGoogleTasks();
             }
         }
 
