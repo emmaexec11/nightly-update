@@ -3625,53 +3625,14 @@
                 clearTimeout(timeoutId);
                 
                 if (response.ok) {
-                    const newTask = await response.json();
-                    console.log('Task added successfully:', newTask);
-                    
-                    // Show brief success message in task area
-                    tasksContainer.innerHTML = '<div style="color: #10b981; padding: 1rem; text-align: center;">✅ Task added successfully!</div>';
-                    
-                    // Refresh task list after brief delay
-                    setTimeout(() => {
-                        console.log('Refreshing task list...');
-                        loadGoogleTasks(); 
-                    }, 1000);
+                    console.log('Task added successfully');
+                    loadGoogleTasks(); // Refresh task list immediately like morning routine
                 } else {
-                    const errorText = await response.text();
-                    console.error('API error response:', errorText);
-                    throw new Error(`Task addition failed: ${response.status} - ${errorText}`);
+                    throw new Error(`Task addition failed: ${response.status}`);
                 }
             } catch (error) {
-                console.error('Failed to add task:', error);
-                
-                // Clear timeout
-                if (timeoutId) clearTimeout(timeoutId);
-                
-                // Restore original content immediately
-                const tasksContainer = document.getElementById('tasksContainer');
-                if (tasksContainer) {
-                    tasksContainer.innerHTML = originalContent || '<div class="loading">Loading tasks...</div>';
-                }
-                
-                // Show user-friendly error message
-                let errorMessage = 'Failed to add task';
-                if (error.message.includes('timeout') || error.message.includes('taking too long')) {
-                    errorMessage = 'Request timed out. Please try again or check your connection.';
-                } else if (error.message.includes('401') || error.message.includes('unauthorized')) {
-                    errorMessage = 'Authentication expired. Please re-authenticate by clicking the lock icon.';
-                } else if (error.message.includes('403') || error.message.includes('forbidden')) {
-                    errorMessage = 'Permission denied. Please ensure Google Tasks access is enabled.';
-                } else if (error.message.includes('network') || error.message.includes('fetch')) {
-                    errorMessage = 'Network error. Please check your internet connection and try again.';
-                }
-                
-                // Show error in task area temporarily
-                tasksContainer.innerHTML = `<div style="color: #ef4444; padding: 1rem; text-align: center;">❌ ${errorMessage}</div>`;
-                
-                // Restore normal view after delay
-                setTimeout(() => {
-                    loadGoogleTasks();
-                }, 3000);
+                console.error('Task addition failed:', error);
+                alert('Failed to add task. Please try again.');
             }
         }
 
@@ -3760,10 +3721,10 @@
                             'Content-Type': 'application/x-www-form-urlencoded',
                         },
                         body: new URLSearchParams({
-                            'client_id': GOOGLE_CONFIG.client_id,
-                            'client_secret': GOOGLE_CONFIG.client_secret,
-                            'refresh_token': GOOGLE_CONFIG.refresh_token,
-                            'grant_type': 'refresh_token'
+                            client_id: GOOGLE_CONFIG.client_id,
+                            client_secret: GOOGLE_CONFIG.client_secret,
+                            refresh_token: GOOGLE_CONFIG.refresh_token,
+                            grant_type: 'refresh_token'
                         })
                     });
                     
