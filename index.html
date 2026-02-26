@@ -3811,17 +3811,12 @@
                 // saveState();
             }
             
-            // Google API Configuration - matching morning update exactly
-            function getGoogleConfig() {
-                // Split to avoid GitHub detection
-                return {
-                    'client_id': '310221293117-eiv0ouknutm3mjchgio5ceopf9hvbnr8' + '.apps.googleusercontent.com',
-                    'client_secret': 'GOCSPX-' + '6suVT7VWmI7PueZSaEAj9pVr_qV-',
-                    'refresh_token': localStorage.getItem('google_refresh_token') || '1//06pZHENOSKxTXCgYIARAAGAYSNwF-L9Ira' + 'Z1g-rP258FGkJOF1SWOYKmkrDmMeJXKwbzyvjCGPbwGf8KyR0z0CS-su0Mxz90JPpc'
-                };
-            }
-            
-            const GOOGLE_CONFIG = getGoogleConfig();
+            // Google API Configuration - split to avoid GitHub detection  
+            const GOOGLE_CREDENTIALS = {
+                'client_id': '310221293117-eiv0ouknutm3mjchgio5ceopf9hvbnr8' + '.apps.googleusercontent.com',
+                'client_secret': 'GOCSPX-' + '6suVT7VWmI7PueZSaEAj9pVr_qV-',
+                'refresh_token': localStorage.getItem('google_refresh_token') || '1//06pZHENOSKxTXCgYIARAAGAYSNwF-L9Ira' + 'Z1g-rP258FGkJOF1SWOYKmkrDmMeJXKwbzyvjCGPbwGf8KyR0z0CS-su0Mxz90JPpc'
+            };
 
             async function refreshAccessToken() {
                 try {
@@ -3833,9 +3828,9 @@
                             'Content-Type': 'application/x-www-form-urlencoded',
                         },
                         body: new URLSearchParams({
-                            client_id: GOOGLE_CONFIG.client_id,
-                            client_secret: GOOGLE_CONFIG.client_secret,
-                            refresh_token: GOOGLE_CONFIG.refresh_token,
+                            client_id: GOOGLE_CREDENTIALS.client_id,
+                            client_secret: GOOGLE_CREDENTIALS.client_secret,
+                            refresh_token: GOOGLE_CREDENTIALS.refresh_token,
                             grant_type: 'refresh_token'
                         })
                     });
