@@ -2699,12 +2699,35 @@
                         }
                     }
                     
-                    // Immediate visual feedback - update the clicked element instantly
+                    // Immediate visual feedback - update checkbox and progress bar instantly
                     if (clickedElement) {
                         if (habit.completed) {
                             clickedElement.classList.add('checked');
                         } else {
                             clickedElement.classList.remove('checked');
+                        }
+                        
+                        // Find and immediately update the progress bar for this habit
+                        const habitItem = clickedElement.closest('.habit-item');
+                        if (habitItem) {
+                            const progressBar = habitItem.querySelector('.progress-bar');
+                            const progressText = habitItem.querySelector('.progress-text');
+                            
+                            if (progressBar && progressText) {
+                                const newProgress = calculateHabitProgress(habit);
+                                progressBar.style.width = newProgress + '%';
+                                progressText.textContent = newProgress + '%';
+                                
+                                // Update color class
+                                progressBar.className = 'progress-bar';
+                                if (newProgress >= 80) {
+                                    progressBar.classList.add('high');
+                                } else if (newProgress >= 50) {
+                                    progressBar.classList.add('medium');
+                                } else {
+                                    progressBar.classList.add('low');
+                                }
+                            }
                         }
                     }
                     
