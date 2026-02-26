@@ -3695,13 +3695,14 @@
                 container.innerHTML = '<div class="loading">Loading calendar...</div>';
                 
                 try {
-                    // Show today + next 2 days = 3 days total
+                    // Show tomorrow + next 2 days = 3 days total
                     const now = new Date();
                     const startDate = new Date();
+                    startDate.setDate(startDate.getDate() + 1); // Start from tomorrow
                     startDate.setHours(0, 0, 0, 0);
                     
                     const endDate = new Date();
-                    endDate.setDate(endDate.getDate() + 3); // Today + 2 more days
+                    endDate.setDate(endDate.getDate() + 4); // Tomorrow + 2 more days
                     endDate.setHours(23, 59, 59, 999);
                     
                     const timeMinStr = startDate.toISOString();
@@ -3769,7 +3770,7 @@
                     // Create HTML for tomorrow only or next 7 days if expanded
                     let html = '';
                     const daysToShow = 3; // Always show 3 days
-                    for (let i = 0; i < daysToShow; i++) {
+                    for (let i = 1; i <= daysToShow; i++) {
                         const currentDate = new Date();
                         currentDate.setDate(currentDate.getDate() + i);
                         const dayKey = currentDate.toDateString();
