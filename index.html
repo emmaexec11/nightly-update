@@ -2638,16 +2638,23 @@
                 const habitName = await showInputModal('Add New Habit', 'Habit name:', 'e.g., Review Trading Charts');
                 if (habitName) {
                     if (!goal.habits) goal.habits = [];
+                    // Build 30 days of retroactive completed history
+                    const retroHistory = [];
+                    for (let i = 29; i >= 0; i--) {
+                        const d = new Date();
+                        d.setDate(d.getDate() - i);
+                        retroHistory.push({
+                            date: d.toISOString().split('T')[0],
+                            completed: true
+                        });
+                    }
                     const newHabit = {
                         id: Date.now().toString(),
                         name: habitName,
-                        completed: false,
+                        completed: true,
                         frequency: 'daily',
                         notes: '',
-                        history: [{
-                            date: new Date().toISOString().split('T')[0],
-                            completed: false
-                        }]
+                        history: retroHistory
                     };
                     goal.habits.push(newHabit);
                     saveState();
