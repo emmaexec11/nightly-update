@@ -3470,6 +3470,7 @@
                 console.log('Task title entered:', taskTitle);
                 
                 const token = await getAccessToken();
+                console.log('Using access token (first 20 chars):', token ? token.substring(0, 20) : 'none');
                 
                 // Get the first task list (usually "My Tasks")
                 const listsResponse = await fetch(`https://www.googleapis.com/tasks/v1/users/@me/lists`, {
@@ -3506,11 +3507,20 @@
                     await loadGoogleTasks();
                     console.log('Task created successfully');
                 } else {
-                    throw new Error(`Failed to create task: ${createResponse.status}`);
+                    const errorText = await createResponse.text();
+                    console.error('API Error Response:', errorText);
+                    throw new Error(`Failed to create task: ${createResponse.status} - ${errorText}`);
                 }
             } catch (error) {
                 console.error('Add task error:', error);
-                alert('Failed to add task. Please check your authentication and try again.');
+                console.error('Full error details:', error.message);
+                
+                // Debug info
+                const storedRefreshToken = localStorage.getItem('google_refresh_token');
+                console.log('Stored refresh token exists:', !!storedRefreshToken);
+                console.log('Stored refresh token (first 20 chars):', storedRefreshToken ? storedRefreshToken.substring(0, 20) : 'none');
+                
+                alert(`Failed to add task: ${error.message}\n\nCheck console for details. You may need to re-authenticate.`);
             }
         }
 
