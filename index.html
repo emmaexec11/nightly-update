@@ -3754,13 +3754,7 @@
                 // saveState();
             }
             
-        // Google API Functions
-        // Auto-refreshing OAuth token system with localStorage persistence
-        const GOOGLE_CREDENTIALS = {
-            'client_id': '310221293117-eiv0ouknutm3mjchgio5ceopf9hvbnr8' + '.apps.googleusercontent.com',
-            'client_secret': 'GOCSPX-' + '6suVT7VWmI7PueZSaEAj9pVr_qV-',
-            'refresh_token': localStorage.getItem('google_refresh_token') || '1//06pZHENOSKxTXCgYIARAAGAYSNwF-L9Ira' + 'Z1g-rP258FGkJOF1SWOYKmkrDmMeJXKwbzyvjCGPbwGf8KyR0z0CS-su0Mxz90JPpc'
-        };
+        // Google API Functions (using global GOOGLE_CREDENTIALS from top)
 
         // GLOBAL SCOPE: Google Authentication Functions (moved from nested scope)
         async function refreshAccessToken() {
