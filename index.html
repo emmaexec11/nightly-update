@@ -3196,6 +3196,14 @@
                 console.log('Marked as completed (green)');
             }
             
+            // SYNC: If this is today, update the main habit checkbox too
+            const today = new Date().toISOString().split('T')[0];
+            if (dateStr === today) {
+                const todayEntry = habit.history.find(h => h.date === today);
+                habit.completed = todayEntry ? todayEntry.completed : false;
+                console.log('Synced main habit checkbox for today:', habit.completed);
+            }
+            
             saveState();
             
             // Update success rate and streak FIRST
