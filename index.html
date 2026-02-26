@@ -2223,45 +2223,42 @@
             return colors[category] || '#a855f7';
         }
 
-        // Calculate habit progress with bonus points
+        // Calculate habit progress: starts at 100%, only drops for missed days
         function calculateHabitProgress(habit) {
             if (!habit.history || habit.history.length === 0) {
                 return 100; // New habits start at 100%
             }
-            
-            // Get last 30 days
+
+            // Focus on recent performance (last 7 days, excluding today)
             const today = new Date();
-            const thirtyDaysAgo = new Date(today);
-            thirtyDaysAgo.setDate(today.getDate() - 30);
-            
+            const todayStr = today.toISOString().split('T')[0];
+            const sevenDaysAgo = new Date(today);
+            sevenDaysAgo.setDate(today.getDate() - 7);
+
+            let missedDays = 0;
             let scheduledDays = 0;
-            let completedScheduled = 0;
-            let bonusDays = 0;
-            
-            // Calculate for each day in the last 30 days
-            for (let d = new Date(thirtyDaysAgo); d <= today; d.setDate(d.getDate() + 1)) {
+
+            // Count missed scheduled days in the last 7 days (not including today)
+            for (let d = new Date(sevenDaysAgo); d < today; d.setDate(d.getDate() + 1)) {
                 const dateStr = d.toISOString().split('T')[0];
+                if (dateStr === todayStr) continue; // Don't penalize today
                 const isScheduled = isHabitScheduledForDate(habit, d);
-                const entry = habit.history.find(h => h.date === dateStr);
-                
-                if (isScheduled && d <= today) {
+
+                if (isScheduled) {
                     scheduledDays++;
-                    if (entry?.completed) {
-                        completedScheduled++;
+                    const entry = habit.history.find(h => h.date === dateStr);
+                    if (!entry || !entry.completed) {
+                        missedDays++;
                     }
-                } else if (entry?.completed) {
-                    // Completed on unscheduled day = bonus!
-                    bonusDays++;
                 }
             }
-            
-            // Base score from scheduled days
-            const baseScore = scheduledDays > 0 ? (completedScheduled / scheduledDays) * 100 : 0;
-            
-            // Bonus points: 2% extra per bonus day (max 20% bonus)
-            const bonusScore = Math.min(bonusDays * 2, 20);
-            
-            return Math.round(Math.min(baseScore + bonusScore, 100));
+
+            // No scheduled days in recent period = 100%
+            if (scheduledDays === 0) return 100;
+
+            // Gentler penalty: lose 10% per missed day in recent week
+            const penalty = (missedDays / scheduledDays) * 60; // Max 60% penalty
+            return Math.round(Math.max(100 - penalty, 40)); // Never below 40%
         }
 
         // Calculate goal progress
