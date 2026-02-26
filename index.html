@@ -3746,10 +3746,18 @@
                         return aTime - bTime;
                     });
                     
-                    // Group events by day
+                    // Group events by day (fix timezone for PST)
                     const eventsByDay = {};
                     filteredEvents.forEach(event => {
-                        const eventDate = new Date(event.start?.dateTime || event.start?.date);
+                        let eventDate;
+                        if (event.start.date) {
+                            // All-day event - just use the date part, don't parse as UTC
+                            const [year, month, day] = event.start.date.split('-');
+                            eventDate = new Date(year, month - 1, day); // month is 0-based
+                        } else {
+                            // Timed event - use dateTime
+                            eventDate = new Date(event.start.dateTime);
+                        }
                         const dayKey = eventDate.toDateString();
                         console.log(`Event "${event.summary}" - Raw: ${event.start?.dateTime || event.start?.date} - Parsed: ${dayKey}`);
                         if (!eventsByDay[dayKey]) {
