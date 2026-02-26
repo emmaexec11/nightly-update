@@ -2110,6 +2110,195 @@
             }
         }
 
+        // GLOBAL: Google Tasks and Calendar functions (moved from DOMContentLoaded)
+        async function loadGoogleTasks() {
+            const container = document.getElementById('tasksContainer');
+            container.innerHTML = '<div class="loading">Loading tasks...</div>';
+            
+            try {
+                const timestamp = new Date().getTime();
+                const listsData = await makeGoogleApiCall(`https://www.googleapis.com/tasks/v1/users/@me/lists?_=${timestamp}`);
+                
+                let allTasks = [];
+                
+                for (const taskList of listsData.items || []) {
+                    const tasksData = await makeGoogleApiCall(`https://www.googleapis.com/tasks/v1/lists/${taskList.id}/tasks?_=${timestamp}`);
+                    
+                    if (tasksData.items) {
+                        const incompleteTasks = tasksData.items.filter(task => 
+                            task.status !== 'completed' && task.title
+                        );
+                        
+                        allTasks = allTasks.concat(incompleteTasks.map(task => ({
+                            ...task,
+                            listName: taskList.title,
+                            listId: taskList.id
+                        })));
+                    }
+                }
+                
+                if (allTasks.length === 0) {
+                    container.innerHTML = '<div class="no-items">No active tasks</div>';
+                } else {
+                    container.innerHTML = allTasks.map(task => `
+                        <div class="task-item" data-task-id="${task.id}" data-list-id="${task.listId}">
+                            <div style="flex: 1;">
+                                <div class="task-title">${task.title}</div>
+                                <div class="task-list-name">${task.listName}</div>
+                            </div>
+                            <input type="checkbox" class="task-checkbox" onchange="if(this.checked) deleteTask('${task.id}', '${task.listId}')" title="Check to complete">
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Failed to load tasks:', error);
+                container.innerHTML = '<div class="no-items">Unable to load tasks - <a href="oauth-redirect.html" target="_blank" style="color: #60a5fa; text-decoration: underline;">re-authenticate</a></div>';
+            }
+            
+            // Update last updated time
+            const tasksUpdated = document.getElementById('tasksLastUpdated');
+            if (tasksUpdated) {
+                tasksUpdated.textContent = 'Updated just now';
+                tasksUpdated.classList.add('visible');
+                
+                setTimeout(() => {
+                    tasksUpdated.textContent = 'Updated 1m ago';
+                }, 60000);
+            }
+        }
+
+        async function loadGoogleCalendar() {
+            const container = document.getElementById('calendarContainer');
+            container.innerHTML = '<div class="loading">Loading calendar...</div>';
+            
+            try {
+                const now = new Date();
+                const tomorrow = new Date(now);
+                tomorrow.setDate(now.getDate() + 1);
+                tomorrow.setHours(0, 0, 0, 0);
+                
+                const endDate = new Date(tomorrow);
+                endDate.setDate(endDate.getDate() + 2); // 3 days total
+                endDate.setHours(23, 59, 59, 999);
+                
+                const timeMinStr = tomorrow.toISOString();
+                const timeMaxStr = endDate.toISOString();
+                console.log('Loading calendars: [primary, emma.exec.11@gmail.com]');
+                
+                const calendars = ['primary', 'emma.exec.11@gmail.com'];
+                let allEvents = [];
+                
+                for (const calendarId of calendars) {
+                    try {
+                        const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?timeMin=${timeMinStr}&timeMax=${timeMaxStr}&singleEvents=true&orderBy=startTime`;
+                        const data = await makeGoogleApiCall(url);
+                        allEvents = allEvents.concat(data.items || []);
+                    } catch (error) {
+                        console.error(`Failed to load calendar ${calendarId}:`, error.message);
+                    }
+                }
+                
+                console.log(`Found ${allEvents.length} total events across all calendars`);
+                
+                // Filter routine events
+                const excludeKeywords = [
+                    'morning routine', 'power hour', 'workout', 'lunch', 'dinner', 
+                    'breakfast', 'evening routine', 'sleep', 'work block', 'focus time',
+                    'break', 'commute', 'daily', 'recurring'
+                ];
+                
+                const filteredEvents = allEvents.filter(event => {
+                    const summary = (event.summary || '').toLowerCase();
+                    return !excludeKeywords.some(keyword => summary.includes(keyword));
+                });
+                
+                // Group events by date
+                const eventsByDate = {};
+                filteredEvents.forEach(event => {
+                    let eventDate;
+                    if (event.start.date) {
+                        eventDate = new Date(event.start.date + 'T00:00:00');
+                    } else if (event.start.dateTime) {
+                        const utcDate = new Date(event.start.dateTime);
+                        eventDate = new Date(utcDate.toLocaleString("en-US", {timeZone: "America/Los_Angeles"}));
+                    } else {
+                        return;
+                    }
+                    
+                    const dateStr = eventDate.toDateString();
+                    if (!eventsByDate[dateStr]) {
+                        eventsByDate[dateStr] = [];
+                    }
+                    eventsByDate[dateStr].push(event);
+                });
+                
+                // Generate display
+                let html = '';
+                
+                for (let i = 1; i <= 3; i++) {
+                    const date = new Date(tomorrow);
+                    date.setDate(date.getDate() + (i - 1));
+                    const dateStr = date.toDateString();
+                    const displayDate = date.toLocaleDateString('en-US', { 
+                        weekday: 'long', 
+                        month: 'short', 
+                        day: 'numeric' 
+                    });
+                    
+                    console.log(`Looking for events on: ${date.toDateString()} (displaying as: ${displayDate})`);
+                    
+                    const events = eventsByDate[dateStr] || [];
+                    
+                    html += `<div style="margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">`;
+                    html += `<div style="color: #60a5fa; font-weight: 600; margin-bottom: 0.25rem;">${displayDate}</div>`;
+                    
+                    if (events.length === 0) {
+                        html += `<div style="color: rgba(255,255,255,0.5); font-style: italic; font-size: 0.9rem;">No events</div>`;
+                    } else {
+                        events.forEach(event => {
+                            const title = event.summary || 'Untitled';
+                            let timeStr = '';
+                            
+                            if (event.start.dateTime) {
+                                const startTime = new Date(event.start.dateTime);
+                                timeStr = startTime.toLocaleTimeString('en-US', { 
+                                    hour: 'numeric', 
+                                    minute: '2-digit',
+                                    timeZone: 'America/Los_Angeles'
+                                });
+                            } else {
+                                timeStr = 'All day';
+                            }
+                            
+                            html += `<div style="margin-bottom: 0.25rem; font-size: 0.9rem;">`;
+                            html += `<span style="color: #a78bfa; font-size: 0.8rem;">${timeStr}</span> `;
+                            html += `<span style="color: rgba(255,255,255,0.9);">${title}</span>`;
+                            html += `</div>`;
+                        });
+                    }
+                    
+                    html += `</div>`;
+                }
+                
+                container.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Failed to load calendar:', error);
+                container.innerHTML = `
+                    <div style="color: #ff6b6b; font-size: 0.9rem;">
+                        Unable to load calendar - <a href="oauth-redirect.html" style="color: #60a5fa; text-decoration: underline;">re-authenticate</a>
+                    </div>
+                `;
+            }
+            
+            // Update timestamp
+            const calendarUpdated = document.getElementById('calendarLastUpdated');
+            if (calendarUpdated) {
+                calendarUpdated.textContent = 'Updated just now';
+                calendarUpdated.classList.add('visible');
+            }
+        }
+
         // Initialize
         function init() {
             loadState();
@@ -3842,217 +4031,6 @@
             }
         }
 
-            // Google Tasks API
-            async function loadGoogleTasks() {
-                const container = document.getElementById('tasksContainer');
-                container.innerHTML = '<div class="loading">Loading tasks...</div>';
-                
-                try {
-                    const timestamp = new Date().getTime();
-                    const listsData = await makeGoogleApiCall(`https://www.googleapis.com/tasks/v1/users/@me/lists?_=${timestamp}`);
-                    
-                    let allTasks = [];
-                    
-                    for (const taskList of listsData.items || []) {
-                        const tasksData = await makeGoogleApiCall(`https://www.googleapis.com/tasks/v1/lists/${taskList.id}/tasks?_=${timestamp}`);
-                        
-                        if (tasksData.items) {
-                            const incompleteTasks = tasksData.items.filter(task => 
-                                task.status !== 'completed' && task.title
-                            );
-                            
-                            allTasks = allTasks.concat(incompleteTasks.map(task => ({
-                                ...task,
-                                listName: taskList.title,
-                                listId: taskList.id
-                            })));
-                        }
-                    }
-                    
-                    if (allTasks.length === 0) {
-                        container.innerHTML = '<div class="no-items">No active tasks</div>';
-                    } else {
-                        container.innerHTML = allTasks.map(task => `
-                            <div class="task-item" data-task-id="${task.id}" data-list-id="${task.listId}">
-                                <div style="flex: 1;">
-                                    <div class="task-title">${task.title}</div>
-                                    <div class="task-list-name">${task.listName}</div>
-                                </div>
-                                <input type="checkbox" class="task-checkbox" onchange="if(this.checked) deleteTask('${task.id}', '${task.listId}')" title="Check to complete">
-                            </div>
-                        `).join('');
-                    }
-                } catch (error) {
-                    console.error('Failed to load tasks:', error);
-                    container.innerHTML = '<div class="no-items">Unable to load tasks - <a href="oauth-redirect.html" target="_blank" style="color: #60a5fa; text-decoration: underline;">re-authenticate</a></div>';
-                }
-                
-                // Update last updated time
-                const tasksUpdated = document.getElementById('tasksLastUpdated');
-                if (tasksUpdated) {
-                    tasksUpdated.textContent = 'Updated just now';
-                    tasksUpdated.classList.add('visible');
-                    
-                    setTimeout(() => {
-                        tasksUpdated.textContent = 'Updated 1m ago';
-                    }, 60000);
-                }
-            }
-            
-            // Calendar expanded state
-            let calendarExpanded = false;
-            
-            function toggleCalendarExpand() {
-                calendarExpanded = !calendarExpanded;
-                const btn = document.getElementById('expandBtn');
-                btn.textContent = calendarExpanded ? 'Collapse &#8593;' : 'Expand &#8595;';
-                // Update title
-                const title = document.querySelector('.google-section:nth-child(2) .section-title');
-                if (title) {
-                    title.textContent = calendarExpanded ? '&#128197; Next 7 Days' : '&#128197; Tomorrow\'s Schedule';
-                }
-                loadGoogleCalendar();
-            }
-            
-            // Google Calendar API
-            async function loadGoogleCalendar() {
-                const container = document.getElementById('calendarContainer');
-                container.innerHTML = '<div class="loading">Loading calendar...</div>';
-                
-                try {
-                    // Show tomorrow + next 2 days = 3 days total
-                    const now = new Date();
-                    const startDate = new Date();
-                    startDate.setDate(startDate.getDate() + 1); // Start from tomorrow
-                    startDate.setHours(0, 0, 0, 0);
-                    
-                    const endDate = new Date();
-                    endDate.setDate(endDate.getDate() + 4); // Tomorrow + 2 more days
-                    endDate.setHours(23, 59, 59, 999);
-                    
-                    const timeMinStr = startDate.toISOString();
-                    const timeMaxStr = endDate.toISOString();
-                    
-                    // Calendar IDs (Devon's and Emma's calendars)
-                    const calendars = [
-                        'primary', // User's primary calendar
-                        'emma.exec.11@gmail.com'
-                    ];
-                    
-                    let allEvents = [];
-                    console.log('Loading calendars:', calendars);
-                    
-                    for (const calendarId of calendars) {
-                        try {
-                            const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?timeMin=${timeMinStr}&timeMax=${timeMaxStr}&singleEvents=true&orderBy=startTime`;
-                            const data = await makeGoogleApiCall(url);
-                            allEvents = allEvents.concat(data.items || []);
-                        } catch (error) {
-                            console.error(`Failed to load calendar ${calendarId}:`, error.message);
-                        }
-                    }
-                    
-                    console.log(`Found ${allEvents.length} total events across all calendars`);
-                    
-                    // Filter out routine events
-                    const routineEvents = ['morning routine', 'power hour', 'lunch', 'lunch break', 'wrap up day', 'night routine', 'workout', 'free time'];
-                    const filteredEvents = allEvents.filter(event => {
-                        const title = (event.summary || '').toLowerCase();
-                        const isRoutine = routineEvents.some(routine => title.includes(routine));
-                        if (isRoutine) {
-                            console.log(`Filtering out routine event: ${event.summary}`);
-                        }
-                        return !isRoutine;
-                    });
-                    
-                    // Sort by start time
-                    filteredEvents.sort((a, b) => {
-                        const aTime = new Date(a.start?.dateTime || a.start?.date || 0);
-                        const bTime = new Date(b.start?.dateTime || b.start?.date || 0);
-                        return aTime - bTime;
-                    });
-                    
-                    // Group events by day (fix timezone for PST)
-                    const eventsByDay = {};
-                    filteredEvents.forEach(event => {
-                        let eventDate;
-                        if (event.start.date) {
-                            // All-day event - just use the date part, don't parse as UTC
-                            const [year, month, day] = event.start.date.split('-');
-                            eventDate = new Date(year, month - 1, day); // month is 0-based
-                        } else {
-                            // Timed event - use dateTime
-                            eventDate = new Date(event.start.dateTime);
-                        }
-                        const dayKey = eventDate.toDateString();
-                        console.log(`Event "${event.summary}" - Raw: ${event.start?.dateTime || event.start?.date} - Parsed: ${dayKey}`);
-                        if (!eventsByDay[dayKey]) {
-                            eventsByDay[dayKey] = [];
-                        }
-                        eventsByDay[dayKey].push(event);
-                    });
-                    
-                    // Create HTML for tomorrow only or next 7 days if expanded
-                    let html = '';
-                    const daysToShow = 3; // Always show 3 days
-                    for (let i = 1; i <= daysToShow; i++) {
-                        const currentDate = new Date();
-                        currentDate.setDate(currentDate.getDate() + i);
-                        const dayKey = currentDate.toDateString();
-                        const dayName = currentDate.toLocaleDateString('en-US', { weekday: 'long' });
-                        const dateStr = currentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                        console.log(`Looking for events on: ${dayKey} (displaying as: ${dayName}, ${dateStr})`);
-                        
-                        // Always show day header with date
-                        html += `<div style="margin-bottom: 1rem;">`;
-                        html += `<div style="color: #10b981; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">${dayName}, ${dateStr}</div>`;
-                        
-                        const dayEvents = eventsByDay[dayKey] || [];
-                        if (dayEvents.length > 0) {
-                            html += dayEvents.map(event => {
-                                const isAllDay = !event.start.dateTime;
-                                let timeStr = 'All Day';
-                                
-                                if (!isAllDay) {
-                                    const startTime = new Date(event.start.dateTime);
-                                    const endTime = event.end?.dateTime ? new Date(event.end.dateTime) : null;
-                                    
-                                    const startStr = startTime.toLocaleTimeString('en-US', { 
-                                        hour: 'numeric', 
-                                        minute: '2-digit' 
-                                    });
-                                    
-                                    if (endTime) {
-                                        const endStr = endTime.toLocaleTimeString('en-US', { 
-                                            hour: 'numeric', 
-                                            minute: '2-digit' 
-                                        });
-                                        timeStr = `${startStr} - ${endStr}`;
-                                    } else {
-                                        timeStr = startStr;
-                                    }
-                                }
-                                
-                                return `
-                                    <div class="event-item">
-                                        <div class="event-time ${isAllDay ? 'all-day-event' : ''}">${timeStr}</div>
-                                        <div class="event-title">${event.summary || 'No title'}</div>
-                                    </div>
-                                `;
-                            }).join('');
-                        } else {
-                            html += `<div style="color: #666; font-size: 0.875rem; margin-bottom: 0.25rem;">No events</div>`;
-                        }
-                        html += `</div>`; // Always close the day div
-                    }
-                    
-                    container.innerHTML = html || `<div class="no-items">No events in the next 3 days</div>`;
-                } catch (error) {
-                    console.error('Failed to load calendar:', error);
-                    container.innerHTML = '<div class="no-items">Unable to load calendar - <a href="oauth-redirect.html" target="_blank" style="color: #60a5fa; text-decoration: underline;">re-authenticate</a></div>';
-                }
-            }
-            
             // Load Google data on init
             function loadGoogleData() {
                 loadGoogleTasks();
