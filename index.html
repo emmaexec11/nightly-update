@@ -2241,10 +2241,9 @@
             let missedDays = 0;
             let scheduledDays = 0;
 
-            // Count missed scheduled days in the last 7 days (not including today)
-            for (let d = new Date(sevenDaysAgo); d < today; d.setDate(d.getDate() + 1)) {
+            // Count missed scheduled days in the last 7 days (including today for real-time feedback)
+            for (let d = new Date(sevenDaysAgo); d <= today; d.setDate(d.getDate() + 1)) {
                 const dateStr = d.toISOString().split('T')[0];
-                if (dateStr === todayStr) continue; // Don't penalize today
                 const isScheduled = isHabitScheduledForDate(habit, d);
 
                 if (isScheduled) {
