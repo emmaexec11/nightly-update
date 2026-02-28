@@ -2361,6 +2361,35 @@
                     console.error('Failed to load state:', e);
                 }
             }
+            
+            // Daily habit reset at midnight PST
+            checkDailyReset();
+        }
+
+        // Reset habit checkmarks at midnight PST
+        function checkDailyReset() {
+            const now = new Date();
+            const pstDate = new Date(now.toLocaleString("en-US", {timeZone: "America/Los_Angeles"}));
+            const today = pstDate.toISOString().split('T')[0];
+            
+            const lastResetDate = localStorage.getItem('lastHabitReset');
+            
+            if (lastResetDate !== today) {
+                // Reset all habit checkmarks for new day
+                if (state.goals) {
+                    state.goals.forEach(goal => {
+                        if (goal.habits) {
+                            goal.habits.forEach(habit => {
+                                habit.completed = false;
+                            });
+                        }
+                    });
+                }
+                
+                // Save new reset date and state
+                localStorage.setItem('lastHabitReset', today);
+                saveState();
+            }
         }
 
         // Period Edit Modal Functions
